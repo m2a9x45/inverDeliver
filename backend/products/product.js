@@ -4,8 +4,6 @@ const router = express.Router();
 const dao = require('../dao/dataProduct.js');
 
 router.get('/standard', async (req, res, next) => {
-  // get the recommend products
-
   try {
     const products = await dao.products();
     res.json({
