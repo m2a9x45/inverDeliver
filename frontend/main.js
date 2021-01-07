@@ -1,7 +1,8 @@
 const gridCcontainer = document.querySelector('.grid-container');
 
-
 const API_URL = "http://localhost:3000"
+
+let cart = {};
 
 fetch(`${API_URL}/product/standard`)
   .then(response => response.json())
@@ -31,6 +32,26 @@ function addProducts(productArray) {
         const button = document.createElement("button");
         button.innerText = "Add to Cart";
         button.setAttribute("class", "addCartButton");
+        button.addEventListener("click", () => {
+          console.log(product.product_id);
+
+          if (cart[product.product_id]) {
+            let currentQuantity = cart[product.product_id].number;
+            cart[product.product_id].number = currentQuantity + 1;
+          } else {
+            cart[product.product_id] = {
+              "name" : product.name,
+              "number" : 1,
+              "price" : product.price
+            };
+          }
+          console.log(cart);
+          toggleToast();
+          localStorage.setItem("cart", JSON.stringify(cart));
+
+
+
+        })
 
         const div = document.createElement("div");
         div.setAttribute("class", "productLinks");
@@ -49,4 +70,16 @@ function addProducts(productArray) {
 
 
     });
+}
+
+
+function toggleToast() {
+  // Get the snackbar DIV
+  var x = document.getElementById("snackbar");
+
+  // Add the "show" class to DIV
+  x.className = "show";
+
+  // After 3 seconds, remove the show class from DIV
+  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 1000);
 }

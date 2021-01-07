@@ -6,7 +6,7 @@ const port = 3000;
 const products = require('./products/product.js');
 
 const corsOptions = {
-  origin: 'http://127.0.0.1:5500',
+  origin: 'http://127.0.0.1:8080',
   optionsSuccessStatus: 200,
 };
 

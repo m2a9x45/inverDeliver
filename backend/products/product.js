@@ -29,4 +29,18 @@ router.get('/search/:productName', async (req, res, next) => {
   }
 });
 
+router.get('/productById/:id', async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const product = await dao.productById(id);
+    res.json({
+      message: 'success',
+      data: product,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;

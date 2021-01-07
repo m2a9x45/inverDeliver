@@ -1,0 +1,97 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background-color: #EED6D3;
+}
+
+header {
+    background-color: #A49393;
+    padding: 1em;
+}
+
+.navbar {
+    margin: 0 auto;
+    width: 75%;
+}
+
+.navbarList {
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+#navbarItem {
+    display: inline-block;
+    list-style-type: none;
+    font-size: 16pt;
+    padding: 0.5rem;
+}
+
+nav ul li:first-child {
+    margin-right: auto;
+}
+
+#navbarItem a, #logo a {
+    text-decoration: none;
+    color: #494547;
+}
+
+#navbarItem a:hover, #logo a:hover {
+    color: #f3a9af;
+}
+
+.cartContent {
+    width: 30%;
+    margin: 4rem auto 1rem auto;
+    padding: 1rem 2rem 1rem 2rem;
+    border-radius: 5px;
+    background-color: rgb(241, 241, 241);
+}
+
+.cartItem {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-bottom: 1px solid rgb(201, 201, 201);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.cartItem p {
+    font-size: 12pt;
+    margin: 0;
+}
+
+.total {
+    width: 30%;
+    margin: 2rem auto;
+    padding: 1rem 2rem 1rem 2rem;
+    border-radius: 5px;
+    background-color: rgb(241, 241, 241);
+    text-align: center;
+    font-size: 16pt;
+}
+
+.total p {
+    margin: 0;
+}
+
+.customerInfo {
+    width: 30%;
+    margin: 2rem auto;
+    padding: 1rem 2rem 1rem 2rem;
+    border-radius: 5px;
+    background-color: rgb(241, 241, 241);
+    text-align: center;
+    font-size: 16pt;
+}
+
+.customerInfo h4 {
+    margin: 0.5rem;
+}
+
+.customerInfo input {
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+}

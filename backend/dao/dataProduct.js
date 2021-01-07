@@ -26,7 +26,23 @@ function product(searchTerm) {
   }));
 }
 
+function productById(productById) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT name, image_url, price FROM product WHERE product_id=(?)';
+    db.query(sql, [productById], (err, value) => {
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
+
+
 module.exports = {
   products,
   product,
+  productById,
 };
