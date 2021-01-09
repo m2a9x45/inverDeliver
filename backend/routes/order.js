@@ -12,8 +12,12 @@ router.post('/create', async (req, res, next) => {
 
   const data = req.body;
 
+  const datetime = new Date().getTime();
+  console.log(datetime);
+
   try {
-    const orderInfo = await dao.createOrder(uuidv4(), );
+    const orderInfo = await dao.createOrder(uuidv4(), uuidv4(), datetime);
+    res.json(orderInfo);
   } catch (error) {
     next(error);
   }

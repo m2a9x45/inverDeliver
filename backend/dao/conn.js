@@ -6,8 +6,8 @@ const connection = mysql.createConnection({
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_DB,
-  port: 4000,
-  // _socket: '/tmp/mysql.sock',
+  // port: 4000,
+  _socket: '/tmp/mysql.sock',
 });
 
 module.exports = connection;

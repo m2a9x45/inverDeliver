@@ -7,11 +7,12 @@ const products = require('./routes/product.js');
 const orders = require('./routes/order.js');
 
 const corsOptions = {
-  origin: 'http://127.0.0.1:8080',
+  origin: ['http://127.0.0.1:8080', 'http://127.0.0.1:5500'],
   optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
+app.use(express.json());
 app.use(express.static('public'));
 app.use('/product', products);
 app.use('/order', orders);
