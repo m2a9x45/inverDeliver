@@ -12,11 +12,22 @@ router.post('/create', async (req, res, next) => {
 
   const data = req.body;
 
-  const datetime = new Date().getTime();
-  console.log(datetime);
+  const productsArray = [];
+
+  const orderID = uuidv4();
+  const deliveryID = uuidv4();
+
+  data.products.forEach((product) => {
+    productsArray.push([orderID, product, 1]);
+  });
+
+  console.log(productsArray);
 
   try {
-    const orderInfo = await dao.createOrder(uuidv4(), uuidv4(), datetime);
+    const orderInfo = await dao.createOrder(orderID, deliveryID, new Date());
+
+    const addProductToOrder = await dao.addOrderDetails(productsArray);
+
     res.json(orderInfo);
   } catch (error) {
     next(error);
