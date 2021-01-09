@@ -26,10 +26,10 @@ function product(searchTerm) {
   }));
 }
 
-function productById(productById) {
+function productById(productID) {
   return new Promise(((resolve, reject) => {
     const sql = 'SELECT name, image_url, price FROM product WHERE product_id=(?)';
-    db.query(sql, [productById], (err, value) => {
+    db.query(sql, [productID], (err, value) => {
       if (err === null) {
         resolve(value);
       } else {
@@ -38,8 +38,6 @@ function productById(productById) {
     });
   }));
 }
-
-
 
 module.exports = {
   products,
