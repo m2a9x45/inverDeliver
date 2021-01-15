@@ -3,8 +3,10 @@ const cors = require('cors');
 
 const app = express();
 const port = 3000;
+
 const products = require('./routes/product.js');
 const orders = require('./routes/order.js');
+const payments = require('./routes/payment.js');
 
 const corsOptions = {
   origin: ['http://127.0.0.1:8080', 'http://127.0.0.1:5500'],
@@ -14,8 +16,10 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.static('public'));
+
 app.use('/product', products);
 app.use('/order', orders);
+app.use('/payment', payments);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');

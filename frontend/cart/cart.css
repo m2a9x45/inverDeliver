@@ -62,6 +62,10 @@ nav ul li:first-child {
     margin: 0;
 }
 
+#quantity {
+    width: 10%;
+}
+
 .total {
     width: 30%;
     margin: 2rem auto;
@@ -82,12 +86,12 @@ nav ul li:first-child {
     padding: 1rem 2rem 1rem 2rem;
     border-radius: 5px;
     background-color: rgb(241, 241, 241);
-    text-align: center;
-    font-size: 16pt;
 }
 
 .customerInfo h4 {
     margin: 0.5rem;
+    text-align: center;
+    font-size: 16pt;
 }
 
 .customerInfo input {
@@ -95,4 +99,17 @@ nav ul li:first-child {
     padding: 12px 20px;
     margin: 8px 0;
     box-sizing: border-box;
+}
+
+.submit {
+    width: 85%;
+    margin-top: 1rem;
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 11pt;
 }

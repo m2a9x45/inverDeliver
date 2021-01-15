@@ -1,9 +1,11 @@
 const db = require('./conn.js');
 
-function createOrder(orderID, deliveryID, deliveryTime) {
+function createOrder(orderID, deliveryID, orderData) {
   return new Promise(((resolve, reject) => {
     db.beginTransaction((err) => {
-      if (err) { throw err; }
+      if (err) {
+        throw err;
+      }
       db.query('INSERT INTO food.order (order_id, delivery_id) VALUES (?,?)', [orderID, deliveryID], (error, results, fields) => {
         if (error) {
           return db.rollback(() => {
@@ -11,8 +13,11 @@ function createOrder(orderID, deliveryID, deliveryTime) {
           });
         }
 
-        db.query('INSERT INTO delivery (delivery_id, name, email, phone, delivery_time, street_name, city, post_code) VALUES (?,"a","a","a",?,"a","a","a")',
-          [deliveryID, deliveryTime], (error, results, fields) => {
+        db.query('INSERT INTO delivery (delivery_id, name, email, phone, delivery_time, street_name, city, post_code) VALUES (?,?,?,?,?,?,?,?)',
+          [deliveryID, orderData.name, orderData.email, orderData.phone,
+            new Date(orderData.delivery_time), orderData.street_name,
+            orderData.city, orderData.post_code],
+          (error, results, fields) => {
             if (error) {
               return db.rollback(() => {
                 reject(error);
@@ -30,8 +35,7 @@ function createOrder(orderID, deliveryID, deliveryTime) {
           });
       });
     });
-  }
-  ));
+  }));
 }
 
 function addOrderDetails(products) {
@@ -47,7 +51,21 @@ function addOrderDetails(products) {
   }));
 }
 
+function getOrderPrice(orderID) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT d.quantity, p.price FROM details d INNER JOIN product p ON d.product_id=p.product_id WHERE d.order_id=(?)';
+    db.query(sql, [orderID], (err, value) => {
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
 module.exports = {
   createOrder,
   addOrderDetails,
+  getOrderPrice,
 };

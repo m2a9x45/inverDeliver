@@ -26,8 +26,10 @@ function addProducts(productArray) {
         const productLinksDiv = document.createElement("div");
         productLinksDiv.setAttribute("class", "productLinks");
 
+        const formatedPrice = new Intl.NumberFormat('en-UK', { style: 'currency', currency: 'GBP' }).format(product.price / 100);
+
         const price = document.createElement("p");
-        price.innerText = `£ ${product.price / 100}` // more logic needed to handle zero
+        price.innerText = formatedPrice // more logic needed to handle zero
 
         const button = document.createElement("button");
         button.innerText = "Add to Cart";

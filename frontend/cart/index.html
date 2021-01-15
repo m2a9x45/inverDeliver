@@ -24,7 +24,7 @@
     <main>
         <div class="cartContent">
             <h2>Your Cart 🛒</h2>
-            <div class="cartItem">
+            <!-- <div class="cartItem">
                 <div>
                     <p>Milk</p>
                     <label for="quantity">Quantity:</label>
@@ -52,31 +52,33 @@
                 <div>      
                     <p>£ 1.00</p>
                 </div>
-            </div>
+            </div> -->
         </div>
 
         <div class="total">
-            <p>Your total: £15.00</p>
+            <p id="priceTotal">Your total: £15.00</p>
         </div>
 
         <div class="customerInfo">
-            <h4>Delivery Info 🚚</h4>
-            <div>
-                <input type="text" placeholder="name">
-                <input type="email" name="" id="" placeholder="your@email.com">
-            </div>
-            <div>
-                <input type="tel" placeholder="+44">
-                <input type="datetime-local" name="" id="">
-            </div>
-            <div>
-                <input type="text" placeholder="Street Name">
-                <input type="text" placeholder="Town/City">
-                <input type="text" placeholder="Postcode">
-            </div>
-            
-
-            
+            <form id="deliveryForm">
+                <h4>Delivery Info 🚚</h4>
+                <div>
+                    <input type="text" name="name" id="name" placeholder="Your name" autocomplete="given-name">
+                    <input type="email" name="email" id="email" placeholder="Your email" autocomplete="email">
+                </div>
+                <div>
+                    <input type="tel" name="phone" id="phone" placeholder="Your phone number" autocomplete="tel">
+                    <label for="">Choose your delivery day & time:</label>
+                    <input type="datetime-local" name="delivery_time" id="delivery_time">
+                </div>
+                <div>
+                    <label for="">Your delivery address:</label>
+                    <input type="text" placeholder="Street Name" autocomplete="address-line1" name="street_name" id="street_name">
+                    <input type="text" placeholder="Town/City" autocomplete="address-level2" name="city" id="city">
+                    <input type="text" placeholder="Postcode" autocomplete="postal-code" name="post_code" id="post_code">
+                </div>
+                <input class="submit" type="submit" value="Continue to Payment">
+            </form>            
         </div>
 
 

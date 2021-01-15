@@ -5,11 +5,6 @@ const router = express.Router();
 const dao = require('../dao/dataOrder.js');
 
 router.post('/create', async (req, res, next) => {
-  // data will have the customers cart product ID's and their delivery Info
-
-  // Step 1 : create order with ervything expect products
-  // Step 2 : Add the products using the orderID
-
   const data = req.body;
 
   const productsArray = [];
@@ -18,17 +13,20 @@ router.post('/create', async (req, res, next) => {
   const deliveryID = uuidv4();
 
   data.products.forEach((product) => {
-    productsArray.push([orderID, product, 1]);
+    productsArray.push([orderID, product[0], product[1]]);
   });
 
   console.log(productsArray);
 
   try {
-    const orderInfo = await dao.createOrder(orderID, deliveryID, new Date());
+    console.log(data);
+    const orderInfo = await dao.createOrder(orderID, deliveryID, data);
 
     const addProductToOrder = await dao.addOrderDetails(productsArray);
 
-    res.json(orderInfo);
+    res.json({
+      order_id: orderID,
+    });
   } catch (error) {
     next(error);
   }
