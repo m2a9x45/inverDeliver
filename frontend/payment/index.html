@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Accept a card payment</title>
+    <title>food - payment</title>
     <meta name="description" content="A demo of a card payment on Stripe" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="payment.css" />
@@ -11,18 +11,25 @@
     <script src="payment.js" defer></script>
   </head>
   <body>
+    <main>
+      <h1>Food - Payment</h1>
+      <h4>Order Info</h4>
+      <h4>Delivery Info</h4>
+      <h4>Payment Info</h4>
+      <form id="payment-form">
+        <div id="card-element"><!--Stripe.js injects the Card Element--></div>
+        <button id="submit">
+          <div class="spinner hidden" id="spinner"></div>
+          <span id="button-text">Pay</span>
+        </button>
+        <p id="card-error" role="alert"></p>
+        <p class="result-message hidden">
+          Payment succeeded, see the result in your
+          <a href="" target="_blank">Stripe dashboard.</a> Refresh the page to pay again.
+        </p>
+      </form>
+    </main>
     <!-- Display a payment form -->
-    <form id="payment-form">
-      <div id="card-element"><!--Stripe.js injects the Card Element--></div>
-      <button id="submit">
-        <div class="spinner hidden" id="spinner"></div>
-        <span id="button-text">Pay</span>
-      </button>
-      <p id="card-error" role="alert"></p>
-      <p class="result-message hidden">
-        Payment succeeded, see the result in your
-        <a href="" target="_blank">Stripe dashboard.</a> Refresh the page to pay again.
-      </p>
-    </form>
+    
   </body>
 </html>

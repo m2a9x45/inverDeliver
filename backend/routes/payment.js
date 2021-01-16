@@ -26,6 +26,7 @@ router.post('/create-payment-intent', async (req, res, next) => {
       currency: 'gbp',
       metadata: { order_id: orderID },
     });
+
     res.send({
       clientSecret: paymentIntent.client_secret,
     });

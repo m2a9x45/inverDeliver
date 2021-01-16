@@ -64,8 +64,24 @@ function getOrderPrice(orderID) {
   }));
 }
 
+function getOrderStatus(orderID) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT status FROM food.order WHERE order_id=(?)';
+    db.query(sql, [orderID], (err, value) => {
+      console.log(err, value);
+
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
 module.exports = {
   createOrder,
   addOrderDetails,
   getOrderPrice,
+  getOrderStatus,
 };

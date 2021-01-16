@@ -32,4 +32,21 @@ router.post('/create', async (req, res, next) => {
   }
 });
 
+// order/status?orderID=6c2651f4-4ed6-43ac-a1aa-cafe4b27fd83
+router.get('/status', async (req, res, next) => {
+  const { orderID } = req.query;
+
+  try {
+    const status = await dao.getOrderStatus(orderID);
+
+    if (status.length !== 0) {
+      res.json(status[0]);
+    } else {
+      res.status(404).send();
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;
