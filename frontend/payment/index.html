@@ -14,6 +14,34 @@
     <main>
       <h1>Food - Payment</h1>
       <h4>Order Info</h4>
+      <div class="cartContent">
+          <div class="cartItem">
+              <div>
+                  <p>Milk</p>
+              </div>
+              <div>      
+                  <p>£ 6.53</p>
+              </div>
+          </div>
+          <div class="cartItem">
+              <div>
+                  <p>Orange Juice</p>
+              </div>
+              <div>      
+                  <p>£ 2.50</p>
+              </div>
+          </div>
+          <div class="cartItem">
+              <div>
+                  <p>Total</p>
+                  <p></p>
+              </div>
+              <div>      
+                  <p>£ 1.00</p>
+              </div>
+          </div>
+      </div>
+
       <h4>Delivery Info</h4>
       <div class="deliveryInfo">
           <div>
@@ -27,7 +55,7 @@
               <p>contact number</p>
           </div>
       </div>
-      
+
       <form id="payment-form">
         <div id="card-element"><!--Stripe.js injects the Card Element--></div>
         <button id="submit">
