@@ -1,3 +1,4 @@
+const API_URL = "http://localhost:3000";
 var stripe = Stripe("pk_test_51H7AsMK7XxBFOf2KD3wGhUSnQRncvlSgpaez5NPRCilzrFxxJPsKgUNU0li9EHwtSigGZV1Y1Y6gtYu7kmbjs9KC00LtASdb7Q");
 
 var url_string = window.location.href;
@@ -11,12 +12,17 @@ let clientSecret = "";
 
 // check orderID is in a payable state.
 
+fetch(`${API_URL}/order/status?orderID=${orderID}`)
+  .then(response => response.json())
+  .then(data => console.log(data));
+
+
 
 if (localStorage.getItem("token")) {
   console.log(localStorage.getItem("token"));
   clientSecret = localStorage.getItem("token");
 } else {
-  fetch("http://localhost:3000/payment/create-payment-intent", {
+  fetch(`${API_URL}/payment/create-payment-intent`, {
   method: "POST",
   headers: {
     "Content-Type": "application/json"

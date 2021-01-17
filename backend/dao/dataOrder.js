@@ -66,7 +66,7 @@ function getOrderPrice(orderID) {
 
 function getOrderStatus(orderID) {
   return new Promise(((resolve, reject) => {
-    const sql = 'SELECT status FROM food.order WHERE order_id=(?)';
+    const sql = 'SELECT d.name, d.email, d.phone, d.delivery_time, d.street_name, d.city, d.post_code, o.status FROM delivery d INNER JOIN food.order o ON o.delivery_id=d.delivery_id WHERE o.order_id=(?)';
     db.query(sql, [orderID], (err, value) => {
       console.log(err, value);
 

@@ -132,6 +132,24 @@ button:disabled {
   -webkit-animation: loading 2s infinite ease;
   animation: loading 2s infinite ease;
 }
+
+.deliveryInfo {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  border-bottom: 1px solid rgb(201, 201, 201);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.deliveryInfo p {
+  font-size: 12pt;
+  margin: 0.5rem;
+}
+
+
+
+
 @-webkit-keyframes loading {
   0% {
     -webkit-transform: rotate(0deg);
