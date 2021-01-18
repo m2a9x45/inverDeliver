@@ -4,6 +4,10 @@ const API_URL = "http://localhost:3000"
 
 let cart = {};
 
+if (localStorage.getItem("cart")) {
+  cart = JSON.parse(localStorage.getItem("cart"));
+}
+
 fetch(`${API_URL}/product/standard`)
   .then(response => response.json())
   .then(resObject => addProducts(resObject.data));
@@ -35,24 +39,7 @@ function addProducts(productArray) {
         button.innerText = "Add to Cart";
         button.setAttribute("class", "addCartButton");
         button.addEventListener("click", () => {
-          console.log(product.product_id);
-
-          if (cart[product.product_id]) {
-            let currentQuantity = cart[product.product_id].number;
-            cart[product.product_id].number = currentQuantity + 1;
-          } else {
-            cart[product.product_id] = {
-              "name" : product.name,
-              "number" : 1,
-              "price" : product.price
-            };
-          }
-          console.log(cart);
-          toggleToast();
-          localStorage.setItem("cart", JSON.stringify(cart));
-
-
-
+          onProductadd(product);
         })
 
         const div = document.createElement("div");
@@ -68,12 +55,27 @@ function addProducts(productArray) {
         gridDiv.appendChild(productLinksDiv);
 
         gridCcontainer.appendChild(gridDiv);
-
-
-
     });
 }
 
+function onProductadd(product) {
+  console.log(product.product_id);
+
+  if (cart[product.product_id]) {
+    let currentQuantity = cart[product.product_id].number;
+    cart[product.product_id].number = currentQuantity + 1;
+  } else {
+    cart[product.product_id] = {
+      "name" : product.name,
+      "number" : 1,
+      "price" : product.price
+    };
+  }
+  console.log(cart);
+  toggleToast();
+  localStorage.setItem("cart", JSON.stringify(cart));
+
+}
 
 function toggleToast() {
   // Get the snackbar DIV
