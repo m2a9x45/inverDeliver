@@ -1,12 +1,13 @@
 body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
-    background-color: #EED6D3;
+    background-color: #cec3c1;
 }
 
 header {
-    background-color: #A49393;
+    background-color: #2e2a2a;
     padding: 1em;
+    
 }
 
 .navbar {
@@ -33,18 +34,52 @@ nav ul li:first-child {
 
 #navbarItem a, #logo a {
     text-decoration: none;
-    color: #494547;
+    color: rgb(224, 224, 224);
 }
 
 #navbarItem a:hover, #logo a:hover {
     color: #f3a9af;
 }
 
-.productsContainer {
-    width: 80%;
-    margin: 3rem auto;
+.callOutHolder {
+    width: 100%;
+    background-color: #6b2020;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
 }
 
+.callOut {
+    color: rgb(214, 214, 214);
+    width: 40%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.callOut h4 {
+    margin: 1rem;
+    font-size: 32pt;
+}
+
+.callOut p {
+    font-size: 18pt;
+}
+
+#learnMoreButton {
+    background-color: #c69cdf; /* Green */
+    border: none;
+    width: 35%;
+    /* color: white; */
+    padding: 1rem 2rem;
+    text-align: center;
+    text-decoration: none;
+    font-size: 14pt;
+    border-radius: 5px;
+}
+
+.productsContainer {
+    width: 80%;
+    margin: 2rem auto;
+}
 
 .grid-container {
     display: grid;
@@ -138,4 +173,68 @@ img {
 @keyframes fadeout {
     from {opacity: 1;}
     to {opacity: 0;}
+}
+
+@media only screen and (max-width: 1453px) {
+    .grid-container {
+        display: grid;
+        grid-template-columns: auto auto auto auto auto;
+        /* background-color: #2196F3; */
+        /* padding: 10px; */
+    }
+    .productsContainer {
+        width: 90%;
+    }
+}
+
+@media only screen and (max-width: 1130px) {
+    .grid-container {
+        display: grid;
+        grid-template-columns: auto auto auto auto;
+        /* background-color: #2196F3; */
+        /* padding: 10px; */
+    }
+    .callOut {
+        color: rgb(214, 214, 214);
+        width: 80%;
+
+    }
+}
+
+@media only screen and (max-width: 935px) {
+    .grid-container {
+        display: grid;
+        grid-template-columns: auto auto auto;
+        /* background-color: #2196F3; */
+        /* padding: 10px; */
+    }
+}
+
+@media only screen and (max-width: 680px) {
+    .grid-container {
+        display: grid;
+        grid-template-columns: auto auto;
+        /* background-color: #2196F3; */
+        /* padding: 10px; */
+    }
+    #learnMoreButton {
+        background-color: #c69cdf; /* Green */
+        border: none;
+        width: 75%;
+        /* color: white; */
+        padding: 1rem 2rem;
+        text-align: center;
+        text-decoration: none;
+        font-size: 14pt;
+        border-radius: 5px;
+    }
+}
+
+@media only screen and (max-width: 465px) {
+    .grid-container {
+        display: grid;
+        grid-template-columns: auto;
+        /* background-color: #2196F3; */
+        /* padding: 10px; */
+    }
 }

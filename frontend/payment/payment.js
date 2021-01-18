@@ -14,8 +14,21 @@ let clientSecret = "";
 
 fetch(`${API_URL}/order/status?orderID=${orderID}`)
   .then(response => response.json())
-  .then(data => console.log(data));
+  .then(data => {
+    console.log(data);
+    if (data.status == 0) {
+      displayDeliveryInfo(data);
+    } else {
+      console.log("Order ID invalid");
+      // order isn't in correct status, diaply error and redirect
+    }
 
+
+  });
+
+function displayDeliveryInfo(addressInfo) {
+
+} 
 
 
 if (localStorage.getItem("token")) {
