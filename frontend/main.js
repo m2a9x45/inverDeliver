@@ -38,7 +38,15 @@ function addProducts(productArray) {
         const button = document.createElement("button");
         button.innerText = "Add to Cart";
         button.setAttribute("class", "addCartButton");
-        button.addEventListener("click", () => {
+        button.addEventListener("click", (e) => {
+          e.target.innerText = "Added to cart";
+          e.target.disabled = true;
+
+          setTimeout(function(){ 
+            e.target.innerText = "Add to cart";
+            e.target.disabled = false;
+           }, 550);
+
           onProductadd(product);
         })
 
@@ -72,18 +80,20 @@ function onProductadd(product) {
     };
   }
   console.log(cart);
-  toggleToast();
+  toggleToast(product.name);
   localStorage.setItem("cart", JSON.stringify(cart));
 
 }
 
-function toggleToast() {
+function toggleToast(name) {
+
   // Get the snackbar DIV
   var x = document.getElementById("snackbar");
+  x.innerText = `${name} added to 🛒`
 
   // Add the "show" class to DIV
   x.className = "show";
 
   // After 3 seconds, remove the show class from DIV
-  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 1000);
+  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 500);
 }
