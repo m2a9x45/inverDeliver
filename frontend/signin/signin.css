@@ -1,0 +1,15 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background-color: #e4e4e4;
+}
+
+.signInSelect {
+    margin: 15rem auto;
+    text-align: center;
+}
+
+.googleSignInHolder {
+    width: 350px;
+    margin: 1.5rem auto;
+}

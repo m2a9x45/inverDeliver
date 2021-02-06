@@ -43,13 +43,12 @@ nav ul li:first-child {
 
 .callOutHolder {
     width: 100%;
-    background-color: #6b2020;
+    background-color: royalblue;
     padding-top: 1.5rem;
     padding-bottom: 1.5rem;
 }
 
 .callOut {
-    color: rgb(214, 214, 214);
     width: 40%;
     margin: 0 auto;
     text-align: center;
@@ -171,7 +170,6 @@ img {
         /* padding: 10px; */
     }
     .callOut {
-        color: rgb(214, 214, 214);
         width: 80%;
 
     }

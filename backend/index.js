@@ -7,9 +7,10 @@ const port = 3000;
 const products = require('./routes/product.js');
 const orders = require('./routes/order.js');
 const payments = require('./routes/payment.js');
+const users = require('./routes/user.js');
 
 const corsOptions = {
-  origin: ['http://127.0.0.1:8080', 'http://127.0.0.1:5500'],
+  origin: ['http://127.0.0.1:8080', 'http://localhost:8080', 'http://127.0.0.1:5500'],
   optionsSuccessStatus: 200,
 };
 
@@ -20,6 +21,7 @@ app.use(express.static('public'));
 app.use('/product', products);
 app.use('/order', orders);
 app.use('/payment', payments);
+app.use('/user', users);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
