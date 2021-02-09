@@ -122,7 +122,8 @@ if (localStorage.getItem("stripeToken")) {
   fetch(`${API_URL}/payment/create-payment-intent`, {
   method: "POST",
   headers: {
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
+    'authorization': `bearer ${token}`,
   },
   body: JSON.stringify({
 	"orderID" : orderID

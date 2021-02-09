@@ -1,0 +1,90 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background-color: #cec3c1;
+}
+
+header {
+    background-color: #2e2a2a;
+    padding: 1em;
+    
+}
+
+.navbar {
+    margin: 0 auto;
+    width: 75%;
+}
+
+.navbarList {
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+#navbarItem {
+    display: inline-block;
+    list-style-type: none;
+    font-size: 16pt;
+    padding: 0.5rem;
+}
+
+nav ul li:first-child {
+    margin-right: auto;
+}
+
+#navbarItem a, #logo a {
+    text-decoration: none;
+    color: rgb(224, 224, 224);
+}
+
+#navbarItem a:hover, #logo a:hover {
+    color: #f3a9af;
+}
+
+.orders {
+    width: 45%;
+    margin: 2rem auto;
+}
+
+#ordersHeading {
+    text-align: center;
+    border-bottom: 2px solid rgb(85, 85, 85);
+    padding-bottom: 0.5rem;
+}
+
+.order {
+    background-color: rgb(238, 238, 238);
+    border: 1px solid rgb(85, 85, 85);
+    border-radius: 3px;
+    margin: 1rem auto 1rem auto;
+}
+
+.orderInfo {
+    display: flex;
+    justify-content: space-between;
+    background-color: #e2e2e2;
+    padding: 0.5rem;
+    border-bottom: 1px solid rgb(85, 85, 85);
+}
+
+.orderInfo p {
+    margin: 0;
+    font-size: 14pt;
+}
+
+.orderbody {
+    padding: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.orderbody p {
+    margin: 0;
+    font-size: 14pt;
+}
+
+.statusAndHelp {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}

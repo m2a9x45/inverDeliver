@@ -49,4 +49,13 @@ router.get('/status', async (req, res, next) => {
   }
 });
 
+router.get('/all', async (req, res, next) => {
+  try {
+    const orders = await dao.getUserOrders(res.locals.user);
+    res.json(orders);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;

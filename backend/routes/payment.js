@@ -28,6 +28,19 @@ router.post('/create-payment-intent', authorisation.isAuthorized, async (req, re
       metadata: { order_id: orderID },
     });
 
+    // update price
+    try {
+      const addPricetoOrder = await dao.updateOrderPrice(
+        total,
+        paymentIntent.id,
+        orderID,
+        res.locals.user,
+      );
+      console.log(addPricetoOrder);
+    } catch (error) {
+      next(error);
+    }
+
     res.send({
       clientSecret: paymentIntent.client_secret,
     });

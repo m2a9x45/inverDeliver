@@ -79,9 +79,38 @@ function getOrderStatus(orderID, userID) {
   }));
 }
 
+function getUserOrders(userID) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT f.user_id, f.order_id, f.delivery_id, f.status, f.price, f.created_at, d.delivery_id, d.delivery_time, d.street_name, d.city, d.post_code  FROM food.order f INNER JOIN food.delivery d ON f.delivery_id=d.delivery_id WHERE user_id=(?)';
+    db.query(sql, [userID], (err, value) => {
+      console.log(err, value);
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
+function updateOrderPrice(price, paymentID, orderID, userID) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'UPDATE food.order SET price=(?), payment_id=(?) WHERE order_id=(?) AND user_id=(?)';
+    db.query(sql, [price, paymentID, orderID, userID], (err, value) => {
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
 module.exports = {
   createOrder,
   addOrderDetails,
   getOrderPrice,
   getOrderStatus,
+  getUserOrders,
+  updateOrderPrice,
 };
