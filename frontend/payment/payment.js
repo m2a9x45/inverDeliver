@@ -5,6 +5,10 @@ var url_string = window.location.href;
 var url = new URL(url_string);
 var orderID = url.searchParams.get("orderID");
 console.log(orderID);
+let cart = JSON.parse(localStorage.getItem("cart"));
+const cartContent = document.querySelector(".cartContent");
+
+let total =  0;
 
 const token = localStorage.getItem('token');
 
@@ -15,6 +19,62 @@ if (!token) {
 document.querySelector("button").disabled = true;
 
 let clientSecret = "";
+
+for (const [key, value] of Object.entries(cart)) {
+  console.log(`${key}: ${value.name} ${value.number} £ ${value.price} £${value.price * value.number}`);
+  total = total + (value.price * value.number);
+  displayCart(key, value);
+}
+
+const totalFormat = new Intl.NumberFormat('en-UK', { style: 'currency', currency: 'GBP' }).format(total / 100);
+
+priceTotal.innerText = `Your total: ${totalFormat}`;
+
+function displayCart(id, item) {
+  const div = document.createElement("div");
+  div.setAttribute("class", "cartItem");
+
+  const divItems = document.createElement("div");
+
+  const itemName = document.createElement("p");
+  itemName.innerText = `${item.name} (x${item.number})`;
+
+  // const quantityLabel = document.createElement("label");
+  // quantityLabel.setAttribute("for", "quantity");
+  // quantityLabel.innerText = "quantity: ";
+
+  // const quantityInput = document.createElement("Input");
+  // quantityInput.setAttribute("type", "number");
+  // quantityInput.setAttribute("id", "quantity");
+  // quantityInput.setAttribute("value", item.number);
+
+
+  const divPrice = document.createElement("div");
+
+  const itemPrice = document.createElement("p");
+
+  // console.log(new Intl.NumberFormat('en-UK', { style: 'currency', currency: 'GBP' }).format(number));
+
+  const formatedPrice = new Intl.NumberFormat('en-UK', { style: 'currency', currency: 'GBP' }).format((item.price * item.number) / 100);
+
+  itemPrice.innerText = formatedPrice;
+
+  divItems.appendChild(itemName);
+  // divItems.appendChild(quantityLabel);
+  // divItems.appendChild(quantityInput);
+
+  divPrice.appendChild(itemPrice);
+
+  div.appendChild(divItems);
+  div.appendChild(divPrice);
+
+  cartContent.appendChild(div);
+
+}
+
+
+
+
 
 // check orderID is in a payable state.
 
