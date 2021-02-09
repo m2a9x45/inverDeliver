@@ -6,13 +6,23 @@ var url = new URL(url_string);
 var orderID = url.searchParams.get("orderID");
 console.log(orderID);
 
+const token = localStorage.getItem('token');
+
+if (!token) {
+  window.location.replace("../signin");
+}
+
 document.querySelector("button").disabled = true;
 
 let clientSecret = "";
 
 // check orderID is in a payable state.
 
-fetch(`${API_URL}/order/status?orderID=${orderID}`)
+fetch(`${API_URL}/order/status?orderID=${orderID}`,{
+  headers: {
+    'authorization': `bearer ${token}`,
+  }
+})
   .then(response => response.json())
   .then(data => {
     console.log(data);
@@ -22,18 +32,32 @@ fetch(`${API_URL}/order/status?orderID=${orderID}`)
       console.log("Order ID invalid");
       // order isn't in correct status, diaply error and redirect
     }
-
-
   });
 
 function displayDeliveryInfo(addressInfo) {
+  const addressLine = document.querySelector('#addressLine');
+  const addressCity = document.querySelector('#addressCity');
+  const addressPostCode = document.querySelector('#addressPostCode');
+  const deliveryTime = document.querySelector('#deliveryTime');
+  const ContactNumber = document.querySelector('#ContactNumber');
 
+  addressLine.innerText = addressInfo.street_name;
+  addressCity.innerText = addressInfo.city;
+  addressPostCode.innerText = addressInfo.post_code;
+
+  var deliveryDate  = new Date(addressInfo.delivery_time);
+  var options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric'  };
+  const displaydate = deliveryDate.toLocaleDateString("en-UK", options)
+
+
+  deliveryTime.innerText = displaydate;
+  ContactNumber.innerText = addressInfo.phone;
 } 
 
 
-if (localStorage.getItem("token")) {
-  console.log(localStorage.getItem("token"));
-  clientSecret = localStorage.getItem("token");
+if (localStorage.getItem("stripeToken")) {
+  console.log(localStorage.getItem("stripeToken"));
+  clientSecret = localStorage.getItem("stripeToken");
 } else {
   fetch(`${API_URL}/payment/create-payment-intent`, {
   method: "POST",
@@ -49,7 +73,7 @@ if (localStorage.getItem("token")) {
   })
   .then(function(data) {
     console.log(data);
-    localStorage.setItem("token", data.clientSecret);
+    localStorage.setItem("stripeToken", data.clientSecret);
     clientSecret = data.clientSecret;
   });
 }

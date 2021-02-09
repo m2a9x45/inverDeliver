@@ -5,8 +5,9 @@ const stripe = require('stripe')(process.env.STRIPE_KEY);
 
 const router = express.Router();
 const dao = require('../dao/dataOrder.js');
+const authorisation = require('../middleware/auth.js');
 
-router.post('/create-payment-intent', async (req, res, next) => {
+router.post('/create-payment-intent', authorisation.isAuthorized, async (req, res, next) => {
   const { orderID } = req.body;
 
   console.log(orderID);

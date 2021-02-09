@@ -8,6 +8,7 @@ const products = require('./routes/product.js');
 const orders = require('./routes/order.js');
 const payments = require('./routes/payment.js');
 const users = require('./routes/user.js');
+const authorisation = require('./middleware/auth.js');
 
 const corsOptions = {
   origin: ['http://127.0.0.1:8080', 'http://localhost:8080', 'http://127.0.0.1:5500'],
@@ -19,7 +20,7 @@ app.use(express.json());
 app.use(express.static('public'));
 
 app.use('/product', products);
-app.use('/order', orders);
+app.use('/order', authorisation.isAuthorized, orders);
 app.use('/payment', payments);
 app.use('/user', users);
 

@@ -20,7 +20,7 @@ router.post('/create', async (req, res, next) => {
 
   try {
     console.log(data);
-    const orderInfo = await dao.createOrder(orderID, deliveryID, data);
+    const orderInfo = await dao.createOrder(res.locals.user, orderID, deliveryID, data);
 
     const addProductToOrder = await dao.addOrderDetails(productsArray);
 
@@ -37,7 +37,7 @@ router.get('/status', async (req, res, next) => {
   const { orderID } = req.query;
 
   try {
-    const status = await dao.getOrderStatus(orderID);
+    const status = await dao.getOrderStatus(orderID, res.locals.user);
 
     if (status.length !== 0) {
       res.json(status[0]);

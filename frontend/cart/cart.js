@@ -1,8 +1,16 @@
 const API_URL = "http://localhost:3000";
-let cart = JSON.parse(localStorage.getItem("cart"))
+
+let cart = JSON.parse(localStorage.getItem("cart"));
+
 const cartContent = document.querySelector(".cartContent");
 const priceTotal = document.querySelector("#priceTotal");
 const deliveryForm = document.querySelector('#deliveryForm');
+
+const token = localStorage.getItem('token');
+
+if (!token) {
+  window.location.replace("../signin");
+}
 
 console.log(cart);
 let total =  0;
@@ -84,6 +92,7 @@ deliveryForm.addEventListener("submit", (e) => {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
+    'authorization': `bearer ${token}`,
   },
   body: JSON.stringify(orderData),
 })
@@ -91,8 +100,6 @@ deliveryForm.addEventListener("submit", (e) => {
 .then(data => {
   console.log('Success:', data);
   window.location.replace(`../payment/index.html?orderID=${data.order_id}`);
-
-
 })
 .catch((error) => {
   console.error('Error:', error);
