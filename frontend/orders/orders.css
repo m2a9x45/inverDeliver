@@ -126,11 +126,12 @@ nav ul li:first-child {
 #helpButton {
     background-color: #ec9027;
     border: none;
+    color: black;
     padding: 0.5rem 1rem;
     text-align: center;
     text-decoration: none;
-    display: inline-block;
     font-size: 12pt;
+    cursor: pointer;
     border-radius: 5px;
 }
 

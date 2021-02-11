@@ -156,9 +156,10 @@ function displayOrders(order) {
 
     contextInfo.appendChild(deliveryStatus);
 
-    const helpButton = document.createElement("button");
+    const helpButton = document.createElement("a");
     helpButton.setAttribute("id", "helpButton");
-    helpButton.innerText = "Need help";
+    helpButton.setAttribute("href", `../help/order?id=${order.order_id}`);
+    helpButton.innerText = "Order help";
     contextInfo.appendChild(helpButton);
 
     orderbody.appendChild(contextInfo); // Adding contextInfo to the orderbody

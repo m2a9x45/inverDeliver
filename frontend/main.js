@@ -1,6 +1,8 @@
-const gridCcontainer = document.querySelector('.grid-container');
-
 const API_URL = "http://localhost:3000"
+
+const gridCcontainer = document.querySelector('.grid-container');
+const productSearch = document.querySelector('#productSearch');
+let initProducts;
 
 let cart = {};
 
@@ -10,60 +12,100 @@ if (localStorage.getItem("cart")) {
 
 fetch(`${API_URL}/product/standard`)
   .then(response => response.json())
-  .then(resObject => addProducts(resObject.data));
+  .then(data => {
+    console.log(data);
+    initProducts = data.data;
+    addProducts(data.data)
+  });
 
+productSearch.addEventListener("keypress", (e) => {
+  if (e.key === 'Enter' && productSearch.value !== "") {
+    console.log(productSearch.value);
+    fetch(`${API_URL}/product/search/${productSearch.value}`)
+      .then(response => {
+        switch (response.status) {
+          case 200:
+            return response.json()
+          default:
+            console.log("🚨 Something went wrong");
+        }
+      })
+      .then(data => {
+        console.log(data);
+        if (data.length != 0) {
+          console.log("found product");
+          gridCcontainer.innerHTML = "";
+          addProducts(data);
+        } else {
+          console.log("didn't product");
+        }
+      })
+      .catch(error => {
+        console.error(`🚨🚨🚨${error}🚨🚨🚨`);
+      })
+  }
+
+  if (e.key === 'Enter' && productSearch.value === "") {
+    gridCcontainer.innerHTML = "";
+    addProducts(initProducts);
+  }
+
+})
 
 function addProducts(productArray) {
-    productArray.forEach(product => {
+  productArray.forEach(product => {
 
-        const gridDiv = document.createElement("div");
-        gridDiv.setAttribute("class", "grid-item");
+    const gridDiv = document.createElement("div");
+    gridDiv.setAttribute("class", "grid-item");
 
-        const img = document.createElement("img");
-        img.setAttribute("src", product.image_url);
-        img.setAttribute("width", "150px");
-        img.setAttribute("height", "150px");
+    const img = document.createElement("img");
+    img.setAttribute("src", product.image_url ? product.image_url : "");
+    img.setAttribute("width", "150px");
+    img.setAttribute("height", "150px");
 
-        const title = document.createElement("p");
-        title.innerText = `${product.name} - ${product.des}`;
+    const title = document.createElement("p");
+    title.innerText = `${product.name} - ${product.des}`;
 
-        const productLinksDiv = document.createElement("div");
-        productLinksDiv.setAttribute("class", "productLinks");
+    const productLinksDiv = document.createElement("div");
+    productLinksDiv.setAttribute("class", "productLinks");
 
-        const formatedPrice = new Intl.NumberFormat('en-UK', { style: 'currency', currency: 'GBP' }).format(product.price / 100);
+    const formatedPrice = new Intl.NumberFormat('en-UK', {
+      style: 'currency',
+      currency: 'GBP'
+    }).format(product.price / 100);
 
-        const price = document.createElement("p");
-        price.innerText = formatedPrice // more logic needed to handle zero
+    const price = document.createElement("p");
+    price.innerText = formatedPrice // more logic needed to handle zero
 
-        const button = document.createElement("button");
-        button.innerText = "Add to Cart";
-        button.setAttribute("class", "addCartButton");
-        button.addEventListener("click", (e) => {
-          e.target.innerText = "Added to cart";
-          e.target.disabled = true;
+    const button = document.createElement("button");
+    button.innerText = "Add to Cart";
+    button.setAttribute("class", "addCartButton");
+    button.addEventListener("click", (e) => {
+      e.target.innerText = "Added to cart";
+      e.target.disabled = true;
 
-          setTimeout(function(){ 
-            e.target.innerText = "Add to cart";
-            e.target.disabled = false;
-           }, 550);
+      setTimeout(function () {
+        e.target.innerText = "Add to cart";
+        e.target.disabled = false;
+      }, 550);
 
-          onProductadd(product);
-        })
+      onProductadd(product);
+    })
 
-        const div = document.createElement("div");
-        div.setAttribute("class", "productLinks");
-        
-        div.appendChild(price);
-        div.appendChild(button);
+    const div = document.createElement("div");
+    div.setAttribute("class", "productLinks");
 
-        productLinksDiv.appendChild(div);
+    div.appendChild(price);
+    div.appendChild(button);
 
-        gridDiv.appendChild(img);
-        gridDiv.appendChild(title);
-        gridDiv.appendChild(productLinksDiv);
+    productLinksDiv.appendChild(div);
 
-        gridCcontainer.appendChild(gridDiv);
-    });
+    gridDiv.appendChild(img);
+    gridDiv.appendChild(title);
+    gridDiv.appendChild(productLinksDiv);
+
+    gridCcontainer.appendChild(gridDiv);
+  });
 }
 
 function onProductadd(product) {
@@ -74,9 +116,9 @@ function onProductadd(product) {
     cart[product.product_id].number = currentQuantity + 1;
   } else {
     cart[product.product_id] = {
-      "name" : product.name,
-      "number" : 1,
-      "price" : product.price
+      "name": product.name,
+      "number": 1,
+      "price": product.price
     };
   }
   console.log(cart);
@@ -95,5 +137,7 @@ function toggleToast(name) {
   x.className = "show";
 
   // After 3 seconds, remove the show class from DIV
-  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 500);
+  setTimeout(function () {
+    x.className = x.className.replace("show", "");
+  }, 500);
 }

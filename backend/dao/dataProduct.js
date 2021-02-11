@@ -17,6 +17,7 @@ function product(searchTerm) {
   return new Promise(((resolve, reject) => {
     const sql = 'SELECT id, product_id, category, brand, name, des, image_url, price FROM product WHERE name LIKE (?)';
     db.query(sql, [`%${searchTerm}%`], (err, value) => {
+      // console.log(err, value);
       if (err === null) {
         resolve(value);
       } else {

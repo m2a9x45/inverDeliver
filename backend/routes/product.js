@@ -20,10 +20,7 @@ router.get('/search/:productName', async (req, res, next) => {
 
   try {
     const product = await dao.product(productName);
-    res.json({
-      message: 'success',
-      data: product,
-    });
+    res.json(product);
   } catch (error) {
     next(error);
   }

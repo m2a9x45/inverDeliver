@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 function isAuthorized(req, res, next) {
-  console.log(req.headers.authorization);
+  // console.log(req.headers.authorization);
 
   const bearerHeader = req.headers.authorization;
 
