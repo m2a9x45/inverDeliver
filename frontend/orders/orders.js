@@ -1,5 +1,7 @@
 const API_URL = "http://localhost:3000";
+const loader = document.querySelector('.loader');
 const ordersHolder = document.querySelector('.orders');
+const errorMessage = document.querySelector('#errorMessage');
 
 const token = localStorage.getItem('token');
 
@@ -13,10 +15,15 @@ fetch(`${API_URL}/order/all`, {
         }
     })
     .then(response => {
-        if (response.status == 401) {
-            window.location.replace('../signin');
-        } else {
-            return response.json()
+        switch (response.status) {
+            case 200:
+                loader.style.display = "none";
+                return response.json()
+            case 401:
+                window.location.replace('../signin');
+                break;
+            default:
+                console.log("🚨 Something went wrong");
         }
     })
     .then(data => {
@@ -24,7 +31,13 @@ fetch(`${API_URL}/order/all`, {
         data.forEach(order => {
             displayOrders(order);
         });
-    });
+    })
+    .catch(error => {
+        loader.style.display = "none";
+        errorMessage.style.display = "block"
+        errorMessage.innerText = "🚨🚨🚨 Sorry somthing went wrong, if this continues please get in touch 🚨🚨🚨";
+        console.error(`🚨🚨🚨${error}🚨🚨🚨`);
+    })
 
 function displayOrders(order) {
     const orderDiv = document.createElement("div");
