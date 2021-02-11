@@ -105,9 +105,9 @@ function displayDeliveryInfo(addressInfo) {
   addressCity.innerText = addressInfo.city;
   addressPostCode.innerText = addressInfo.post_code;
 
-  var deliveryDate  = new Date(addressInfo.delivery_time);
-  var options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric'  };
-  const displaydate = deliveryDate.toLocaleDateString("en-UK", options)
+  const deliveryDate  = new Date(addressInfo.delivery_time);
+  const options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric'  };
+  const displaydate = deliveryDate.toLocaleDateString("en-GB", options)
 
 
   deliveryTime.innerText = displaydate;

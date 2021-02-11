@@ -1,4 +1,5 @@
 const API_URL = "http://localhost:3000";
+const ordersHolder = document.querySelector('.orders');
 
 const token = localStorage.getItem('token');
 
@@ -11,8 +12,140 @@ fetch(`${API_URL}/order/all`, {
             'authorization': `bearer ${token}`,
         }
     })
-    .then(response => response.json())
+    .then(response => {
+        if (response.status == 401) {
+            window.location.replace('../signin');
+        } else {
+            return response.json()
+        }
+    })
     .then(data => {
         console.log(data);
-
+        data.forEach(order => {
+            displayOrders(order);
+        });
     });
+
+function displayOrders(order) {
+    const orderDiv = document.createElement("div");
+    orderDiv.setAttribute("class", "order");
+
+    // Creating the orderInfo top part of the displayed order
+    // Includes the orderID, Cost and Ordered date
+    const orderInfo = document.createElement("div");
+    orderInfo.setAttribute("class", "orderInfo");
+
+    // Order ID section
+    const orderIDDiv = document.createElement("div");
+    const orderIDLabel = document.createElement("p");
+    orderIDLabel.innerText = "Order ID";
+    orderIDDiv.appendChild(orderIDLabel);
+
+    const orderID = document.createElement("p");
+    orderID.innerText = order.order_id;
+    orderIDDiv.appendChild(orderID);
+
+    orderInfo.appendChild(orderIDDiv);
+
+    // Order cost section
+    const orderCostDiv = document.createElement("div");
+    const orderCostLabel = document.createElement("p");
+    orderCostLabel.innerText = "Cost";
+    orderCostDiv.appendChild(orderCostLabel);
+
+    const orderCost = document.createElement("p");
+    const formatedPrice = new Intl.NumberFormat('en-UK', {
+        style: 'currency',
+        currency: 'GBP'
+    }).format(order.price / 100);
+    orderCost.innerText = formatedPrice;
+    orderCostDiv.appendChild(orderCost);
+
+    orderInfo.appendChild(orderCostDiv);
+
+    // Order created at section
+    const orderOnDiv = document.createElement("div");
+    const orderOnLabel = document.createElement("p");
+    orderOnLabel.innerText = "Ordered On";
+    orderOnDiv.appendChild(orderOnLabel);
+
+    const orderOn = document.createElement("p");
+    const deliveryDate = new Date(order.created_at);
+    const displaydate = deliveryDate.toLocaleDateString("en-GB", {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    })
+    orderOn.innerText = displaydate;
+    orderOnDiv.appendChild(orderOn);
+
+    orderInfo.appendChild(orderOnDiv);
+
+    orderDiv.appendChild(orderInfo); // Added the orderInfo div to the order div
+
+    // order body
+    const orderbody = document.createElement("div");
+    orderbody.setAttribute("class", "orderbody");
+
+    // Delivery section, label, streetname, city and postcode
+    const deliveryInfo = document.createElement("div");
+
+    const deliveryInfoLabel = document.createElement("p");
+    deliveryInfoLabel.innerText = "Delivery Address";
+    deliveryInfo.appendChild(deliveryInfoLabel);
+
+    const deliveryStreet = document.createElement("p");
+    deliveryStreet.innerText = order.street_name;
+    deliveryInfo.appendChild(deliveryStreet);
+
+    const deliveryCity = document.createElement("p");
+    deliveryCity.innerText = order.city;
+    deliveryInfo.appendChild(deliveryCity);
+
+    const deliveryPostCode = document.createElement("p");
+    deliveryPostCode.innerText = order.post_code;
+    deliveryInfo.appendChild(deliveryPostCode);
+
+    orderbody.appendChild(deliveryInfo); // Adding delivery info to the orderbody
+
+    // Context section, includes help and status of order
+    const contextInfo = document.createElement("div");
+    contextInfo.setAttribute("class", "statusAndHelp");
+
+    const deliveryStatus = document.createElement("p");
+    deliveryStatus.setAttribute("id", "deliveryStatus");
+
+    switch (order.status) {
+        case 0:
+            deliveryStatus.innerText = "Awaiting Payment";
+            break;
+        case 1:
+            deliveryStatus.innerText = "Awaiting Dispatch";
+            break;
+        case 2:
+            deliveryStatus.innerText = "Dispatching";
+            break;
+        case 3:
+            deliveryStatus.innerText = "Out for delivery";
+            break;
+        case 4:
+            deliveryStatus.innerText = "Delivered";
+            break;
+        default:
+            deliveryStatus.innerText = "Please get In touch";
+    }
+
+    contextInfo.appendChild(deliveryStatus);
+
+    const helpButton = document.createElement("button");
+    helpButton.setAttribute("id", "helpButton");
+    helpButton.innerText = "Need help";
+    contextInfo.appendChild(helpButton);
+
+    orderbody.appendChild(contextInfo); // Adding contextInfo to the orderbody
+
+    orderDiv.appendChild(orderbody); // Adding order body to the order div
+
+    ordersHolder.appendChild(orderDiv); // Adding the order div to the orders div
+
+}
