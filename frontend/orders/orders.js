@@ -37,6 +37,7 @@ function displayOrders(order) {
 
     // Order ID section
     const orderIDDiv = document.createElement("div");
+    orderIDDiv.setAttribute("id", "orderIDDiv");
     const orderIDLabel = document.createElement("p");
     orderIDLabel.innerText = "Order ID";
     orderIDDiv.appendChild(orderIDLabel);
@@ -118,18 +119,23 @@ function displayOrders(order) {
     switch (order.status) {
         case 0:
             deliveryStatus.innerText = "Awaiting Payment";
+            deliveryStatus.style.backgroundColor = "#8f6eff"; // purple
             break;
         case 1:
             deliveryStatus.innerText = "Awaiting Dispatch";
+            deliveryStatus.style.backgroundColor = "#ff80fb"; // pink
             break;
         case 2:
             deliveryStatus.innerText = "Dispatching";
+            deliveryStatus.style.backgroundColor = "#9efffc"; // blue
             break;
         case 3:
             deliveryStatus.innerText = "Out for delivery";
+            deliveryStatus.style.backgroundColor = "#ff7c4d"; // orange
             break;
         case 4:
             deliveryStatus.innerText = "Delivered";
+            deliveryStatus.style.backgroundColor = "#32a852"; // green
             break;
         default:
             deliveryStatus.innerText = "Please get In touch";
