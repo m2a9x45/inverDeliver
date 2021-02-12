@@ -83,8 +83,7 @@ nav ul li:first-child {
     display: grid;
     grid-template-columns: auto auto auto auto auto auto;
     max-width: fit-content;
-    /* background-color: #2196F3; */
-    /* padding: 10px; */
+    margin: 0 auto;
   }
 
 img {
@@ -95,24 +94,23 @@ img {
     display: flex;
     flex-direction: column;
     background-color: rgb(230, 230, 230);
-    /* margin: 4%;
-    padding: 4%; */
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     transition: 0.3s;
-    /* border-radius: 10px; */
-
 
     border-right: 1px solid rgba(82, 82, 82, 0.1);
     border-left: 1px solid rgba(82, 82, 82, 0.1);
 
     background-color: rgb(255, 255, 255);
 
+    
+
     margin-bottom: 1rem;
     padding: 1rem;
     margin: 0.3rem;
     font-size: 11pt;
     text-align: center;
-    max-width: 170px;
+    height: 320px;
+    width: 170px;
 }
 
 .addCartButton {
@@ -161,6 +159,30 @@ img {
     box-sizing: border-box;
 }
 
+footer {
+    background-color:rgb(245, 245, 245);
+}
+
+.footerContainer {
+    margin: 0 auto;
+    width: 70%;
+    display: flex;
+    padding: 1rem;
+    font-size: 10pt;
+}
+
+.footerSection {
+    margin: 0 2rem;
+}
+
+.footerSection ul{
+    padding: 0;
+}
+
+.footerSection ul li{
+    padding: 0.25rem;
+    list-style-type: none;
+}
 
 @media only screen and (max-width: 1453px) {
     .grid-container {
@@ -208,6 +230,5 @@ img {
 @media only screen and (max-width: 465px) {
     .grid-container {
         grid-template-columns: auto;
-        margin: 0 auto;
     }
 }
