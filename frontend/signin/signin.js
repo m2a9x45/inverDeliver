@@ -1,5 +1,7 @@
 const API_URL = "http://localhost:3000";
 
+const errorMessage = document.querySelector('#errorMessage');   
+
 function onSignIn(googleUser) {
     var id_token = googleUser.getAuthResponse().id_token;
     console.log(id_token);
@@ -20,5 +22,6 @@ function onSignIn(googleUser) {
     })
     .catch((error) => {
         console.error('Error:', error);
+        errorMessage.innerText = "Something when wrong, let us know if it continues";
     });
 }

@@ -63,19 +63,19 @@
             <form id="deliveryForm">
                 <h4>Delivery Info 🚚</h4>
                 <div>
-                    <input type="text" name="name" id="name" placeholder="Your name" autocomplete="given-name">
-                    <input type="email" name="email" id="email" placeholder="Your email" autocomplete="email">
+                    <input type="text" name="name" id="name" placeholder="Your name" autocomplete="given-name" required>
+                    <input type="email" name="email" id="email" placeholder="Your email" autocomplete="email" required>
                 </div>
                 <div>
-                    <input type="tel" name="phone" id="phone" placeholder="Your phone number" autocomplete="tel">
+                    <input type="tel" name="phone" id="phone" placeholder="Your phone number" autocomplete="tel" required>
                     <label for="">Choose your delivery day & time:</label>
-                    <input type="datetime-local" name="delivery_time" id="delivery_time">
+                    <input type="datetime-local" name="delivery_time" id="delivery_time" required>
                 </div>
                 <div>
                     <label for="">Your delivery address:</label>
-                    <input type="text" placeholder="Street Name" autocomplete="address-line1" name="street_name" id="street_name">
-                    <input type="text" placeholder="Town/City" autocomplete="address-level2" name="city" id="city">
-                    <input type="text" placeholder="Postcode" autocomplete="postal-code" name="post_code" id="post_code">
+                    <input type="text" placeholder="Street Name" autocomplete="address-line1" name="street_name" id="street_name" required>
+                    <input type="text" placeholder="Town/City" autocomplete="address-level2" name="city" id="city" required>
+                    <input type="text" placeholder="Postcode" autocomplete="postal-code" name="post_code" id="post_code" required>
                 </div>
                 <input class="submit" type="submit" value="Continue to Payment">
             </form>            

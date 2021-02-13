@@ -49,6 +49,28 @@ router.post('/create-payment-intent', authorisation.isAuthorized, async (req, re
   }
 });
 
+router.get('/intent/:orderID', authorisation.isAuthorized, async (req, res, next) => {
+  const { orderID } = req.params;
+
+  try {
+    const paymentIntentID = await dao.getPaymentID(orderID, res.locals.user);
+    console.log(paymentIntentID[0].payment_id);
+    if (paymentIntentID[0].payment_id) {
+      try {
+        const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentID[0].payment_id);
+        console.log(paymentIntent);
+        res.json({ clientSecret: paymentIntent.client_secret });
+      } catch (error) {
+        next(error);
+      }
+    } else {
+      res.status(404).send();
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.post('/webhook', (req, res, next) => {
   let event;
   try {

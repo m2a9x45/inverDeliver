@@ -55,8 +55,17 @@ function displayOrders(order) {
     orderIDLabel.innerText = "Order ID";
     orderIDDiv.appendChild(orderIDLabel);
 
-    const orderID = document.createElement("p");
-    orderID.innerText = order.order_id;
+    let OrderID;
+
+    if (order.status === 0) {
+        orderID = document.createElement("a");
+        orderID.innerText = order.order_id;
+        orderID.setAttribute("href", `../payment/index.html?orderID=${order.order_id}`);
+    } else {
+        orderID = document.createElement("p");
+        orderID.innerText = order.order_id;
+    }
+
     orderIDDiv.appendChild(orderID);
 
     orderInfo.appendChild(orderIDDiv);

@@ -2,6 +2,10 @@ const API_URL = "http://localhost:3000"
 
 const gridCcontainer = document.querySelector('.grid-container');
 const productSearch = document.querySelector('#productSearch');
+const loader = document.querySelector('.loader');
+const errorMessage = document.querySelector('#errorMessage');
+
+
 let initProducts;
 
 let cart = {};
@@ -11,18 +15,28 @@ if (localStorage.getItem("cart")) {
 }
 
 fetch(`${API_URL}/product/standard`)
-  .then(response => response.json())
+  .then(response => {
+    loader.style.display = "none";
+    return response.json()
+  })
   .then(data => {
     console.log(data);
     initProducts = data.data;
     addProducts(data.data)
+  })
+  .catch((error) => {
+    loader.style.display = "none";
+    errorMessage.innerText = "Something went wrong, if this continues please get in touch"
+    console.error(error);
   });
 
 productSearch.addEventListener("keypress", (e) => {
   if (e.key === 'Enter' && productSearch.value !== "") {
+    loader.style.display = "block";
     console.log(productSearch.value);
     fetch(`${API_URL}/product/search/${productSearch.value}`)
       .then(response => {
+        loader.style.display = "none";
         switch (response.status) {
           case 200:
             return response.json()
@@ -41,15 +55,18 @@ productSearch.addEventListener("keypress", (e) => {
         }
       })
       .catch(error => {
-        console.error(`🚨🚨🚨${error}🚨🚨🚨`);
+        loader.style.display = "none";
+        errorMessage.innerText = "Something went wrong, if this continues please get in touch"
+        console.error(error);
       })
   }
 
   if (e.key === 'Enter' && productSearch.value === "") {
     gridCcontainer.innerHTML = "";
-    addProducts(initProducts);
+    if (initProducts) {
+      addProducts(initProducts);
+    }
   }
-
 })
 
 function addProducts(productArray) {
