@@ -1,0 +1,104 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background-color: #cec3c1;
+}
+
+header {
+    background-color: #2e2a2a;
+    padding: 1em;
+
+}
+
+.navbar {
+    margin: 0 auto;
+    width: 75%;
+}
+
+.navbarList {
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+#navbarItem {
+    display: inline-block;
+    list-style-type: none;
+    font-size: 16pt;
+    padding: 0.5rem;
+}
+
+nav ul li:first-child {
+    margin-right: auto;
+}
+
+#navbarItem a,
+#logo a {
+    text-decoration: none;
+    color: rgb(224, 224, 224);
+}
+
+#navbarItem a:hover,
+#logo a:hover {
+    color: #f3a9af;
+}
+
+.loader {
+    margin: 1rem auto;
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.content h2 {
+    text-align: center;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    padding: 1rem;
+  }
+  .grid-item {
+    text-align: center;
+  }
+
+.orderStatus {
+    width: 85%;
+    margin: 2rem auto;
+    text-align: center;
+}
+
+.orderStatusCard {
+    margin: 1rem auto;
+    padding: 1rem 1rem;
+    background-color: white;
+    border-radius: 15px;
+    opacity: 0.6; /* Real browsers */
+    filter: alpha(opacity = 60); /* MSIE */
+}
+
+
+@media only screen and (max-width: 540px) {
+    .navbar {
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    #navbarItem {
+        font-size: 14pt;
+    }
+}

@@ -57,13 +57,20 @@ function displayOrders(order) {
 
     let OrderID;
 
-    if (order.status === 0) {
-        orderID = document.createElement("a");
-        orderID.innerText = order.order_id;
-        orderID.setAttribute("href", `../payment/index.html?orderID=${order.order_id}`);
-    } else {
-        orderID = document.createElement("p");
-        orderID.innerText = order.order_id;
+    switch (order.status) {
+        case 0:
+            orderID = document.createElement("a");
+            orderID.innerText = order.order_id;
+            orderID.setAttribute("href", `../payment/?orderID=${order.order_id}`);
+            break;
+        case 1:
+            orderID = document.createElement("a");
+            orderID.innerText = order.order_id;
+            orderID.setAttribute("href", `./info/?orderID=${order.order_id}`);
+            break;
+        default:
+            orderID = document.createElement("p");
+            orderID.innerText = order.order_id;
     }
 
     orderIDDiv.appendChild(orderID);
