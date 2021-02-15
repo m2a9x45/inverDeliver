@@ -106,11 +106,25 @@ function updateOrderPrice(price, paymentID, orderID, userID) {
   }));
 }
 
+function updateOrderStatus(paymentID, status) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'UPDATE food.order SET status=(?) WHERE payment_id=(?)';
+    db.query(sql, [status, paymentID], (err, value) => {
+      // console.log(err, value);
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
 function getPaymentID(orderID, userID) {
   return new Promise(((resolve, reject) => {
     const sql = 'SELECT payment_id FROM food.order WHERE order_id=(?) AND user_id=(?)';
     db.query(sql, [orderID, userID], (err, value) => {
-      console.log(err, value);
+      // console.log(err, value);
       if (err === null) {
         resolve(value);
       } else {
@@ -143,4 +157,5 @@ module.exports = {
   updateOrderPrice,
   getPaymentID,
   getOrderContent,
+  updateOrderStatus,
 };

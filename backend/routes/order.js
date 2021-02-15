@@ -40,7 +40,7 @@ router.post('/create', async (req, res, next) => {
 
 router.get('/content/:orderID', async (req, res, next) => {
   const { orderID } = req.params;
-  console.log(orderID);
+  // console.log(orderID);
   try {
     const orderContent = await dao.getOrderContent(orderID, res.locals.user);
     res.json(orderContent);

@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 const express = require('express');
 require('dotenv').config();
 
@@ -54,11 +55,11 @@ router.get('/intent/:orderID', authorisation.isAuthorized, async (req, res, next
 
   try {
     const paymentIntentID = await dao.getPaymentID(orderID, res.locals.user);
-    console.log(paymentIntentID[0].payment_id);
+    // console.log(paymentIntentID[0].payment_id);
     if (paymentIntentID[0].payment_id) {
       try {
         const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentID[0].payment_id);
-        console.log(paymentIntent);
+        // console.log(paymentIntent);
         res.json({ clientSecret: paymentIntent.client_secret });
       } catch (error) {
         next(error);
@@ -71,7 +72,19 @@ router.get('/intent/:orderID', authorisation.isAuthorized, async (req, res, next
   }
 });
 
-router.post('/webhook', (req, res, next) => {
+async function handlePaymentIntentSucceeded(id) {
+  try {
+    const updated = await dao.updateOrderStatus(id, 1);
+    if (updated.changedRows === 1) {
+      return true;
+    }
+    return `Issue with updating order status: ${id}`;
+  } catch (error) {
+    return error;
+  }
+}
+
+router.post('/webhook', async (req, res, next) => {
   let event;
   try {
     event = req.body;
@@ -82,17 +95,12 @@ router.post('/webhook', (req, res, next) => {
   // Handle the event
   switch (event.type) {
     case 'payment_intent.succeeded':
-      const paymentIntent = event.data.object;
-      console.log(`PaymentIntent for ${paymentIntent.amount} was successful!`);
-      console.log(event);
-      console.log(event.data.object.metadata);
-      // Then define and call a method to handle the successful payment intent.
-      // handlePaymentIntentSucceeded(paymentIntent);
-      break;
-    case 'payment_method.attached':
-      const paymentMethod = event.data.object;
-      // Then define and call a method to handle the successful attachment of a PaymentMethod.
-      // handlePaymentMethodAttached(paymentMethod);
+      const intent = event.data.object;
+      console.log('Succeeded:', intent.id);
+      const response = await handlePaymentIntentSucceeded(intent.id);
+      if (response !== true) {
+        next(response);
+      }
       break;
     default:
       // Unexpected event type
