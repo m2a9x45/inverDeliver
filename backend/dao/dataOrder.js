@@ -51,7 +51,7 @@ function addOrderDetails(products) {
   }));
 }
 
-function getOrderPrice(orderID) {
+function caculateOrderPrice(orderID) {
   return new Promise(((resolve, reject) => {
     const sql = 'SELECT d.quantity, p.price FROM details d INNER JOIN product p ON d.product_id=p.product_id WHERE d.order_id=(?)';
     db.query(sql, [orderID], (err, value) => {
@@ -93,10 +93,10 @@ function getUserOrders(userID) {
   }));
 }
 
-function updateOrderPrice(price, paymentID, orderID, userID) {
+function updateOrderPrice(price, paymentID, fee, orderID, userID) {
   return new Promise(((resolve, reject) => {
-    const sql = 'UPDATE food.order SET price=(?), payment_id=(?) WHERE order_id=(?) AND user_id=(?)';
-    db.query(sql, [price, paymentID, orderID, userID], (err, value) => {
+    const sql = 'UPDATE food.order SET price=(?), payment_id=(?), fee=(?) WHERE order_id=(?) AND user_id=(?)';
+    db.query(sql, [price, paymentID, fee, orderID, userID], (err, value) => {
       if (err === null) {
         resolve(value);
       } else {
@@ -148,14 +148,29 @@ function getOrderContent(orderID, userID) {
   }));
 }
 
+function getOrderPrice(orderID, userID) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT price, fee FROM food.order WHERE order_id=(?) AND user_id=(?)';
+    db.query(sql, [orderID, userID], (err, value) => {
+      // console.log(err, value);
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
 module.exports = {
   createOrder,
   addOrderDetails,
-  getOrderPrice,
+  caculateOrderPrice,
   getOrderStatus,
   getUserOrders,
   updateOrderPrice,
   getPaymentID,
   getOrderContent,
   updateOrderStatus,
+  getOrderPrice,
 };

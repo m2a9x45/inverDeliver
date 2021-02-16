@@ -37,6 +37,7 @@ fetch(`${API_URL}/order/status?orderID=${orderID}`, {
       getOrderContent();
       displayDeliveryInfo(data);
       getOrCreatePaymentIntent();
+      getOrderPrice(orderID);
     } else {
       console.error("Order is not in the correct status for payment");
     }
@@ -54,16 +55,8 @@ fetch(`${API_URL}/order/content/${orderID}`, {
   console.log(data);
 
   data.forEach(item => {
-    total = total + (item.price * item.quantity);
     displayCart(item);
   });
-
-  const totalFormat = new Intl.NumberFormat('en-UK', {
-    style: 'currency',
-    currency: 'GBP'
-  }).format(total / 100);
-
-  priceTotal.innerText = `Your total: ${totalFormat}`;
 });
 }
 
@@ -97,6 +90,27 @@ function getOrCreatePaymentIntent() {
   });
 }
 
+function getOrderPrice(orderID) {
+  fetch(`${API_URL}/order/price/${orderID}`, {
+    headers: {
+      'authorization': `bearer ${token}`,
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log(data);
+
+    const totalFormat = new Intl.NumberFormat('en-UK', {
+      style: 'currency',
+      currency: 'GBP'
+    }).format((data.price + data.fee) / 100);
+  
+    priceTotal.innerText = `Your total: ${totalFormat}`;
+
+    displayCart({name: "Delivery Fee", price: data.fee, quantity: 1});
+  });
+}
+
 function displayCart(item) {
   const div = document.createElement("div");
   div.setAttribute("class", "cartItem");
@@ -104,7 +118,7 @@ function displayCart(item) {
   const divItems = document.createElement("div");
 
   const itemName = document.createElement("p");
-  itemName.innerText = `${item.name} (x${item.quantity})`;
+  itemName.innerText = (item.name === "Delivery Fee" ? `${item.name}` : `${item.name} (x${item.quantity})`);
 
   const divPrice = document.createElement("div");
 

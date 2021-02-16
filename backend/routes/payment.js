@@ -14,17 +14,18 @@ router.post('/create-payment-intent', authorisation.isAuthorized, async (req, re
   console.log(orderID);
 
   try {
-    const products = await dao.getOrderPrice(orderID);
+    const products = await dao.caculateOrderPrice(orderID);
     console.log(products);
 
     let total = 0;
+    const fee = 350;
 
     products.forEach((product) => {
       total += product.price * product.quantity;
     });
 
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: total,
+      amount: total + fee,
       currency: 'gbp',
       metadata: { order_id: orderID },
     });
@@ -34,6 +35,7 @@ router.post('/create-payment-intent', authorisation.isAuthorized, async (req, re
       const addPricetoOrder = await dao.updateOrderPrice(
         total,
         paymentIntent.id,
+        fee,
         orderID,
         res.locals.user,
       );

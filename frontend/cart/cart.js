@@ -13,19 +13,21 @@ if (!token) {
 }
 
 console.log(cart);
-let total =  0;
+let total =  350;
 
 for (const [key, value] of Object.entries(cart)) {
     console.log(`${key}: ${value.name} ${value.number} £ ${value.price} £${value.price * value.number}`);
     total = total + (value.price * value.number);
-    displayCart(key, value);
+    displayCart(value);
 }
+
+displayCart({name: "Delivery Fee", price: 350, number:1});
 
 const totalFormat = new Intl.NumberFormat('en-UK', { style: 'currency', currency: 'GBP' }).format(total / 100);
 
 priceTotal.innerText = `Your total: ${totalFormat}`;
 
-function displayCart(id, item) {
+function displayCart(item) {
   const div = document.createElement("div");
   div.setAttribute("class", "cartItem");
 
@@ -34,15 +36,24 @@ function displayCart(id, item) {
   const itemName = document.createElement("p");
   itemName.innerText = item.name;
 
-  const quantityLabel = document.createElement("label");
-  quantityLabel.setAttribute("for", "quantity");
-  quantityLabel.innerText = "quantity: ";
+  divItems.appendChild(itemName);
 
-  const quantityInput = document.createElement("Input");
-  quantityInput.setAttribute("type", "number");
-  quantityInput.setAttribute("id", "quantity");
-  quantityInput.setAttribute("value", item.number);
+  let quantityLabel
+  let quantityInput;
 
+  if (item.name != "Delivery Fee") {
+    quantityLabel = document.createElement("label");
+    quantityLabel.setAttribute("for", "quantity");
+    quantityLabel.innerText = "quantity: ";
+  
+    quantityInput = document.createElement("Input");
+    quantityInput.setAttribute("type", "number");
+    quantityInput.setAttribute("id", "quantity");
+    quantityInput.setAttribute("value", item.number);
+
+    divItems.appendChild(quantityLabel);
+    divItems.appendChild(quantityInput);
+  } 
 
   const divPrice = document.createElement("div");
 
@@ -54,9 +65,7 @@ function displayCart(id, item) {
 
   itemPrice.innerText = formatedPrice;
 
-  divItems.appendChild(itemName);
-  divItems.appendChild(quantityLabel);
-  divItems.appendChild(quantityInput);
+  
 
   divPrice.appendChild(itemPrice);
 

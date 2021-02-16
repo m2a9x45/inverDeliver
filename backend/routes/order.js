@@ -65,6 +65,18 @@ router.get('/status', async (req, res, next) => {
   }
 });
 
+router.get('/price/:orderID', async (req, res, next) => {
+  const { orderID } = req.params;
+  // console.log(orderID);
+  try {
+    const orderPrice = await dao.getOrderPrice(orderID, res.locals.user);
+    // Add in a alert if we get more than one result back. 
+    res.json(orderPrice[0]);
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.get('/all', async (req, res, next) => {
   try {
     const orders = await dao.getUserOrders(res.locals.user);
