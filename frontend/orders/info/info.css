@@ -10,6 +10,10 @@ header {
 
 }
 
+h2 {
+    font-weight: 400;
+}
+
 .navbar {
     margin: 0 auto;
     width: 75%;
@@ -133,6 +137,32 @@ nav ul li:first-child {
 .orderTotal p {
     padding: 0.5rem;
     font-size: 14pt;
+}
+
+.deliveryContent {
+    width: 65%;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 5px;
+}
+
+.deliveryItem {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem;
+    border-bottom: 1px solid rgb(201, 201, 201);
+}
+
+.deliveryItem p {
+    margin: 0.3rem;
+}
+
+.deliveryAddress {
+    text-align: left;
+}
+
+.deliveryInfo {
+    text-align: right;
 }
 
 @media only screen and (max-width: 540px) {

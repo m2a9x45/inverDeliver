@@ -1,5 +1,5 @@
 const API_URL = "http://localhost:3000";
-const orderContentDiv = document.querySelector(".orderContent"); 
+const orderContentDiv = document.querySelector(".orderContent");
 const priceTotal = document.querySelector('#priceTotal');
 
 const url_string = window.location.href;
@@ -7,8 +7,6 @@ const url = new URL(url_string);
 const orderID = url.searchParams.get("orderID");
 
 const token = localStorage.getItem('token');
-
-let total =  0;
 
 if (!token) {
   window.location.replace("../signin");
@@ -30,6 +28,7 @@ fetch(`${API_URL}/order/status?orderID=${orderID}`, {
   })
   .then(data => {
     console.log(data);
+    displayDeliveryInfo(data);
   });
 
 fetch(`${API_URL}/order/content/${orderID}`, {
@@ -50,15 +49,31 @@ fetch(`${API_URL}/order/content/${orderID}`, {
     console.log(data);
     data.forEach(item => {
       displayOrderContent(item);
-      total = total + (item.price * item.quantity);
-      console.log(total);
     });
-    
-    const totalFormat = new Intl.NumberFormat('en-UK', { style: 'currency', currency: 'GBP' }).format(total / 100);
-    priceTotal.innerText = `Your total: ${totalFormat}`;
   });
 
+fetch(`${API_URL}/order/price/${orderID}`, {
+    headers: {
+      'authorization': `bearer ${token}`,
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log(data);
 
+    const totalFormat = new Intl.NumberFormat('en-UK', {
+      style: 'currency',
+      currency: 'GBP'
+    }).format((data.price + data.fee) / 100);
+
+    priceTotal.innerText = `Your total: ${totalFormat}`;
+
+    displayOrderContent({
+      name: "Delivery Fee",
+      price: data.fee,
+      quantity: 1
+    });
+  });
 
 function displayOrderContent(item) {
 
@@ -68,26 +83,39 @@ function displayOrderContent(item) {
   const orderItemImgAndName = document.createElement("div");
   orderItemImgAndName.setAttribute("class", "orderItemImgAndName");
 
-  const img = document.createElement("img");
-  img.setAttribute("src", item.image_url);
+  const orderItemPriceAndAmount = document.createElement("div");
+  orderItemPriceAndAmount.setAttribute("class", "orderItemPriceAndAmount");
+
+  let img;
+  let quantity;
+
+  if (item.name === "Delivery Fee") {
+    
+  } else {
+    img = document.createElement("img");
+    img.setAttribute("src", item.image_url);
+
+    quantity = document.createElement("p");
+    quantity.innerText = `Quantity: ${item.quantity}`;
+
+    orderItemImgAndName.appendChild(img);
+    orderItemPriceAndAmount.appendChild(quantity);
+  }
 
   const name = document.createElement("p");
   name.innerText = item.name;
 
-  orderItemImgAndName.appendChild(img);
+  
   orderItemImgAndName.appendChild(name);
 
-  const orderItemPriceAndAmount = document.createElement("div");
-  orderItemPriceAndAmount.setAttribute("class", "orderItemPriceAndAmount");
-
-  const quantity = document.createElement("p");
-  quantity.innerText = `Quantity: ${item.quantity}`;
-
   const price = document.createElement("p");
-  const formatedPrice = new Intl.NumberFormat('en-UK', { style: 'currency', currency: 'GBP' }).format((item.price * item.quantity) / 100);
+  const formatedPrice = new Intl.NumberFormat('en-UK', {
+    style: 'currency',
+    currency: 'GBP'
+  }).format((item.price * item.quantity) / 100);
   price.innerText = formatedPrice;
 
-  orderItemPriceAndAmount.appendChild(quantity);
+  
   orderItemPriceAndAmount.appendChild(price);
 
   orderItem.appendChild(orderItemImgAndName);
@@ -95,5 +123,34 @@ function displayOrderContent(item) {
 
   orderContentDiv.appendChild(orderItem);
 
+
+};
+
+function displayDeliveryInfo(data) {
+  const streetName = document.querySelector('#streetName');
+  const city = document.querySelector('#city');
+  const postCode = document.querySelector('#postCode');
+
+  const deliveryTime = document.querySelector('#deliveryTime');
+  const contactNumber = document.querySelector('#contactNumber');
+  const contactEmail = document.querySelector('#contactEmail');
+
+  streetName.innerText = data.street_name;
+  city.innerText = data.city;
+  postCode.innerText = data.post_code;
+
+  const deliveryDate = new Date(data.delivery_time);
+  const displaydate = deliveryDate.toLocaleDateString("en-GB", {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
+
+  deliveryTime.innerText = `Delivery Time: ${displaydate}`;
+  contactNumber.innerText = data.phone;
+  contactEmail.innerText = data.email;
 
 }

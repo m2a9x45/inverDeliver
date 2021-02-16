@@ -6,7 +6,6 @@ const url = new URL(url_string);
 const orderID = url.searchParams.get("orderID");
 const token = localStorage.getItem('token');
 
-let total = 0;
 let clientSecret = "";
 
 // check user is signed in
@@ -37,7 +36,7 @@ fetch(`${API_URL}/order/status?orderID=${orderID}`, {
       getOrderContent();
       displayDeliveryInfo(data);
       getOrCreatePaymentIntent();
-      getOrderPrice(orderID);
+      
     } else {
       console.error("Order is not in the correct status for payment");
     }
@@ -83,6 +82,7 @@ function getOrCreatePaymentIntent() {
     } else {
       console.log(data);
       clientSecret = data.clientSecret;
+      getOrderPrice(orderID);
     }
   })
   .catch((error) => {
@@ -187,6 +187,7 @@ function createPaymentIntent() {
       console.log(data);
       // localStorage.setItem("stripeToken", data.clientSecret);
       clientSecret = data.clientSecret;
+      getOrderPrice(orderID);
     });
 }
 

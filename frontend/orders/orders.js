@@ -105,7 +105,7 @@ function displayOrders(order) {
         year: 'numeric',
         month: 'short',
         day: 'numeric'
-    })
+    });
     orderOn.innerText = displaydate;
     orderOnDiv.appendChild(orderOn);
 
