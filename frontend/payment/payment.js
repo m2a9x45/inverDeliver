@@ -23,7 +23,7 @@ fetch(`${API_URL}/order/status?orderID=${orderID}`, {
     }
   })
   .then(response => {
-    if (response.status = 404) {
+    if (response.status == 404) {
       console.log("No order with that ID that you've started has been found");
       // window.location.replace(`../`); 
     }

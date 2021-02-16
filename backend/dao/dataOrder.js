@@ -136,7 +136,7 @@ function getPaymentID(orderID, userID) {
 
 function getOrderContent(orderID, userID) {
   return new Promise(((resolve, reject) => {
-    const sql = 'SELECT d.product_id, d.quantity, p.price, p.name FROM details d INNER JOIN product p ON d.product_id=p.product_id INNER JOIN food.order o ON d.order_id=o.order_id WHERE d.order_id=(?) AND o.user_id=(?)';
+    const sql = 'SELECT d.product_id, d.quantity, p.price, p.name, p.image_url FROM details d INNER JOIN product p ON d.product_id=p.product_id INNER JOIN food.order o ON d.order_id=o.order_id WHERE d.order_id=(?) AND o.user_id=(?)';
     db.query(sql, [orderID, userID], (err, value) => {
       // console.log(err, value);
       if (err === null) {
