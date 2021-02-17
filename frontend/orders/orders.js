@@ -63,14 +63,10 @@ function displayOrders(order) {
             orderID.innerText = order.order_id;
             orderID.setAttribute("href", `../payment/?orderID=${order.order_id}`);
             break;
-        case 1:
+        default:
             orderID = document.createElement("a");
             orderID.innerText = order.order_id;
             orderID.setAttribute("href", `./info/?orderID=${order.order_id}`);
-            break;
-        default:
-            orderID = document.createElement("p");
-            orderID.innerText = order.order_id;
     }
 
     orderIDDiv.appendChild(orderID);
@@ -87,7 +83,7 @@ function displayOrders(order) {
     const formatedPrice = new Intl.NumberFormat('en-UK', {
         style: 'currency',
         currency: 'GBP'
-    }).format(order.price / 100);
+    }).format((order.price + order.fee )/ 100);
     orderCost.innerText = formatedPrice;
     orderCostDiv.appendChild(orderCost);
 
@@ -151,18 +147,26 @@ function displayOrders(order) {
             deliveryStatus.style.backgroundColor = "#8f6eff"; // purple
             break;
         case 1:
-            deliveryStatus.innerText = "Awaiting Dispatch";
+            deliveryStatus.innerText = "Order recived";
             deliveryStatus.style.backgroundColor = "#ff80fb"; // pink
             break;
         case 2:
-            deliveryStatus.innerText = "Dispatching";
+            deliveryStatus.innerText = "Awaiting shopping";
             deliveryStatus.style.backgroundColor = "#9efffc"; // blue
             break;
         case 3:
-            deliveryStatus.innerText = "Out for delivery";
+            deliveryStatus.innerText = "shopping";
             deliveryStatus.style.backgroundColor = "#ff7c4d"; // orange
             break;
         case 4:
+            deliveryStatus.innerText = "shopping complete";
+            deliveryStatus.style.backgroundColor = "#32a852"; // green
+            break;
+        case 5:
+            deliveryStatus.innerText = "Out for Delivery";
+            deliveryStatus.style.backgroundColor = "#32a852"; // green
+            break;
+        case 6:
             deliveryStatus.innerText = "Delivered";
             deliveryStatus.style.backgroundColor = "#32a852"; // green
             break;

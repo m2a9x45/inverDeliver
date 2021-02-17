@@ -89,7 +89,7 @@ nav ul li:first-child {
 
 .orderStatusCard {
     margin: 1rem auto;
-    padding: 1rem 1rem;
+    padding: 0.5rem 1rem;
     background-color: white;
     border-radius: 15px;
     opacity: 0.6; /* Real browsers */

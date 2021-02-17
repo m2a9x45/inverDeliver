@@ -29,6 +29,7 @@ fetch(`${API_URL}/order/status?orderID=${orderID}`, {
   .then(data => {
     console.log(data);
     displayDeliveryInfo(data);
+    showOrderStatus(data.status);
   });
 
 fetch(`${API_URL}/order/content/${orderID}`, {
@@ -153,4 +154,64 @@ function displayDeliveryInfo(data) {
   contactNumber.innerText = data.phone;
   contactEmail.innerText = data.email;
 
+}
+
+function showOrderStatus(status) {
+
+  const status1 = document.querySelector("#status1");
+  const status2 = document.querySelector("#status2");
+  const status3 = document.querySelector("#status3");
+  const status4 = document.querySelector("#status4");
+  const status5 = document.querySelector("#status5");
+  const status6 = document.querySelector("#status6");
+
+  switch (status) {
+    case 1:
+      
+      status1.style.opacity = 1;
+      status1.style.backgroundColor = "#5bd45b";
+      break;
+    case 2:
+      
+      status1.style.opacity = 1;
+      status2.style.opacity = 1;
+      status2.style.backgroundColor = "#5bd45b";
+      break;
+    case 3:
+      
+      status1.style.opacity = 1;
+      status2.style.opacity = 1;
+      status3.style.opacity = 1;
+      status3.style.backgroundColor = "#5bd45b";
+      break;
+    case 4:
+      
+      status1.style.opacity = 1;
+      status2.style.opacity = 1;
+      status3.style.opacity = 1;
+      status4.style.opacity = 1;
+      status4.style.backgroundColor = "#5bd45b";
+      break;
+    case 5:
+      
+      status1.style.opacity = 1;
+      status2.style.opacity = 1;
+      status3.style.opacity = 1;
+      status4.style.opacity = 1;
+      status5.style.opacity = 1;
+      status5.style.backgroundColor = "#5bd45b";
+      break;
+    case 6:
+      
+      status1.style.opacity = 1;
+      status2.style.opacity = 1;
+      status3.style.opacity = 1;
+      status4.style.opacity = 1;
+      status5.style.opacity = 1;
+      status6.style.opacity = 1;
+      status6.style.backgroundColor = "#5bd45b";
+      break;
+    default:
+      break;
+  }
 }

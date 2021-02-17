@@ -81,7 +81,7 @@ function getOrderStatus(orderID, userID) {
 
 function getUserOrders(userID) {
   return new Promise(((resolve, reject) => {
-    const sql = 'SELECT f.user_id, f.order_id, f.delivery_id, f.status, f.price, f.created_at, d.delivery_id, d.delivery_time, d.street_name, d.city, d.post_code  FROM food.order f INNER JOIN food.delivery d ON f.delivery_id=d.delivery_id WHERE user_id=(?) ORDER BY f.created_at DESC';
+    const sql = 'SELECT f.user_id, f.order_id, f.delivery_id, f.status, f.price, f.fee, f.created_at, d.delivery_id, d.delivery_time, d.street_name, d.city, d.post_code  FROM food.order f INNER JOIN food.delivery d ON f.delivery_id=d.delivery_id WHERE user_id=(?) ORDER BY f.created_at DESC';
     db.query(sql, [userID], (err, value) => {
       // console.log(err, value);
       if (err === null) {
