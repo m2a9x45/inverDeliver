@@ -1,7 +1,5 @@
 const API_URL = "http://localhost:3000";
 
-let cart = JSON.parse(localStorage.getItem("cart"));
-
 const cartContent = document.querySelector(".cartContent");
 const priceTotal = document.querySelector("#priceTotal");
 const deliveryForm = document.querySelector('#deliveryForm');
@@ -12,22 +10,29 @@ if (!token) {
   window.location.replace("../signin");
 }
 
-console.log(cart);
 let total =  350;
+let cart;
 
-for (const [key, value] of Object.entries(cart)) {
+showCart();
+
+function showCart() {
+  cart = JSON.parse(localStorage.getItem("cart"));
+  console.log(cart);
+
+  for (const [key, value] of Object.entries(cart)) {
     console.log(`${key}: ${value.name} ${value.number} £ ${value.price} £${value.price * value.number}`);
     total = total + (value.price * value.number);
-    displayCart(value);
+    displayCart(value, key);
+  }
+
+  displayCart({name: "Delivery Fee", price: 350, number:1});
+
+  const totalFormat = new Intl.NumberFormat('en-UK', { style: 'currency', currency: 'GBP' }).format(total / 100);
+
+  priceTotal.innerText = `Your total: ${totalFormat}`;
 }
 
-displayCart({name: "Delivery Fee", price: 350, number:1});
-
-const totalFormat = new Intl.NumberFormat('en-UK', { style: 'currency', currency: 'GBP' }).format(total / 100);
-
-priceTotal.innerText = `Your total: ${totalFormat}`;
-
-function displayCart(item) {
+function displayCart(item, id) {
   const div = document.createElement("div");
   div.setAttribute("class", "cartItem");
 
@@ -50,6 +55,24 @@ function displayCart(item) {
     quantityInput.setAttribute("type", "number");
     quantityInput.setAttribute("id", "quantity");
     quantityInput.setAttribute("value", item.number);
+    quantityInput.addEventListener("change", (e) => {
+      console.log(quantityInput.value, id);
+
+      cart[id].number = Number(quantityInput.value);
+
+      if (quantityInput.value <= 0) {
+        // remove item
+        delete cart[id];
+      }
+
+      console.log(cart);
+      localStorage.setItem("cart", JSON.stringify(cart));
+
+      cartContent.innerHTML = "";
+      total = 350;
+      showCart();
+
+    })
 
     divItems.appendChild(quantityLabel);
     divItems.appendChild(quantityInput);
@@ -59,13 +82,9 @@ function displayCart(item) {
 
   const itemPrice = document.createElement("p");
 
-  // console.log(new Intl.NumberFormat('en-UK', { style: 'currency', currency: 'GBP' }).format(number));
-
   const formatedPrice = new Intl.NumberFormat('en-UK', { style: 'currency', currency: 'GBP' }).format((item.price * item.number) / 100);
 
   itemPrice.innerText = formatedPrice;
-
-  
 
   divPrice.appendChild(itemPrice);
 
@@ -75,6 +94,8 @@ function displayCart(item) {
   cartContent.appendChild(div);
 
 }
+
+
 
 deliveryForm.addEventListener("submit", (e) => {
   e.preventDefault();

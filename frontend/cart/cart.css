@@ -1,11 +1,11 @@
 body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
-    background-color: #EED6D3;
+    background-color: #cec3c1;
 }
 
 header {
-    background-color: #A49393;
+    background-color: #2e2a2a;
     padding: 1em;
 }
 
@@ -33,16 +33,25 @@ nav ul li:first-child {
 
 #navbarItem a, #logo a {
     text-decoration: none;
-    color: #494547;
+    color: rgb(224, 224, 224);
 }
 
 #navbarItem a:hover, #logo a:hover {
     color: #f3a9af;
 }
 
-.cartContent {
+#cartLabel {
     width: 30%;
     margin: 4rem auto 1rem auto;
+    padding: 1rem 2rem 1rem 2rem;
+    border-radius: 5px;
+    background-color: rgb(241, 241, 241);
+    text-align: center;
+}
+
+.cartContent {
+    width: 30%;
+    margin: 0rem auto 1rem auto;
     padding: 1rem 2rem 1rem 2rem;
     border-radius: 5px;
     background-color: rgb(241, 241, 241);
