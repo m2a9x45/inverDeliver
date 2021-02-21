@@ -3,7 +3,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 
 const app = express();
-const port = 3000;
+const port = 3001;
 
 const products = require('./routes/product.js');
 const orders = require('./routes/order.js');

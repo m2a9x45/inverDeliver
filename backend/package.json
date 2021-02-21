@@ -17,6 +17,7 @@
     "mailgun-js": "^0.22.0",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
+    "prom-client": "^13.1.0",
     "stripe": "^8.131.1",
     "uuid": "^8.3.2",
     "winston": "^3.3.3"

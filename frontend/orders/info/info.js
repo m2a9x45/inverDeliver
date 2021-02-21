@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000";
+const API_URL = "http://localhost:3001";
 const orderContentDiv = document.querySelector(".orderContent");
 const priceTotal = document.querySelector('#priceTotal');
 

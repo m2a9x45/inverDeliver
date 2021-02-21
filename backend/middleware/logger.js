@@ -13,7 +13,7 @@ const logger = createLogger({
   ),
   transports: [
     new transports.Console(),
-    new transports.File({ filename: 'combined.log' }),
+    new transports.File({ filename: 'combined.log', level: 'debug' }),
   ],
   exceptionHandlers: [
     new transports.Console(),
@@ -23,7 +23,7 @@ const logger = createLogger({
 
 logger.stream = {
   write(message, encoding) {
-    logger.info(message);
+    logger.debug(message);
   },
 };
 
