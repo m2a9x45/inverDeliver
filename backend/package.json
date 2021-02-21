@@ -14,9 +14,11 @@
     "express": "^4.17.1",
     "google-auth-library": "^6.1.6",
     "jsonwebtoken": "^8.5.1",
+    "mailgun-js": "^0.22.0",
     "mysql": "^2.18.1",
     "stripe": "^8.131.1",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "eslint": "^7.17.0",

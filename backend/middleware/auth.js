@@ -14,7 +14,7 @@ function isAuthorized(req, res, next) {
         next();
       } else {
         res.statusCode = 401;
-        next({ message: 'Unautharised' });
+        next({ internalMessage: 'Unautharised' });
       }
     } catch (err) {
       res.statusCode = 401;
@@ -22,7 +22,7 @@ function isAuthorized(req, res, next) {
     }
   } else {
     res.statusCode = 401;
-    next({ message: 'No token given' });
+    next({ internalMessage: 'No token given' });
   }
 }
 

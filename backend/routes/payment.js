@@ -103,6 +103,10 @@ router.post('/webhook', async (req, res, next) => {
       if (response !== true) {
         next(response);
       }
+
+      // send conformation email
+        // get email address from order ID
+
       break;
     default:
       // Unexpected event type
