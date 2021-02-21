@@ -22,11 +22,14 @@ router.post('/googleSignIn', async (req, res, next) => {
     const payload = ticket.getPayload();
     const googleUserID = payload.sub;
 
+    logger.info('Google sign in or signup', { googleID: googleUserID });
+
     // check to see if this person already has an account using the google user_id
     // if they do issue a jwt and log them in
     try {
       const hasLinkedGoogleAcount = await dao.userByGoogleID(googleUserID);
       console.log(hasLinkedGoogleAcount);
+      logger.info('looking for account for google ID', { googleID: googleUserID, userID: hasLinkedGoogleAcount[0].user_id });
       if (hasLinkedGoogleAcount.length !== 0) {
         const data = hasLinkedGoogleAcount[0].user_id;
         jwt.sign({ userID: data }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
@@ -52,7 +55,13 @@ router.post('/googleSignIn', async (req, res, next) => {
 
         jwt.sign({ userID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
           if (!err) {
-            logger.info('User created', { userID });
+            logger.info('User created', {
+              userID,
+              googleID: googleUserID,
+              email: payload.email,
+              firstName: payload.given_name,
+              lastName: payload.family_name,
+            });
             res.json({ token: jwtToken });
           } else {
             next(err);

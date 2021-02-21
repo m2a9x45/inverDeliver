@@ -21,4 +21,10 @@ const logger = createLogger({
   ],
 });
 
+logger.stream = {
+  write(message, encoding) {
+    logger.info(message);
+  },
+};
+
 module.exports = logger;

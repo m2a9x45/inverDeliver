@@ -30,7 +30,13 @@ router.post('/create-payment-intent', authorisation.isAuthorized, async (req, re
       currency: 'gbp',
       metadata: { order_id: orderID },
     });
-    logger.info('Payent intent created', { orderID, userID: res.locals.user, paymentIntent: paymentIntent.id, orderTotal: total, OrderFee: fee });
+    logger.info('Payent intent created', {
+      orderID,
+      userID: res.locals.user,
+      paymentIntent: paymentIntent.id,
+      orderTotal: total,
+      OrderFee: fee,
+    });
 
     // update price
     try {
@@ -41,7 +47,9 @@ router.post('/create-payment-intent', authorisation.isAuthorized, async (req, re
         orderID,
         res.locals.user,
       );
-      logger.info('Added order price to database', { orderID, userID: res.locals.user, orderTotal: total, OrderFee: fee });
+      logger.info('Added order price to database', {
+        orderID, userID: res.locals.user, orderTotal: total, OrderFee: fee,
+      });
       console.log(addPricetoOrder);
     } catch (error) {
       next(error);
@@ -97,7 +105,7 @@ router.post('/webhook', async (req, res, next) => {
   try {
     event = req.body;
   } catch (err) {
-    logger.error('Stripe webhook error while parsing request.', { error:  err.message });
+    logger.error('Stripe webhook error while parsing request.', { error: err.message });
     console.log('⚠️  Webhook error while parsing basic request.', err.message);
     return res.send();
   }
@@ -113,7 +121,7 @@ router.post('/webhook', async (req, res, next) => {
         next(response);
       }
       // send conformation email
-        // get email address from order ID
+      // get email address from order ID
       break;
     default:
       // Unexpected event type
