@@ -43,8 +43,8 @@ router.post('/create', async (req, res, next) => {
   }
 });
 
-router.get('/content/:orderID', async (req, res, next) => {
-  const { orderID } = req.params;
+router.get('/content', async (req, res, next) => {
+  const { orderID } = req.query;
   // console.log(orderID);
   try {
     const orderContent = await dao.getOrderContent(orderID, res.locals.user);
@@ -83,8 +83,8 @@ router.get('/emailTest', async (req, res, next) => {
   }
 });
 
-router.get('/price/:orderID', async (req, res, next) => {
-  const { orderID } = req.params;
+router.get('/price', async (req, res, next) => {
+  const { orderID } = req.query;
   // console.log(orderID);
   try {
     const orderPrice = await dao.getOrderPrice(orderID, res.locals.user);

@@ -44,7 +44,7 @@ fetch(`${API_URL}/order/status?orderID=${orderID}`, {
 
 function getOrderContent() {
 // get order content from DB not localstorage
-fetch(`${API_URL}/order/content/${orderID}`, {
+fetch(`${API_URL}/order/content?orderID=${orderID}`, {
   headers: {
     'authorization': `bearer ${token}`,
   }
@@ -61,7 +61,7 @@ fetch(`${API_URL}/order/content/${orderID}`, {
 
 function getOrCreatePaymentIntent() {
   // get the payment intent for this order if one exists
-  fetch(`${API_URL}/payment/intent/${orderID}`, {
+  fetch(`${API_URL}/payment/intent?orderID=${orderID}`, {
     headers: {
       'authorization': `bearer ${token}`,
     }
@@ -91,7 +91,7 @@ function getOrCreatePaymentIntent() {
 }
 
 function getOrderPrice(orderID) {
-  fetch(`${API_URL}/order/price/${orderID}`, {
+  fetch(`${API_URL}/order/price?orderID=${orderID}`, {
     headers: {
       'authorization': `bearer ${token}`,
     }

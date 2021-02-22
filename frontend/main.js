@@ -34,7 +34,7 @@ productSearch.addEventListener("keypress", (e) => {
   if (e.key === 'Enter' && productSearch.value !== "") {
     loader.style.display = "block";
     console.log(productSearch.value);
-    fetch(`${API_URL}/product/search/${productSearch.value}`)
+    fetch(`${API_URL}/product/search?productName=${productSearch.value}`)
       .then(response => {
         loader.style.display = "none";
         switch (response.status) {

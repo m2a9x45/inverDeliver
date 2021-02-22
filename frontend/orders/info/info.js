@@ -32,7 +32,7 @@ fetch(`${API_URL}/order/status?orderID=${orderID}`, {
     showOrderStatus(data.status);
   });
 
-fetch(`${API_URL}/order/content/${orderID}`, {
+fetch(`${API_URL}/order/content?orderID=${orderID}`, {
     headers: {
       'authorization': `bearer ${token}`,
     }
@@ -53,7 +53,7 @@ fetch(`${API_URL}/order/content/${orderID}`, {
     });
   });
 
-fetch(`${API_URL}/order/price/${orderID}`, {
+fetch(`${API_URL}/order/price?orderID=${orderID}`, {
     headers: {
       'authorization': `bearer ${token}`,
     }

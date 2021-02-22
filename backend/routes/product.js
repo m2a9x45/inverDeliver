@@ -19,8 +19,8 @@ router.get('/standard', async (req, res, next) => {
 });
 
 // Get a product via a serach term
-router.get('/search/:productName', async (req, res, next) => {
-  const { productName } = req.params;
+router.get('/search', async (req, res, next) => {
+  const { productName } = req.query;
 
   try {
     const product = await dao.product(productName);
@@ -31,8 +31,8 @@ router.get('/search/:productName', async (req, res, next) => {
 });
 
 // Get a product via it's product ID
-router.get('/productById/:id', async (req, res, next) => {
-  const { id } = req.params;
+router.get('/productById', async (req, res, next) => {
+  const { id } = req.query;
 
   try {
     const product = await dao.productById(id);

@@ -64,8 +64,8 @@ router.post('/create-payment-intent', authorisation.isAuthorized, async (req, re
   }
 });
 
-router.get('/intent/:orderID', authorisation.isAuthorized, async (req, res, next) => {
-  const { orderID } = req.params;
+router.get('/intent', authorisation.isAuthorized, async (req, res, next) => {
+  const { orderID } = req.query;
 
   try {
     const paymentIntentID = await dao.getPaymentID(orderID, res.locals.user);
