@@ -69,7 +69,7 @@ router.get('/intent', authorisation.isAuthorized, async (req, res, next) => {
 
   try {
     const paymentIntentID = await dao.getPaymentID(orderID, res.locals.user);
-    // console.log(paymentIntentID[0].payment_id);
+    console.log(paymentIntentID[0].payment_id);
     if (paymentIntentID[0].payment_id) {
       try {
         const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentID[0].payment_id);

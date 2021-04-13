@@ -13,17 +13,17 @@ const logger = createLogger({
   ),
   transports: [
     new transports.Console(),
-    new transports.File({ filename: 'combined.log', level: 'debug' }),
+    new transports.File({ filename: 'combined.log', level: 'error' }),
   ],
   exceptionHandlers: [
     new transports.Console(),
-    new transports.File({ filename: 'combined.log' }),
+    new transports.File({ filename: 'combined.log', level: 'error' }),
   ],
 });
 
 logger.stream = {
   write(message, encoding) {
-    logger.debug(message);
+    // logger.debug(message);
   },
 };
 

@@ -1,0 +1,11 @@
+backend/.env
+# npm
+backend/node_modules
+backend/package-lock.json
+*.log
+*.gz
+backend/public
+
+tools
+
+frontend/email
