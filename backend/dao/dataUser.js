@@ -26,7 +26,21 @@ function CreateAccountWithGoogleID(userID, googleID, email, firstName, lastName)
   }));
 }
 
+function getAccountInfo(userID) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT email, phone_number, first_name, last_name, created_at FROM users WHERE user_id=(?)';
+    db.query(sql, [userID], (err, value) => {
+      if (err === null) {
+        resolve(value[0]);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
 module.exports = {
   userByGoogleID,
   CreateAccountWithGoogleID,
+  getAccountInfo,
 };

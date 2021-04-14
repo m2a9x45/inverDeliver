@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const dao = require('../dao/dataUser.js');
 
 const logger = require('../middleware/logger.js');
+const authorisation = require('../middleware/auth.js');
 
 require('dotenv').config();
 
@@ -70,6 +71,19 @@ router.post('/googleSignIn', async (req, res, next) => {
       }
     } catch (error) {
       next(error);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/account', authorisation.isAuthorized, async (req, res, next) => {
+  try {
+    const user = await dao.getAccountInfo(res.locals.user);
+    if (user) {
+      res.json(user);
+    } else {
+      res.json('User Not Found');
     }
   } catch (error) {
     next(error);
