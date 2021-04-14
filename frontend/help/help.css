@@ -1,0 +1,128 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background-color: #eeeeee;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+header {
+    background-color: #2e2a2a;
+    padding: 1em;
+    
+}
+
+.navbar {
+    margin: 0 auto;
+    width: 75%;
+}
+
+.navbarList {
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+#navbarItem {
+    display: inline-block;
+    list-style-type: none;
+    font-size: 16pt;
+    padding: 0.5rem;
+}
+
+nav ul li:first-child {
+    margin-right: auto;
+}
+
+#navbarItem a, #logo a {
+    text-decoration: none;
+    color: rgb(224, 224, 224);
+}
+
+#navbarItem a:hover, #logo a:hover {
+    color: #f3a9af;
+}
+
+.callOutHolder {
+    width: 100%;
+    background-color: rgb(147, 169, 233);
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+}
+
+.callOut {
+    width: 40%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.callOut h4 {
+    margin: 1rem;
+    font-size: 32pt;
+}
+
+.callOut p {
+    font-size: 18pt;
+}
+
+.helpContent {
+    width: 70%;
+    margin: 1rem auto;
+}
+
+.helpContent h2 {
+    text-align: center;
+}
+
+.helpContent p {
+    font-size: 18pt;
+}
+
+.helpOptionsHolder {
+    margin: 2rem auto;
+    display: grid;
+    grid-template-columns: auto auto auto;
+    text-align: center;
+}
+
+#mailImg {
+    font-size: 80pt;
+    color: rgb(117, 112, 184);
+}
+
+#phoneImg {
+    font-size: 80pt;
+    color: #FF5A5F;
+}
+
+#twitterImg {
+    font-size: 80pt;
+    color: #1DA1F2;
+}
+
+footer {
+    margin-top:auto; 
+    background-color:rgb(194, 194, 194);
+}
+
+.footerContainer {
+    margin: 0 auto;
+    width: 70%;
+    display: flex;
+    padding: 1rem;
+    font-size: 10pt;
+}
+
+.footerSection {
+    margin: 0 2rem;
+}
+
+.footerSection ul{
+    padding: 0;
+}
+
+.footerSection ul li{
+    padding: 0.25rem;
+    list-style-type: none;
+}
