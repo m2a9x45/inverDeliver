@@ -13,10 +13,10 @@ function userByGoogleID(googleID) {
   }));
 }
 
-function CreateAccountWithGoogleID(userID, googleID, email, firstName, lastName) {
+function CreateAccountWithGoogleID(userID, googleID, email, firstName, lastName, stripeID) {
   return new Promise(((resolve, reject) => {
-    const sql = 'INSERT INTO users (user_id, g_id, email, first_name, last_name) VALUES (?,?,?,?,?)';
-    db.query(sql, [userID, googleID, email, firstName, lastName], (err, value) => {
+    const sql = 'INSERT INTO users (user_id, g_id, email, first_name, last_name, stripe_id) VALUES (?,?,?,?,?,?)';
+    db.query(sql, [userID, googleID, email, firstName, lastName, stripeID], (err, value) => {
       if (err === null) {
         resolve(value);
       } else {

@@ -2,6 +2,8 @@ const express = require('express');
 const { OAuth2Client } = require('google-auth-library');
 const { v4: uuidv4 } = require('uuid');
 const jwt = require('jsonwebtoken');
+const stripe = require('stripe')(process.env.STRIPE_KEY);
+
 const dao = require('../dao/dataUser.js');
 
 const logger = require('../middleware/logger.js');
@@ -29,13 +31,19 @@ router.post('/googleSignIn', async (req, res, next) => {
     // if they do issue a jwt and log them in
     try {
       const hasLinkedGoogleAcount = await dao.userByGoogleID(googleUserID);
-      console.log(hasLinkedGoogleAcount);
-      logger.info('looking for account for google ID', { googleID: googleUserID, userID: hasLinkedGoogleAcount[0].user_id });
+      logger.info(`User accounts found: ${hasLinkedGoogleAcount.length}`, { googleID: googleUserID });
       if (hasLinkedGoogleAcount.length !== 0) {
-        const data = hasLinkedGoogleAcount[0].user_id;
-        jwt.sign({ userID: data }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
+        // Checking to see if more than 1 user account matches the googleID we've been given
+        if (hasLinkedGoogleAcount.length > 1) {
+          logger.warn('More than one userID to googleID match', { googleID: googleUserID, matched: hasLinkedGoogleAcount });
+        }
+
+        logger.info('Account found with matching googleID', { googleID: googleUserID, userID: hasLinkedGoogleAcount[0].user_id });
+
+        const userID = hasLinkedGoogleAcount[0].user_id;
+        jwt.sign({ userID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
           if (!err) {
-            logger.info('User signed in', { userID: data });
+            logger.info('User signed in', { userID });
             res.json({ token: jwtToken });
           } else {
             next(err);
@@ -44,24 +52,41 @@ router.post('/googleSignIn', async (req, res, next) => {
       } else {
         // if they don't create an account for them
         const userID = uuidv4();
+        logger.info('Account not found via googleID', { googleID: googleUserID, userID });
+
+        // generate a stripe customer ID
+        const stripeCustomer = await stripe.customers.create({
+          name: `${payload.given_name}`,
+          metadata: { userID }, // Look at adding more data to the create customer part of Stripe
+        });
+
+        logger.info('Stripe Customer ID creatted', { googleID: googleUserID, userID, StripeID: stripeCustomer.id });
+        // Create User account via sign in with google
         const acoountCreation = await dao.CreateAccountWithGoogleID(
           userID,
           googleUserID,
           payload.email,
           payload.given_name,
           payload.family_name,
+          stripeCustomer.id,
         );
 
-        console.log(acoountCreation);
+        logger.info('Customers Account Created', {
+          userID,
+          googleID: googleUserID,
+          StripeID: stripeCustomer.id,
+          dbID: acoountCreation.insertId,
+        });
 
         jwt.sign({ userID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
           if (!err) {
-            logger.info('User created', {
+            logger.info('JWT Created & Sent', {
               userID,
               googleID: googleUserID,
               email: payload.email,
               firstName: payload.given_name,
               lastName: payload.family_name,
+              jwt: jwtToken,
             });
             res.json({ token: jwtToken });
           } else {
