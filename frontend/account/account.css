@@ -44,7 +44,55 @@ nav ul li:first-child {
     color: #f3a9af;
 }
 
+.userDetailsHolder {
+    width: 20%;
+    margin: 4rem auto;
+    padding: 1rem 2rem;
+    background-color: #d8d8d8;
+    border-radius: 15px;
+}
 
+.userDetailsHolder h1 {
+    text-align: center;
+    margin: 0.5rem;
+}
+
+#joinDate {
+    display:inline-block;
+    position: relative;
+    left: 50%; 
+    transform: translateX(-50%);
+    text-align: center;
+    margin: 1rem 0;
+    background-color: rgb(107, 3, 167);
+    color: #eeeeee;
+    border-radius: 25px;
+    padding: 0.3em 1em;
+}
+
+#userNumber {
+    text-align: center;
+    margin: 0.4rem;
+    font-size: 10pt;
+    color: gray;
+}
+
+.userDetails {
+    margin: 1rem auto 1rem auto;
+    font-size: 14pt;
+    border-top: 1px solid rgb(173, 173, 173);
+    border-bottom: 1px solid rgb(173, 173, 173);
+    padding: 0.5rem 0;
+}
+
+.userDetailsTextInLine {
+    display: flex;
+    justify-content: space-between;
+}
+
+.userDetailsTextInLine p {
+    margin: 0.7rem;
+}
 
 
 footer {
