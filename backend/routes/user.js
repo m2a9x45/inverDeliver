@@ -106,10 +106,37 @@ router.get('/account', authorisation.isAuthorized, async (req, res, next) => {
   try {
     const user = await dao.getAccountInfo(res.locals.user);
     if (user) {
+      logger.info('Found customers account data', { userID: res.locals.user, user });
       res.json(user);
     } else {
+      logger.error('Athenticated usersID does not match customer info in DB', { userID: res.locals.user });
       res.json('User Not Found');
     }
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/card', authorisation.isAuthorized, async (req, res, next) => {
+  try {
+    const stripeID = await dao.getStripeID(res.locals.user);
+
+    if (stripeID === undefined) {
+      logger.error('No stripeID found for customer', { userID: res.locals.user });
+      next('No stripeID found for customer');
+      return;
+    }
+
+    logger.info('Got StripeID to retrive cards', { userID: res.locals.user, stripeID: stripeID.stripe_id });
+
+    const paymentMethods = await stripe.paymentMethods.list({
+      customer: stripeID.stripe_id,
+      type: 'card',
+    });
+
+    logger.info('Got payment methods for customer from stripe', { userID: res.locals.user, stripeID: stripeID.stripe_id });
+
+    res.json(paymentMethods);
   } catch (error) {
     next(error);
   }
