@@ -77,12 +77,12 @@ function getOrCreatePaymentIntent() {
     }
   })
   .then((data) => {
-    if (data === null) {
-      
-    } else {
+    if (data !== null) {
       console.log(data);
       clientSecret = data.clientSecret;
       getOrderPrice(orderID);
+    } else {
+      // show error
     }
   })
   .catch((error) => {
@@ -191,8 +191,9 @@ function createPaymentIntent() {
     });
 }
 
-var elements = stripe.elements();
-var style = {
+const elements = stripe.elements();
+
+const style = {
   base: {
     color: "#32325d",
     fontFamily: 'Arial, sans-serif',
@@ -208,44 +209,49 @@ var style = {
     iconColor: "#fa755a"
   }
 };
-var card = elements.create("card", {
+
+const card = elements.create("card", {
   style: style
 });
 // Stripe injects an iframe into the DOM
 card.mount("#card-element");
+
 card.on("change", function (event) {
   // Disable the Pay button if there are no card details in the Element
   document.querySelector("button").disabled = event.empty;
   document.querySelector("#card-error").textContent = event.error ? event.error.message : "";
 });
-var form = document.getElementById("payment-form");
-form.addEventListener("submit", function (event) {
+
+const form = document.getElementById("payment-form");
+
+form.addEventListener("submit", (event) => {
   event.preventDefault();
-  // Complete payment when the submit button is clicked
   payWithCard(stripe, card, clientSecret);
 });
+
 // Calls stripe.confirmCardPayment
 // If the card requires authentication Stripe shows a pop-up modal to
 // prompt the user to enter authentication details without leaving your page.
-var payWithCard = function (stripe, card, clientSecret) {
+const payWithCard = (stripe, card, clientSecret) => {
   loading(true);
-  stripe
-    .confirmCardPayment(clientSecret, {
+
+  stripe.confirmCardPayment(clientSecret, {
       payment_method: {
         card: card
+        // pass in payment_method to pay with an existing card 
+        // https://stripe.com/docs/js/payment_intents/confirm_card_payment
       }
     })
-    .then(function (result) {
+    .then((result) => {
       if (result.error) {
-        // Show error to your customer
         showError(result.error.message);
       } else {
-        // The payment succeeded!
         localStorage.removeItem("cart");
         orderComplete(result.paymentIntent.id);
       }
     });
 };
+
 /* ------- UI helpers ------- */
 // Shows a success message when the payment is complete
 var orderComplete = function (paymentIntentId) {

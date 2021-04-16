@@ -10,7 +10,6 @@ body {
 header {
     background-color: #2e2a2a;
     padding: 1em;
-    
 }
 
 .navbar {
@@ -46,7 +45,7 @@ nav ul li:first-child {
 
 .userDetailsHolder {
     width: 20%;
-    margin: 4rem auto;
+    margin: 6.5rem auto;
     padding: 1rem 2rem;
     background-color: #d8d8d8;
     border-radius: 15px;
@@ -57,13 +56,13 @@ nav ul li:first-child {
     margin: 0.5rem;
 }
 
-#joinDate {
+#badge {
     display:inline-block;
     position: relative;
     left: 50%; 
     transform: translateX(-50%);
     text-align: center;
-    margin: 1rem 0;
+    margin: 0.5rem 0;
     background-color: rgb(107, 3, 167);
     color: #eeeeee;
     border-radius: 25px;
@@ -78,8 +77,8 @@ nav ul li:first-child {
 }
 
 .userDetails {
-    margin: 1rem auto 1rem auto;
-    font-size: 14pt;
+    margin: 0.2rem auto 1rem auto;
+    font-size: 12pt;
     border-top: 1px solid rgb(173, 173, 173);
     border-bottom: 1px solid rgb(173, 173, 173);
     padding: 0.5rem 0;
@@ -94,6 +93,109 @@ nav ul li:first-child {
     margin: 0.7rem;
 }
 
+.userDetailsSubheading {
+    text-align: center;
+    margin: 0.2rem auto;
+}
+
+.cardDetails {
+    margin: 0.5rem auto 1rem auto;
+    font-size: 12pt;
+}
+
+.card {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid rgb(173, 173, 173);
+    padding: 0.5rem 0;
+    align-items: center;
+}
+
+.card i {
+    margin-left: 0.7rem;
+}
+
+#visa {
+    font-size: 40pt;
+    color: #1a1f71;
+    /* margin: 0.7rem; */
+}
+
+#mastercard {
+    font-size: 40pt;
+    color: #231F20;
+    /* margin: 0.7rem; */
+}
+
+#amex {
+    font-size: 40pt;
+    color: #2671B9;
+    /* margin: 0.7rem; */
+}
+
+.expDate {
+    margin-right: 0.7rem;
+}
+
+/* The Modal (background) */
+.modal {
+    /* display: none; */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #e7e7e7;
+    margin: 5% auto; /* 15% from the top and centered */
+    padding: 2rem;
+    width: 30%;
+    border-radius: 1em;
+}
+
+#modalTitle {
+    margin-top: 0px;
+    text-align: center;
+}
+
+select {
+    margin: 0.5rem auto;
+    width: 100%;
+    padding: 1em 1em;
+    border: none;
+}
+
+input[type=text] {
+    margin: 0.5rem auto;
+    width: 100%;
+    padding: 12px 20px;
+    box-sizing: border-box;
+    border: none;
+}
+
+#submitButton {
+    width: 50%;
+    margin: 1rem auto;
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+#helpLink {
+    text-align: center;
+}
 
 footer {
     margin-top:auto; 
