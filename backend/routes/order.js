@@ -90,7 +90,7 @@ router.get('/price', async (req, res, next) => {
     const orderPrice = await dao.getOrderPrice(orderID, res.locals.user);
 
     if (orderPrice.length !== 0) {
-      logger.info('get order price with fee ', {
+      logger.info('Got order price with fee ', {
         orderID, userID: res.locals.user, path: `/price/${orderID}`, orderPrice,
       });
       res.json(orderPrice[0]);

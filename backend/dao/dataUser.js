@@ -28,8 +28,22 @@ function CreateAccountWithGoogleID(userID, googleID, email, firstName, lastName,
 
 function getAccountInfo(userID) {
   return new Promise(((resolve, reject) => {
-    const sql = 'SELECT email, phone_number, first_name, last_name, created_at FROM users WHERE user_id=(?)';
+    const sql = 'SELECT id, email, phone_number, first_name, last_name, created_at FROM users WHERE user_id=(?)';
     db.query(sql, [userID], (err, value) => {
+      if (err === null) {
+        resolve(value[0]);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
+function getStripeID(userID) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT stripe_id FROM users WHERE user_id=(?)';
+    db.query(sql, [userID], (err, value) => {
+      console.log('THIS HERE', err, value[0]);
       if (err === null) {
         resolve(value[0]);
       } else {
@@ -43,4 +57,5 @@ module.exports = {
   userByGoogleID,
   CreateAccountWithGoogleID,
   getAccountInfo,
+  getStripeID,
 };

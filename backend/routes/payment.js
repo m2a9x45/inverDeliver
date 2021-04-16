@@ -6,54 +6,62 @@ const stripe = require('stripe')(process.env.STRIPE_KEY);
 
 const router = express.Router();
 const dao = require('../dao/dataOrder.js');
+const daoUser = require('../dao/dataUser.js');
 const authorisation = require('../middleware/auth.js');
 const logger = require('../middleware/logger.js');
 
 router.post('/create-payment-intent', authorisation.isAuthorized, async (req, res, next) => {
   const { orderID } = req.body;
-
-  console.log(orderID);
+  logger.info('Payment Intent creation for order', { orderID, userID: res.locals.user });
 
   try {
     const products = await dao.caculateOrderPrice(orderID);
-    console.log(products);
+    logger.debug('The products the order is for', { orderID, userID: res.locals.user, products });
 
+    // This is the delivery charge we apply to all orders,
+    // could improve the logic here in the future.
     let total = 0;
     const fee = 350;
 
+    // Caculating the total price of the order.
     products.forEach((product) => {
       total += product.price * product.quantity;
     });
 
+    const stripeID = await daoUser.getStripeID(res.locals.user);
+    logger.info('Got StripeID', { orderID, userID: res.locals.user, stripeID: stripeID.stripe_id });
+
     const paymentIntent = await stripe.paymentIntents.create({
       amount: total + fee,
+      customer: stripeID.stripe_id,
       currency: 'gbp',
       metadata: { order_id: orderID },
+      setup_future_usage: 'off_session',
     });
     logger.info('Payent intent created', {
       orderID,
       userID: res.locals.user,
       paymentIntent: paymentIntent.id,
-      orderTotal: total,
-      OrderFee: fee,
+      itemTotal: total,
+      orderFee: fee,
+      orderTotal: total + fee,
     });
 
-    // update price
-    try {
-      const addPricetoOrder = await dao.updateOrderPrice(
-        total,
-        paymentIntent.id,
-        fee,
-        orderID,
-        res.locals.user,
-      );
-      logger.info('Added order price to database', {
-        orderID, userID: res.locals.user, orderTotal: total, OrderFee: fee,
-      });
-      console.log(addPricetoOrder);
-    } catch (error) {
-      next(error);
-    }
+    // updating price for order in DB
+    const addPricetoOrder = await dao.updateOrderPrice(
+      total,
+      paymentIntent.id,
+      fee,
+      orderID,
+      res.locals.user,
+    );
+    logger.info('Added order price to database', {
+      orderID,
+      userID: res.locals.user,
+      orderTotal: total,
+      orderFee: fee,
+      numRowsChanged: addPricetoOrder.affectedRows,
+    });
 
     res.send({
       clientSecret: paymentIntent.client_secret,
@@ -106,7 +114,6 @@ router.post('/webhook', async (req, res, next) => {
     event = req.body;
   } catch (err) {
     logger.error('Stripe webhook error while parsing request.', { error: err.message });
-    console.log('⚠️  Webhook error while parsing basic request.', err.message);
     return res.send();
   }
   // Handle the event
@@ -114,7 +121,6 @@ router.post('/webhook', async (req, res, next) => {
     case 'payment_intent.succeeded':
       const intent = event.data.object;
       logger.info('Stripe webhook event parsed', { event: 'payment_intent.succeeded', paymentIntentID: intent.id });
-      console.log('Succeeded:', intent.id);
       const response = await handlePaymentIntentSucceeded(intent.id);
       logger.info('Order status updated', { event: 'payment_intent.succeeded', paymentIntentID: intent.id });
       if (response !== true) {
@@ -125,7 +131,6 @@ router.post('/webhook', async (req, res, next) => {
       break;
     default:
       // Unexpected event type
-      console.log(`Unhandled event type ${event.type}.`);
       logger.info('Stripe webhook warning', { event: `${event.type}`, eventID: event.id });
   }
   res.send();

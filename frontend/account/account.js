@@ -35,7 +35,8 @@ function displayUserInfo(customerInfo) {
     month: 'long',
   });
 
-  userDetailsNameHeading.innerHTML = `Hey ${customerInfo.first_name} 👋`
+  userDetailsNameHeading.innerHTML = `Hey ${customerInfo.first_name} 👋`;
+  userJoinNum.innerText = `InverDeliver customer #${customerInfo.id}`;
   userJoinDate.innerText = `Since ${displayDate}`;
   userName.innerText = `${customerInfo.first_name} ${customerInfo.last_name}`;
   userEmail.innerText = customerInfo.email;
