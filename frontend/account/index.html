@@ -67,11 +67,14 @@
                     </div>                    -->
                 </div>
 
-                <div>
-                    <button id="myBtn">Update Details</button>
-                    <a href="../help/">Your Data</a> 
-                    <button>Delete Account</button>
+                <div class="deleteAccountButtonHolder">
+                    <button id="deleteAccountButton">Delete Account</button>
+                    <div id="legalLink">
+                        <a  href="../help/">The Legal Stuff</a> 
+                    </div>
+                    
                 </div>
+                
 
             </div>
             
@@ -85,7 +88,7 @@
 
 
                 <label for="updateValue">Enter your phone number</label>
-                <input id="newPhoneNumber" name="updateValue" type="tel" placeholder="Phone Number" maxlength="14">
+                <input id="newPhoneNumber" name="updateValue" type="tel" placeholder="Phone Number" maxlength="20">
                 <br>
                 <button id="submitButton" type="submit">Update Phone Number</button>
             

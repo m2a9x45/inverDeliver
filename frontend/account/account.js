@@ -18,7 +18,10 @@ if (!token) {
   window.location.replace("../signin");
 }
 
-fetch(`${API_URL}/user/account`, {
+getCustomerAccount();
+
+function getCustomerAccount() {
+  fetch(`${API_URL}/user/account`, {
     headers: {
       'authorization': `bearer ${token}`,
     }
@@ -31,6 +34,10 @@ fetch(`${API_URL}/user/account`, {
   .catch((error) => {
     console.error('Error:', error);
   });
+}
+
+
+
 
 fetch(`${API_URL}/user/card`, {
     headers: {
@@ -165,6 +172,7 @@ submitButton.addEventListener("click", () => {
     message.style.display = "block";
     if (response.ok) {
       showMessage("Phone Number Updated 📞");
+      getCustomerAccount();
     } else {
       showMessage("❌ Sorry we couldn't update your phone number if this continues, please let us know");
     }
