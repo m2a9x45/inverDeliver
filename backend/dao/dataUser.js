@@ -43,9 +43,21 @@ function getStripeID(userID) {
   return new Promise(((resolve, reject) => {
     const sql = 'SELECT stripe_id FROM users WHERE user_id=(?)';
     db.query(sql, [userID], (err, value) => {
-      console.log('THIS HERE', err, value[0]);
       if (err === null) {
         resolve(value[0]);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
+function updatePhoneNumber(userID, phoneNumber) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'UPDATE users SET phone_number=(?) WHERE user_id=(?)';
+    db.query(sql, [phoneNumber, userID], (err, value) => {
+      if (err === null) {
+        resolve(value);
       } else {
         reject(err);
       }
@@ -58,4 +70,5 @@ module.exports = {
   CreateAccountWithGoogleID,
   getAccountInfo,
   getStripeID,
+  updatePhoneNumber,
 };

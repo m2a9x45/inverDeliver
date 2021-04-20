@@ -26,6 +26,9 @@
         </nav>
     </header>
     <main>
+        <div>
+            <p id="messageText">Update successful</p>
+        </div>
         <div class="container">
             <div class="userDetailsHolder">
                 <h1 id="userDetailsNameHeading"></h1>
@@ -42,8 +45,11 @@
                         <p id="userEmail">test@gmail.com</p>
                     </div>
                     <div class="userDetailsTextInLine">
-                        <p><b>Phone Number</b></p>
-                        <p id="userPhone">0800 802 1281</p>
+                        <div class="userDetailsPhoneEdit">
+                            <p><b>Phone Number</b></p>
+                            <a href="javascript:;" onclick="showUpdatePhoneNumber()"><i id="phoneEditIcon" class="fa fa-edit"></i></a>
+                        </div>
+                        <p id="userPhone"></p>
                     </div>
                 </div>
                 <!-- <h3 class="userDetailsSubheading">Your Delivery Addresses</h3> -->
@@ -75,57 +81,18 @@
     <!-- The Modal -->
     <div id="myModal" class="modal">
         <div class="modal-content">
-            <h1 id="modalTitle">Update Your Details</h1>
+            <h1 id="modalTitle">Update you phone number</h1>
 
-            <form>
-                <label for="updateOption">What info would you like to update</label>
 
-                <select name="updateOption" id="options">
-                    <option value="name">Choose info to update</option>
-                    <option value="name">Name</option>
-                    <option value="phoneNumber">Phone number</option>
-                </select>
-
-                <label for="updateValue">What would you like to update it to</label>
-                <input name="updateValue" type="text" placeholder="Update info to ...">
+                <label for="updateValue">Enter your phone number</label>
+                <input id="newPhoneNumber" name="updateValue" type="tel" placeholder="Phone Number" maxlength="14">
                 <br>
-                <input id="submitButton" type="submit" value="Update">
-            </form>
-
-            <a id="helpLink" href="../help/">Let us know if you need any help</a>
+                <button id="submitButton" type="submit">Update Phone Number</button>
+            
+            <a href="../help/">Let us know if you need any help</a>
         </div>
     </div>
 
-
-    <!-- <footer>
-        <div class="footerContainer">
-            <div class="footerSection">
-                <h2>Us</h2>
-                <ul>
-                    <li>About us</li>
-                </ul>
-            </div>
-            <div class="footerSection">
-                <h2>Customer Service</h2>
-                <ul>
-                    <li><a href="./help/">Contact Us</a></li>
-                    <li><a href="">Operating hours</a></li>
-                    <li><a href="">FAQ</a></li>
-                </ul>
-            </div>
-            <div class="footerSection">
-                <h2>Legal Stuff</h2>
-                <ul>
-                    <li><a href="">Terms & Conditions</a></li>
-                    <li><a href="">Privacy Policy</a></li>
-                    <li><a href="">Cookie Policy</a></li>
-                    <li><a href="">Refund Policy</a></li>
-                    <li><a href="">Request your data</a></li>
-                </ul>
-            </div>
-        </div>
-
-    </footer> -->
     <script src="account.js"></script>
 </body>
 

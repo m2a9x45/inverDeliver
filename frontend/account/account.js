@@ -8,6 +8,9 @@ const userEmail = document.querySelector('#userEmail');
 const userPhone = document.querySelector('#userPhone');
 
 const cardDetails = document.querySelector('.cardDetails');
+const submitButton = document.querySelector('#submitButton');
+
+const message = document.querySelector('#messageText');
 
 const token = localStorage.getItem('token');
 
@@ -56,7 +59,23 @@ function displayUserInfo(customerInfo) {
   userJoinDate.innerText = `Since ${displayDate}`;
   userName.innerText = `${customerInfo.first_name} ${customerInfo.last_name}`;
   userEmail.innerText = customerInfo.email;
-  userPhone.innerText = customerInfo.phone_number; 
+
+  switch (customerInfo.phone_number != null) {
+    case true:
+      userPhone.innerText = customerInfo.phone_number;
+      break;
+    
+    default:
+      // create a tag to add phone number
+      const addPhoneNumber = document.createElement("a");
+      addPhoneNumber.innerText = "Add Number"
+      addPhoneNumber.setAttribute("href", "javascript:;");
+      addPhoneNumber.setAttribute("onClick", "showUpdatePhoneNumber()");
+
+      userPhone.appendChild(addPhoneNumber);
+    
+      break;
+  }
 }
 
 function displayCards(cardData) {
@@ -117,17 +136,54 @@ function displayCards(cardData) {
   });
 }
 
+submitButton.addEventListener("click", () => {
+  const newPhoneNumber = document.querySelector('#newPhoneNumber');
+  const phoneNumber = newPhoneNumber.value;
+
+  let re = /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|\+)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|\#)\d{3,4})?$/;
+
+  console.log(re.test(phoneNumber));
+
+  if (re.test(phoneNumber) === false) {
+    modal.style.display = "none";
+    showMessage("❌ Please enter a vaild UK number, if you are please contact customer support");
+    return;
+  }
+
+  fetch(`${API_URL}/user/updatePhoneNumber`, {
+    method: "PATCH",
+    headers: {
+      'Content-Type': 'application/json',
+      'authorization': `bearer ${token}`,
+    },
+    body: JSON.stringify({
+      "phoneNumber": phoneNumber,
+    })
+  })
+  .then(response => {
+    modal.style.display = "none";
+    message.style.display = "block";
+    if (response.ok) {
+      showMessage("Phone Number Updated 📞");
+    } else {
+      showMessage("❌ Sorry we couldn't update your phone number if this continues, please let us know");
+    }
+
+    
+
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+  });
+
+});
+
 // Get the modal
 var modal = document.getElementById("myModal");
 
-// Get the button that opens the modal
-var btn = document.getElementById("myBtn");
-
-// Get the <span> element that closes the modal
-var span = document.getElementsByClassName("close")[0];
-
 // When the user clicks on the button, open the modal
-btn.onclick = function() {
+
+function showUpdatePhoneNumber() {
   modal.style.display = "block";
 }
 
@@ -136,4 +192,10 @@ window.onclick = function(event) {
   if (event.target == modal) {
     modal.style.display = "none";
   }
+}
+
+function showMessage(text) {
+  message.style.display = "block";
+  message.innerText = text;
+  setTimeout(() => { message.style.display = "none"; }, 3000);
 }

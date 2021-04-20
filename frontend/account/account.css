@@ -43,6 +43,15 @@ nav ul li:first-child {
     color: #f3a9af;
 }
 
+#messageText {
+    display: none;
+    text-align: center;
+    background-color: rgb(52, 192, 52);
+    margin: 0;
+    padding: 0.5rem;
+    font-size: 12pt;
+}
+
 .userDetailsHolder {
     width: 20%;
     margin: 6.5rem auto;
@@ -54,6 +63,10 @@ nav ul li:first-child {
 .userDetailsHolder h1 {
     text-align: center;
     margin: 0.5rem;
+}
+
+.userDetailsPhoneEdit {
+    display: flex;
 }
 
 #badge {
@@ -87,6 +100,15 @@ nav ul li:first-child {
 .userDetailsTextInLine {
     display: flex;
     justify-content: space-between;
+}
+
+#phoneEditIcon {
+    margin: 0.7rem 0.7rem 0.7rem 0;
+    color: #777777;
+}
+
+#phoneEditIcon:hover {
+    color: #f3a9af;
 }
 
 .userDetailsTextInLine p {
@@ -139,7 +161,7 @@ nav ul li:first-child {
 
 /* The Modal (background) */
 .modal {
-    /* display: none; */
+    display: none;
     position: fixed; /* Stay in place */
     z-index: 1; /* Sit on top */
     left: 0;
@@ -172,7 +194,7 @@ select {
     border: none;
 }
 
-input[type=text] {
+input[type=tel] {
     margin: 0.5rem auto;
     width: 100%;
     padding: 12px 20px;
@@ -181,7 +203,7 @@ input[type=text] {
 }
 
 #submitButton {
-    width: 50%;
+    width: 100%;
     margin: 1rem auto;
     background-color: #4CAF50; /* Green */
     border: none;
@@ -191,10 +213,6 @@ input[type=text] {
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
-}
-
-#helpLink {
-    text-align: center;
 }
 
 footer {

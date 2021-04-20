@@ -28,16 +28,14 @@ router.post('/create', async (req, res, next) => {
     console.log(data);
     const orderInfo = await dao.createOrder(res.locals.user, orderID, deliveryID, data);
     console.log(orderInfo);
-    try {
-      const addProductToOrder = await dao.addOrderDetails(productsArray);
-      console.log(addProductToOrder);
-      logger.info('Order Created', { orderID, userID: res.locals.user });
-      res.json({
-        order_id: orderID,
-      });
-    } catch (error) {
-      next(error);
-    }
+
+    const addProductToOrder = await dao.addOrderDetails(productsArray);
+    console.log(addProductToOrder);
+    logger.info('Order Created', { orderID, userID: res.locals.user });
+
+    res.json({
+      order_id: orderID,
+    });
   } catch (error) {
     next(error);
   }

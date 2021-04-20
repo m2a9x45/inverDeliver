@@ -95,8 +95,6 @@ function displayCart(item, id) {
 
 }
 
-
-
 deliveryForm.addEventListener("submit", (e) => {
   e.preventDefault();
 

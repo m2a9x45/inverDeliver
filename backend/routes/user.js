@@ -142,4 +142,21 @@ router.get('/card', authorisation.isAuthorized, async (req, res, next) => {
   }
 });
 
+router.patch('/updatePhoneNumber', authorisation.isAuthorized, async (req, res, next) => {
+  const { phoneNumber } = req.body;
+  logger.info('Updated phone number request', { userID: res.locals.user, phoneNumber });
+
+  try {
+    const updated = await dao.updatePhoneNumber(res.locals.user, req.body.phoneNumber);
+    if (updated.changedRows === 1) {
+      logger.info('Updated users phone number', { userID: res.locals.user, phoneNumber });
+      res.sendStatus(204);
+    } else {
+      res.sendStatus(404);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;
