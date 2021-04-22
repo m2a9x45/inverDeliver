@@ -32,7 +32,7 @@ fetch(`${API_URL}/order/status?orderID=${orderID}`, {
   })
   .then(data => {
     console.log(data);
-    if (data.status == 0) {
+    if (data.status === 0) {
       getOrderContent();
       displayDeliveryInfo(data);
       getOrCreatePaymentIntent();
@@ -149,11 +149,11 @@ function displayDeliveryInfo(addressInfo) {
   const deliveryTime = document.querySelector('#deliveryTime');
   const ContactNumber = document.querySelector('#ContactNumber');
 
-  addressLine.innerText = addressInfo.street_name;
+  addressLine.innerText = addressInfo.street;
   addressCity.innerText = addressInfo.city;
   addressPostCode.innerText = addressInfo.post_code;
 
-  const deliveryDate = new Date(addressInfo.delivery_time);
+  const deliveryDate = new Date(addressInfo.time);
   const options = {
     weekday: 'long',
     year: 'numeric',
@@ -166,7 +166,7 @@ function displayDeliveryInfo(addressInfo) {
 
 
   deliveryTime.innerText = displaydate;
-  ContactNumber.innerText = addressInfo.phone;
+  ContactNumber.innerText = addressInfo.phone_number;
 }
 
 function createPaymentIntent() {

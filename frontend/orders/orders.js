@@ -121,7 +121,7 @@ function displayOrders(order) {
     deliveryInfo.appendChild(deliveryInfoLabel);
 
     const deliveryStreet = document.createElement("p");
-    deliveryStreet.innerText = order.street_name;
+    deliveryStreet.innerText = order.street;
     deliveryInfo.appendChild(deliveryStreet);
 
     const deliveryCity = document.createElement("p");

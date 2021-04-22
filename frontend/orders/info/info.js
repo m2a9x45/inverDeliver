@@ -136,11 +136,11 @@ function displayDeliveryInfo(data) {
   const contactNumber = document.querySelector('#contactNumber');
   const contactEmail = document.querySelector('#contactEmail');
 
-  streetName.innerText = data.street_name;
+  streetName.innerText = data.street;
   city.innerText = data.city;
   postCode.innerText = data.post_code;
 
-  const deliveryDate = new Date(data.delivery_time);
+  const deliveryDate = new Date(data.time);
   const displaydate = deliveryDate.toLocaleDateString("en-GB", {
     year: 'numeric',
     month: 'short',
@@ -151,7 +151,7 @@ function displayDeliveryInfo(data) {
   });
 
   deliveryTime.innerText = `Delivery Time: ${displaydate}`;
-  contactNumber.innerText = data.phone;
+  contactNumber.innerText = data.phone_number;
   contactEmail.innerText = data.email;
 
 }

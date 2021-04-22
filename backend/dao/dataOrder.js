@@ -1,37 +1,52 @@
 const db = require('./conn.js');
 
-function createOrder(userID, orderID, deliveryID, orderData) {
+function createOrder(userID, orderID, deliveryID, addressID, orderData) {
   return new Promise(((resolve, reject) => {
     db.beginTransaction((err) => {
       if (err) {
         throw err;
       }
-      db.query('INSERT INTO food.order (user_id, order_id, delivery_id) VALUES (?,?,?)', [userID, orderID, deliveryID], (error, results, fields) => {
-        if (error) {
+
+      db.query('INSERT INTO food.order (user_id, order_id, delivery_id) VALUES (?,?,?)', [userID, orderID, deliveryID], (errorFood, valueFood) => {
+        if (errorFood) {
           return db.rollback(() => {
-            reject(error);
+            reject(errorFood);
           });
         }
 
-        db.query('INSERT INTO delivery (delivery_id, name, email, phone, delivery_time, street_name, city, post_code) VALUES (?,?,?,?,?,?,?,?)',
-          [deliveryID, orderData.name, orderData.email, orderData.phone,
-            new Date(orderData.delivery_time), orderData.street_name,
-            orderData.city, orderData.post_code],
-          (error, results, fields) => {
-            if (error) {
+        // orderData.street_name, orderData.city, orderData.post_code
+        // should reflect the new delivery table with ref to address table
+        return db.query('INSERT INTO delivery (delivery_id, time, address_id) VALUES (?,?,?)',
+          [deliveryID, new Date(orderData.delivery_time),
+            addressID], (errorDelivery, valueDelivery) => {
+            if (errorDelivery) {
               return db.rollback(() => {
-                reject(error);
+                reject(errorDelivery);
               });
             }
-            db.commit((err) => {
-              if (err) {
-                return db.rollback(() => {
-                  reject(error);
+
+            return db.query('INSERT INTO addresses (address_id, user_id, street, city, post_code) VALUES (?,?,?,?,?)',
+              [addressID, userID, orderData.street_name, orderData.city,
+                orderData.post_code], (errorAddress, valueAddress) => {
+                if (errorAddress) {
+                  return db.rollback(() => {
+                    reject(errorAddress);
+                  });
+                }
+                return db.commit((errCommit) => {
+                  if (errCommit) {
+                    return db.rollback(() => {
+                      reject(errCommit);
+                    });
+                  }
+
+                  return resolve({
+                    orderdbID: valueFood.insertId,
+                    deliverydbID: valueDelivery.insertId,
+                    addressdbID: valueAddress.insertId,
+                  });
                 });
-              }
-              console.log('success!');
-              resolve('success');
-            });
+              });
           });
       });
     });
@@ -67,7 +82,12 @@ function caculateOrderPrice(orderID) {
 
 function getOrderStatus(orderID, userID) {
   return new Promise(((resolve, reject) => {
-    const sql = 'SELECT d.name, d.email, d.phone, d.delivery_time, d.street_name, d.city, d.post_code, o.status FROM delivery d INNER JOIN food.order o ON o.delivery_id=d.delivery_id WHERE o.order_id=(?) AND o.user_id=(?)';
+    const sql = `SELECT o.delivery_id, o.status, d.address_id, d.time, a.street, a.city, a.post_code, u.first_name, u.last_name, u.email, u.phone_number
+    FROM food.order o 
+    INNER JOIN delivery d ON o.delivery_id=d.delivery_id
+    INNER JOIN addresses a ON d.address_id=a.address_id
+    INNER JOIN users u ON o.user_id=u.user_id
+    WHERE o.order_id=(?) AND o.user_id=(?)`;
     db.query(sql, [orderID, userID], (err, value) => {
       // console.log(err, value);
       if (err === null) {
@@ -81,7 +101,12 @@ function getOrderStatus(orderID, userID) {
 
 function getUserOrders(userID) {
   return new Promise(((resolve, reject) => {
-    const sql = 'SELECT f.user_id, f.order_id, f.delivery_id, f.status, f.price, f.fee, f.created_at, d.delivery_id, d.delivery_time, d.street_name, d.city, d.post_code  FROM food.order f INNER JOIN food.delivery d ON f.delivery_id=d.delivery_id WHERE user_id=(?) ORDER BY f.created_at DESC';
+    const sql = `SELECT o.user_id, o.order_id, o.delivery_id, o.status, o.price, o.fee, o.created_at, d.address_id, d.time, a.street, a.city, a.post_code
+    FROM food.order o 
+    INNER JOIN delivery d ON o.delivery_id=d.delivery_id
+    INNER JOIN addresses a ON d.address_id=a.address_id
+    WHERE o.user_id=(?) ORDER BY o.created_at DESC`;
+
     db.query(sql, [userID], (err, value) => {
       // console.log(err, value);
       if (err === null) {

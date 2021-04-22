@@ -11,31 +11,50 @@ const email = require('../helper/email.js');
 router.post('/create', async (req, res, next) => {
   const data = req.body;
 
-  console.log(new Date(data.delivery_time));
-
   const productsArray = [];
 
   const orderID = uuidv4();
   const deliveryID = uuidv4();
+  const addressID = uuidv4();
+
+  logger.info('Create new order request', { orderID, userID: res.locals.user, addressID });
 
   data.products.forEach((product) => {
     productsArray.push([orderID, product[0], product[1]]);
   });
 
-  console.log(productsArray);
+  logger.info('Product array created', { orderID, userID: res.locals.user, productsArray });
 
   try {
-    console.log(data);
-    const orderInfo = await dao.createOrder(res.locals.user, orderID, deliveryID, data);
-    console.log(orderInfo);
-
+    const orderInfo = await dao.createOrder(res.locals.user, orderID, deliveryID, addressID, data);
     const addProductToOrder = await dao.addOrderDetails(productsArray);
-    console.log(addProductToOrder);
-    logger.info('Order Created', { orderID, userID: res.locals.user });
 
-    res.json({
-      order_id: orderID,
+    logger.debug('Reply from DB when creating order', {
+      orderID, userID: res.locals.user, orderInfo, addProductToOrder,
     });
+
+    const orderdbID = typeof orderInfo.orderdbID;
+    const deliverydbID = typeof orderInfo.deliverydbID;
+    const addressdbID = typeof orderInfo.addressdbID;
+    const productListdbID = typeof addProductToOrder.insertId;
+
+    if (orderdbID === 'number' && deliverydbID === 'number' && addressdbID === 'number' && productListdbID === 'number') {
+      logger.info('Order Created', { orderID, userID: res.locals.user });
+      res.json({
+        order_id: orderID,
+      });
+    } else {
+      logger.error('Something went wrong with creating the order', {
+        orderID,
+        userID: res.locals.user,
+        orderdbID,
+        deliverydbID,
+        addressdbID,
+        productListdbID,
+        ProductsdbRownum: addProductToOrder.affectedRows,
+      });
+      res.statusCode(500);
+    }
   } catch (error) {
     next(error);
   }
