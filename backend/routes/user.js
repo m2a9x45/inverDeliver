@@ -174,4 +174,21 @@ router.patch('/updatePhoneNumber', authorisation.isAuthorized, async (req, res, 
   }
 });
 
+router.delete('/address', authorisation.isAuthorized, async (req, res, next) => {
+  const { addressID } = req.query;
+
+  try {
+    const deleted = await dao.deleteAddresses(res.locals.user, addressID);
+    if (deleted.changedRows !== 1) {
+      logger.warn('Deleting address possibly failed or was already deleted', { userID: res.locals.user, addressID });
+      res.sendStatus(500);
+      return;
+    }
+    logger.info('Address deleted', { userID: res.locals.user, addressID });
+    res.sendStatus(204);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;

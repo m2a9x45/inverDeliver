@@ -41,8 +41,21 @@ function getAccountInfo(userID) {
 
 function getAddresses(userID) {
   return new Promise(((resolve, reject) => {
-    const sql = 'SELECT address_id, street, city, post_code FROM addresses WHERE user_id=(?)';
+    const sql = 'SELECT address_id, street, city, post_code FROM addresses WHERE user_id=(?) AND deleted_at IS NULL';
     db.query(sql, [userID], (err, value) => {
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
+function deleteAddresses(userID, addressID) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'UPDATE addresses SET deleted_at=(?) WHERE user_id=(?) AND address_id=(?) AND deleted_at IS NULL';
+    db.query(sql, [new Date().toISOString().slice(0, 19).replace('T', ' '), userID, addressID], (err, value) => {
       if (err === null) {
         resolve(value);
       } else {
@@ -85,4 +98,5 @@ module.exports = {
   getStripeID,
   updatePhoneNumber,
   getAddresses,
+  deleteAddresses,
 };

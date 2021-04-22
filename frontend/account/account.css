@@ -104,11 +104,7 @@ nav ul li:first-child {
 
 #phoneEditIcon {
     margin: 0.7rem 0.7rem 0.7rem 0;
-    color: #777777;
-}
-
-#phoneEditIcon:hover {
-    color: #f3a9af;
+    color: rgb(38, 114, 228);
 }
 
 .userDetailsTextInLine p {
@@ -171,6 +167,40 @@ nav ul li:first-child {
 
 }
 
+#buttonDiv {
+    padding: 1rem;
+}
+
+#deleteButton {
+    margin: 0 1rem;
+    text-decoration: none;
+    background: rgb(233, 76, 76);
+    border-radius: 4px;
+    color: #FFF;
+    padding: 0.5rem 1rem;
+    cursor: pointer;   
+
+}
+
+#deleteButton:hover {
+    background-color: #ff3022;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#editButton {
+    padding: 1rem;
+    text-decoration: none;
+    background: rgb(38, 114, 228);
+    border-radius: 4px;
+    color: #FFF;
+    padding: 0.5rem 1rem;
+    cursor: pointer;   
+}
+
+#editButton:hover {
+    background-color: rgb(45, 129, 255);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
 
 .deleteAccountButtonHolder {
     width: 85%;

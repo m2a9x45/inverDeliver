@@ -10,6 +10,8 @@ const userPhone = document.querySelector('#userPhone');
 const cardDetails = document.querySelector('.cardDetails');
 const submitButton = document.querySelector('#submitButton');
 
+const addressDetails = document.querySelector('.addressDetails');
+
 const message = document.querySelector('#messageText');
 
 const token = localStorage.getItem('token');
@@ -19,6 +21,7 @@ if (!token) {
 }
 
 getCustomerAccount();
+getCustomersAddresses();
 
 function getCustomerAccount() {
   fetch(`${API_URL}/user/account`, {
@@ -50,7 +53,8 @@ fetch(`${API_URL}/user/card`, {
     console.error('Error:', error);
   });
 
-fetch(`${API_URL}/user/addresses`, {
+function getCustomersAddresses() {
+  fetch(`${API_URL}/user/addresses`, {
     headers: {
       'authorization': `bearer ${token}`,
     }
@@ -58,10 +62,12 @@ fetch(`${API_URL}/user/addresses`, {
   .then(response => response.json())
   .then(data => {
     console.log(data);
+    displayAddresses(data);
   })
   .catch((error) => {
     console.error('Error:', error);
   });
+}
 
 function displayUserInfo(customerInfo) {
 
@@ -150,6 +156,68 @@ function displayCards(cardData) {
     cardDiv.appendChild(cardExpiryText);
 
     cardDetails.appendChild(cardDiv);
+  });
+}
+
+function displayAddresses(addresses) {
+  addressDetails.innerHTML = "";
+  addresses.forEach(address => {
+    const addressDiv = document.createElement("div");
+    addressDiv.setAttribute("class", "address");
+    
+    const street = document.createElement("p");
+    street.innerText = address.street;
+    const city = document.createElement("p");
+    city.innerText = address.city;
+    const postCode = document.createElement("p");
+    postCode.innerText = address.post_code;
+
+    const buttonDiv = document.createElement("div");
+    buttonDiv.setAttribute("id", "buttonDiv");
+
+    const editButton = document.createElement("a");
+    editButton.setAttribute("href", "javascript:;");
+    editButton.setAttribute("onclick", "console.log('Clickced');");
+    editButton.setAttribute("id", "editButton");
+    editButton.innerText = "Edit";
+
+    const deleteButton = document.createElement("a");
+    deleteButton.setAttribute("href", "javascript:;");
+    deleteButton.addEventListener("click", () => deleteAdress(address.address_id));
+    deleteButton.setAttribute("id", "deleteButton");
+    deleteButton.innerText = "Delete";
+
+    addressDiv.appendChild(street);
+    addressDiv.appendChild(city);
+    addressDiv.appendChild(postCode);
+
+    buttonDiv.appendChild(editButton);
+    buttonDiv.appendChild(deleteButton);
+
+    addressDiv.appendChild(buttonDiv);
+
+    addressDetails.appendChild(addressDiv);
+    
+  });
+};
+
+function deleteAdress(addressID) {
+  fetch(`${API_URL}/user/address?addressID=${addressID}`, {
+    method: "DELETE",
+    headers: {
+      'authorization': `bearer ${token}`,
+    }
+  })
+  .then(response => {
+    if (response.ok) {
+      showMessage("Address deleted");
+      getCustomersAddresses();
+    } else {
+      showMessage("We had problems deleting your address");
+    }
+  })
+  .catch((error) => {
+    console.error('Error:', error);
   });
 }
 
