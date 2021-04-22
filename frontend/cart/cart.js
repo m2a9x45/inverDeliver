@@ -95,6 +95,37 @@ function displayCart(item, id) {
 
 }
 
+fetch(`${API_URL}/user/phoneNumber`, {
+  headers: {
+    'authorization': `bearer ${token}`,
+  },
+})
+.then(response => response.json())
+.then(data => {
+  console.log(data);
+  if (data.phone_number !== null) {
+    const phoneNumberInput = document.querySelector('#phone');
+    phoneNumberInput.disabled = "disabled";
+    phoneNumberInput.style.display = "none";
+  }
+})
+.catch((error) => {
+  console.error('Error:', error);
+});
+
+fetch(`${API_URL}/user/addresses`, {
+  headers: {
+    'authorization': `bearer ${token}`,
+  },
+})
+.then(response => response.json())
+.then(data => {
+  console.log('Success:', data);
+})
+.catch((error) => {
+  console.error('Error:', error);
+});
+
 deliveryForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -117,35 +148,35 @@ deliveryForm.addEventListener("submit", (e) => {
   console.log(orderData);
 
   // convert delivery time into epoch time
-  const deliverTime = new Date(orderData.delivery_time)
-  deliverTimeEp = deliverTime.getTime();
+  // const deliverTime = new Date(orderData.delivery_time)
+  // deliverTimeEp = deliverTime.getTime();
   // console.log(deliverTimeEp);
 
   // convert current time into epoch time
-  const curret = new Date();
-  const currentTimeNumber = curret.getTime();
+  // const curret = new Date();
+  // const currentTimeNumber = curret.getTime();
   // console.log(currentTimeNumber);
 
   // check that the deliver time is greater than the current time + 2 hours
-  if (deliverTime > currentTimeNumber + 7200000) {
-    console.log("Delivery time is at least 2 hours from the current time");
-    fetch(`${API_URL}/order/create`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'authorization': `bearer ${token}`,
-      },
-      body: JSON.stringify(orderData),
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Success:', data);
-      window.location.replace(`../payment/index.html?orderID=${data.order_id}`);
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-    });
-  } else {
-    console.log("Delivery time is not at least 2 hours from the current time");
-  }
+  // if (deliverTime > currentTimeNumber + 7200000) {
+  //   console.log("Delivery time is at least 2 hours from the current time");
+  //   fetch(`${API_URL}/order/create`, {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       'authorization': `bearer ${token}`,
+  //     },
+  //     body: JSON.stringify(orderData),
+  //   })
+  //   .then(response => response.json())
+  //   .then(data => {
+  //     console.log('Success:', data);
+  //     // window.location.replace(`../payment/index.html?orderID=${data.order_id}`);
+  //   })
+  //   .catch((error) => {
+  //     console.error('Error:', error);
+  //   });
+  // } else {
+  //   console.log("Delivery time is not at least 2 hours from the current time");
+  // }
 })

@@ -157,6 +157,16 @@ router.get('/addresses', authorisation.isAuthorized, async (req, res, next) => {
   }
 });
 
+router.get('/phoneNumber', authorisation.isAuthorized, async (req, res, next) => {
+  try {
+    const phoneNumber = await dao.getPhoneNumber(res.locals.user);
+    console.log(phoneNumber);
+    res.json(phoneNumber);
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.patch('/updatePhoneNumber', authorisation.isAuthorized, async (req, res, next) => {
   const { phoneNumber } = req.body;
   logger.info('Updated phone number request', { userID: res.locals.user, phoneNumber });

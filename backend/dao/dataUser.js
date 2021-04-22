@@ -78,6 +78,19 @@ function getStripeID(userID) {
   }));
 }
 
+function getPhoneNumber(userID) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT phone_number FROM users WHERE user_id=(?)';
+    db.query(sql, [userID], (err, value) => {
+      if (err === null) {
+        resolve(value[0]);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
 function updatePhoneNumber(userID, phoneNumber) {
   return new Promise(((resolve, reject) => {
     const sql = 'UPDATE users SET phone_number=(?) WHERE user_id=(?)';
@@ -99,4 +112,5 @@ module.exports = {
   updatePhoneNumber,
   getAddresses,
   deleteAddresses,
+  getPhoneNumber,
 };

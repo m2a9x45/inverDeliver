@@ -175,12 +175,6 @@ function displayAddresses(addresses) {
     const buttonDiv = document.createElement("div");
     buttonDiv.setAttribute("id", "buttonDiv");
 
-    const editButton = document.createElement("a");
-    editButton.setAttribute("href", "javascript:;");
-    editButton.setAttribute("onclick", "console.log('Clickced');");
-    editButton.setAttribute("id", "editButton");
-    editButton.innerText = "Edit";
-
     const deleteButton = document.createElement("a");
     deleteButton.setAttribute("href", "javascript:;");
     deleteButton.addEventListener("click", () => deleteAdress(address.address_id));
@@ -191,7 +185,6 @@ function displayAddresses(addresses) {
     addressDiv.appendChild(city);
     addressDiv.appendChild(postCode);
 
-    buttonDiv.appendChild(editButton);
     buttonDiv.appendChild(deleteButton);
 
     addressDiv.appendChild(buttonDiv);
