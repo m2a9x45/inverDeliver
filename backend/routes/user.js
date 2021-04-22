@@ -142,6 +142,21 @@ router.get('/card', authorisation.isAuthorized, async (req, res, next) => {
   }
 });
 
+router.get('/addresses', authorisation.isAuthorized, async (req, res, next) => {
+  try {
+    const addresses = await dao.getAddresses(res.locals.user);
+    if (addresses) {
+      logger.info('Found customers addresses', { userID: res.locals.user });
+      res.json(addresses);
+    } else {
+      logger.error('No addresses found', { userID: res.locals.user });
+      res.sendStatus(404);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.patch('/updatePhoneNumber', authorisation.isAuthorized, async (req, res, next) => {
   const { phoneNumber } = req.body;
   logger.info('Updated phone number request', { userID: res.locals.user, phoneNumber });

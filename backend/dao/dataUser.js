@@ -39,6 +39,19 @@ function getAccountInfo(userID) {
   }));
 }
 
+function getAddresses(userID) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT address_id, street, city, post_code FROM addresses WHERE user_id=(?)';
+    db.query(sql, [userID], (err, value) => {
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
 function getStripeID(userID) {
   return new Promise(((resolve, reject) => {
     const sql = 'SELECT stripe_id FROM users WHERE user_id=(?)';
@@ -71,4 +84,5 @@ module.exports = {
   getAccountInfo,
   getStripeID,
   updatePhoneNumber,
+  getAddresses,
 };

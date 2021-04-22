@@ -159,6 +159,19 @@ nav ul li:first-child {
     margin-right: 0.7rem;
 }
 
+.addressDetails {
+    margin: 1rem 0.7rem;
+}
+
+.address{
+    text-align: center;
+    background-color: #d1cece;
+    padding: 0.2rem;
+    margin: 0.5rem 0px;
+
+}
+
+
 .deleteAccountButtonHolder {
     width: 85%;
     margin: 0 auto;
@@ -304,5 +317,14 @@ footer {
         margin: 0px;
         padding: 0px 0px 0.5rem 0px;
         border-radius: 0px;
+    }
+    .modal-content {
+        margin: 3rem auto; /* 15% from the top and centered */
+        padding: 1rem;
+        width: 90%;
+        border-radius: 0px;
+    }
+    #modalTitle {
+        font-size: 18pt;
     }
 }

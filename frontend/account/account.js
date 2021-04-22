@@ -36,9 +36,6 @@ function getCustomerAccount() {
   });
 }
 
-
-
-
 fetch(`${API_URL}/user/card`, {
     headers: {
       'authorization': `bearer ${token}`,
@@ -48,6 +45,19 @@ fetch(`${API_URL}/user/card`, {
   .then(data => {
     console.log(data);
     displayCards(data.data);
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+  });
+
+fetch(`${API_URL}/user/addresses`, {
+    headers: {
+      'authorization': `bearer ${token}`,
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log(data);
   })
   .catch((error) => {
     console.error('Error:', error);
