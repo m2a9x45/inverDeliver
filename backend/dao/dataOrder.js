@@ -1,6 +1,6 @@
 const db = require('./conn.js');
 
-function createOrder(userID, orderID, deliveryID, addressID, orderData) {
+function createOrderWithNewAddress(userID, orderID, deliveryID, addressID, orderData) {
   return new Promise(((resolve, reject) => {
     db.beginTransaction((err) => {
       if (err) {
@@ -43,10 +43,52 @@ function createOrder(userID, orderID, deliveryID, addressID, orderData) {
                   return resolve({
                     orderdbID: valueFood.insertId,
                     deliverydbID: valueDelivery.insertId,
-                    addressdbID: valueAddress.insertId,
                   });
                 });
               });
+          });
+      });
+    });
+  }));
+}
+
+function createOrder(userID, orderID, deliveryID, addressID, orderData) {
+  return new Promise(((resolve, reject) => {
+    db.beginTransaction((err) => {
+      if (err) {
+        throw err;
+      }
+
+      db.query('INSERT INTO food.order (user_id, order_id, delivery_id) VALUES (?,?,?)', [userID, orderID, deliveryID], (errorFood, valueFood) => {
+        if (errorFood) {
+          return db.rollback(() => {
+            reject(errorFood);
+          });
+        }
+
+        // orderData.street_name, orderData.city, orderData.post_code
+        // should reflect the new delivery table with ref to address table
+        return db.query('INSERT INTO delivery (delivery_id, time, address_id) VALUES (?,?,?)',
+          [deliveryID, new Date(orderData.delivery_time),
+            addressID], (errorDelivery, valueDelivery) => {
+            if (errorDelivery) {
+              return db.rollback(() => {
+                reject(errorDelivery);
+              });
+            }
+
+            return db.commit((errCommit) => {
+              if (errCommit) {
+                return db.rollback(() => {
+                  reject(errCommit);
+                });
+              }
+
+              return resolve({
+                orderdbID: valueFood.insertId,
+                deliverydbID: valueDelivery.insertId,
+              });
+            });
           });
       });
     });
@@ -198,4 +240,5 @@ module.exports = {
   getOrderContent,
   updateOrderStatus,
   getOrderPrice,
+  createOrderWithNewAddress,
 };

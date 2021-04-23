@@ -52,6 +52,19 @@ function getAddresses(userID) {
   }));
 }
 
+function getAddress(userID, addressID) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT address_id FROM addresses WHERE user_id=(?) AND address_id=(?) AND deleted_at IS NULL';
+    db.query(sql, [userID, addressID], (err, value) => {
+      if (err === null) {
+        resolve(value[0]);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
 function deleteAddresses(userID, addressID) {
   return new Promise(((resolve, reject) => {
     const sql = 'UPDATE addresses SET deleted_at=(?) WHERE user_id=(?) AND address_id=(?) AND deleted_at IS NULL';
@@ -113,4 +126,5 @@ module.exports = {
   getAddresses,
   deleteAddresses,
   getPhoneNumber,
+  getAddress,
 };

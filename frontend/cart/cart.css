@@ -103,16 +103,44 @@ nav ul li:first-child {
     font-size: 16pt;
 }
 
-.customerInfo input {
+.customerInfo input[type=text], .customerInfo input[type=datetime-local] {
     width: 100%;
     padding: 12px 20px;
     margin: 8px 0;
     box-sizing: border-box;
 }
 
+.savedAddressSelector {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    /* align-items: center; */
+}
+
+.address {
+    border: 2px solid #0e1c31;
+    border-radius: 5px;
+    padding: 25px 36px;
+    margin: 0.5rem 0;
+    font-size: 14pt;
+    /* width: 22%; */
+}
+
+#street_name {
+    display: none;
+}
+
+#city {
+    display: none;
+}
+
+#post_code {
+    display: none;
+}
+
 .submit {
-    width: 85%;
-    margin-top: 1rem;
+    width: 100%;
+    /* margin: 1rem; */
     background-color: #4CAF50; /* Green */
     border: none;
     color: white;

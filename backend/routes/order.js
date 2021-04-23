@@ -5,17 +5,19 @@ const logger = require('../middleware/logger.js');
 
 const router = express.Router();
 const dao = require('../dao/dataOrder.js');
+const daoUser = require('../dao/dataUser');
 
 const email = require('../helper/email.js');
 
 router.post('/create', async (req, res, next) => {
   const data = req.body;
-
+  console.log(data.address);
   const productsArray = [];
 
   const orderID = uuidv4();
   const deliveryID = uuidv4();
-  const addressID = uuidv4();
+  const addressID = data.address ? data.address : uuidv4();
+  console.log(addressID);
 
   logger.info('Create new order request', { orderID, userID: res.locals.user, addressID });
 
@@ -26,7 +28,21 @@ router.post('/create', async (req, res, next) => {
   logger.info('Product array created', { orderID, userID: res.locals.user, productsArray });
 
   try {
-    const orderInfo = await dao.createOrder(res.locals.user, orderID, deliveryID, addressID, data);
+    let orderInfo;
+    if (data.address) {
+      const vaildAddressID = await daoUser.getAddress(res.locals.user, addressID);
+      if (vaildAddressID === undefined) {
+        res.json("Something went wrong we couldn't find the address you've selected");
+        return;
+      }
+      // link address to order
+      orderInfo = await dao.createOrder(res.locals.user, orderID, deliveryID, addressID, data);
+    } else {
+      // add new address to DB
+      orderInfo = await dao.createOrderWithNewAddress(res.locals.user,
+        orderID, deliveryID, addressID, data);
+    }
+
     const addProductToOrder = await dao.addOrderDetails(productsArray);
 
     logger.debug('Reply from DB when creating order', {
@@ -35,10 +51,9 @@ router.post('/create', async (req, res, next) => {
 
     const orderdbID = typeof orderInfo.orderdbID;
     const deliverydbID = typeof orderInfo.deliverydbID;
-    const addressdbID = typeof orderInfo.addressdbID;
     const productListdbID = typeof addProductToOrder.insertId;
 
-    if (orderdbID === 'number' && deliverydbID === 'number' && addressdbID === 'number' && productListdbID === 'number') {
+    if (orderdbID === 'number' && deliverydbID === 'number' && productListdbID === 'number') {
       logger.info('Order Created', { orderID, userID: res.locals.user });
       res.json({
         order_id: orderID,
@@ -49,7 +64,6 @@ router.post('/create', async (req, res, next) => {
         userID: res.locals.user,
         orderdbID,
         deliverydbID,
-        addressdbID,
         productListdbID,
         ProductsdbRownum: addProductToOrder.affectedRows,
       });

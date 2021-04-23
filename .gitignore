@@ -9,3 +9,5 @@ backend/public
 tools
 
 frontend/email
+
+.vscode
