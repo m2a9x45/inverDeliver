@@ -207,7 +207,7 @@ deliveryForm.addEventListener("submit", (e) => {
     .then(response => response.json())
     .then(data => {
       console.log('Success:', data);
-      // window.location.replace(`../payment/index.html?orderID=${data.order_id}`);
+      window.location.replace(`../payment/index.html?orderID=${data.order_id}`);
     })
     .catch((error) => {
       console.error('Error:', error);

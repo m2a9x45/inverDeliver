@@ -67,6 +67,11 @@ nav ul li:first-child {
   padding: 0.5rem;
 }
 
+.cardDetails a {
+  text-decoration: none;
+  color: black;
+}
+
 .card {
   display: flex;
   justify-content: space-evenly;

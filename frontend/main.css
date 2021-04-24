@@ -1,11 +1,11 @@
 body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
-    background-color: #cec3c1;
+    background-color: rgb(241, 241, 241);
 }
 
 header {
-    background-color: #2e2a2a;
+    background-color: rgb(41, 41, 41);
     padding: 1em;
     
 }
@@ -38,12 +38,12 @@ nav ul li:first-child {
 }
 
 #navbarItem a:hover, #logo a:hover {
-    color: #f3a9af;
+    color: rgb(66, 176, 255);
 }
 
 .callOutHolder {
     width: 100%;
-    background-color: royalblue;
+    background-color:rgb(66, 176, 255);
     padding-top: 1.5rem;
     padding-bottom: 1.5rem;
 }
@@ -83,7 +83,7 @@ nav ul li:first-child {
 .loader {
     margin: 1rem auto;
     border: 8px solid #f3f3f3;
-    border-top: 8px solid #3498db;
+    border-top: 8px solid rgb(66, 176, 255);
     border-radius: 50%;
     width: 50px;
     height: 50px;
@@ -122,25 +122,20 @@ img {
     background-color: rgb(230, 230, 230);
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     transition: 0.3s;
-
     border-right: 1px solid rgba(82, 82, 82, 0.1);
     border-left: 1px solid rgba(82, 82, 82, 0.1);
-
     background-color: rgb(255, 255, 255);
-
-    
-
     margin-bottom: 1rem;
     padding: 1rem;
     margin: 0.3rem;
     font-size: 11pt;
     text-align: center;
-    height: 320px;
+    height: 22rem;
     width: 170px;
 }
 
 .addCartButton {
-    background-color: #c69cdf; /* Green */
+    background-color: rgb(66, 176, 255); /* Green */
     border: none;
     /* color: white; */
     padding: 15px 32px;
@@ -186,7 +181,7 @@ img {
 }
 
 footer {
-    background-color:rgb(245, 245, 245);
+    background-color:rgba(66, 176, 255, 0.151);
 }
 
 .footerContainer {

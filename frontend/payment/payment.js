@@ -217,7 +217,7 @@ function getCustomerPaymentMethods() {
       displayCards(data.data);
       cardElement.style.display = "none";
       cardDetails.style.display = "block";
-      payWithNewCardLink.style.display = "Pay with a new card";
+      payWithNewCardLink.innerText = "Pay with a new card";
       payWithNewCardLink.style.display = "block";
     } else {
       console.log("Customer has no saved cards");
