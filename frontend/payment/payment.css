@@ -2,24 +2,126 @@
 * {
   box-sizing: border-box;
 }
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 16px;
-  -webkit-font-smoothing: antialiased;
-  display: flex;
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  background-color: #cec3c1;
+}
+
+main {
+  font-family: 'Roboto', sans-serif;
+  background-color: #cec3c1;
   justify-content: center;
   align-content: center;
-  height: 100vh;
-  width: 100vw;
+  width: 30%;
+  margin: 1rem auto;
 }
-form {
-  width: 30vw;
-  min-width: 500px;
+header {
+  background-color: #2e2a2a;
+  padding: 1em;
+  
+}
+
+h1, h4 {
+  text-align: center;
+}
+
+.navbar {
+  margin: 0 auto;
+  width: 75%;
+}
+
+.navbarList {
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+#navbarItem {
+  display: inline-block;
+  list-style-type: none;
+  font-size: 16pt;
+  padding: 0.5rem;
+}
+
+nav ul li:first-child {
+  margin-right: auto;
+}
+
+#navbarItem a, #logo a {
+  text-decoration: none;
+  color: rgb(224, 224, 224);
+}
+
+#navbarItem a:hover, #logo a:hover {
+  color: #f3a9af;
+}
+
+.cardDetails {
+  /* margin: 0.5rem auto 1rem auto; */
+  font-size: 12pt;
+  width: 80%;
+  margin: 0.5rem auto;
   align-self: center;
-  box-shadow: 0px 0px 0px 0.5px rgba(50, 50, 93, 0.1),
-    0px 2px 5px 0px rgba(50, 50, 93, 0.1), 0px 1px 1.5px 0px rgba(0, 0, 0, 0.07);
-  border-radius: 7px;
-  padding: 40px;
+  padding: 0.5rem;
+}
+
+.card {
+  display: flex;
+  justify-content: space-evenly;
+  /* border: 1px solid rgb(173, 173, 173); */
+  align-items: center;
+  background-color: #e6e6e628;
+}
+
+.card i {
+  margin-left: 0.7rem;
+}
+
+.card:hover {
+  background-color: #e6e6e6c0;
+  /* color: #cfcfcf; */
+}
+
+#visa {
+  font-size: 28pt;
+  color: #1a1f71;
+  /* margin: 0.7rem; */
+}
+
+#mastercard {
+  font-size: 28pt;
+  color: #231F20;
+  /* margin: 0.7rem; */
+}
+
+#amex {
+  font-size: 28pt;
+  color: #2671B9;
+  /* margin: 0.7rem; */
+}
+
+.expDate {
+  margin-right: 0.7rem;
+}
+
+#payWithNewCardLinkptag {
+  text-align: center;
+}
+
+
+main {
+  padding: 1rem;
+  background-color: #ffffff;
+  border-radius: 15px;
+}
+
+form {
+  width: 80%;
+  margin: 0.5rem auto;
+  align-self: center;
+  padding: 1rem;
 }
 input {
   border-radius: 6px;
@@ -51,6 +153,7 @@ input {
   margin-top: 12px;
 }
 #card-element {
+  display: none;
   border-radius: 4px 4px 0 0 ;
   padding: 12px;
   border: 1px solid rgba(50, 50, 93, 0.1);
@@ -58,6 +161,22 @@ input {
   width: 100%;
   background: white;
 }
+
+#cvcCheckText {
+  display: none;
+}
+
+#cardCvcElement {
+  display: none;
+  border-radius: 4px 4px 0 0 ;
+  padding: 12px;
+  border: 1px solid rgba(50, 50, 93, 0.1);
+  height: 44px;
+  width: 20%;
+  margin: 1rem auto;
+  background: white;
+}
+
 #payment-request-button {
   margin-bottom: 32px;
 }
@@ -169,8 +288,9 @@ button:disabled {
   margin: 0.5rem;
 }
 
-
-
+#altDeliveryInfo, #deliveryTime, #ContactNumber {
+  text-align: right;
+}
 
 @-webkit-keyframes loading {
   0% {
@@ -192,8 +312,55 @@ button:disabled {
     transform: rotate(360deg);
   }
 }
-@media only screen and (max-width: 600px) {
-  form {
-    width: 80vw;
+
+@media screen and (max-width: 1300px) {
+  main {
+      width: 60%;
+      padding: 1rem 2rem;
   }
+}
+
+@media screen and (max-width: 900px) {
+  main {
+      width: 80%;
+      padding: 1rem 2rem;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  header {
+      padding: 0.5em;
+  }
+  .navbar {
+      width: 100%;
+  }
+  #navbarItem {
+      font-size: 14pt;
+      padding: 0.2rem;
+  }
+
+  #order {
+    display: none;
+  }
+
+  main {
+    width: 100%;
+    margin: 0;
+    padding: 0.5rem;
+    border-radius: 0;
+  }
+
+  .cardDetails {
+    width: 100%;
+  }
+
+  .card {
+    justify-content: space-between;
+  }
+
+  form {
+    width: 100%;
+    padding: 0;
+  }
+
 }

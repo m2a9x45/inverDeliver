@@ -1,21 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8" />
-    <title>food - payment</title>
-    <meta name="description" content="A demo of a card payment on Stripe" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <link rel="stylesheet" href="payment.css" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@150;300;400&display=swap" rel="stylesheet">
+
     <script src="https://js.stripe.com/v3/"></script>
     <script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script>
-    <script src="payment.js" defer></script>
-  </head>
-  <body>
+    <script src="https://use.fontawesome.com/844b628bbf.js"></script>
+
+    <title>food - payment</title>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <ul class="navbarList">
+                <li id="navbarItem"><a href="../">InverDeliver</a></li>
+                <li id="navbarItem"><a id="order" href="../orders/">Orders</a></li>
+                <li id="navbarItem"><a id="cart" href="../cart/">Cart</a></li>
+                <li id="navbarItem"><a id="cart" href="../account/">Account</a></li>
+            </ul>
+        </nav>
+    </header>
     <main>
-      <h1>InverDeliver - Payment</h1>
-      <h4>Order Info</h4>
-      <div class="cartContent">
-          <!-- <div class="cartItem">
+        <h1>Ready to Pay</h1>
+        <h4>🛒 Your order</h4>
+        <div class="cartContent">
+            <!-- <div class="cartItem">
               <div>
                   <p>Milk</p>
               </div>
@@ -40,40 +56,68 @@
                   <p>£ 1.00</p>
               </div>
           </div> -->
-      </div>
+        </div>
 
-      <div class="total">
-        <p id="priceTotal"></p>
-      </div>
+        <div class="total">
+            <p id="priceTotal"></p>
+        </div>
 
-      <h4>Delivery Info</h4>
-      <div class="deliveryInfo">
-          <div>
-              <p id="addressLine"></p>
-              <p id="addressCity"></p>
-              <p id="addressPostCode"></p>
+        <h4>🚚 Delivery Information</h4>
+        <div class="deliveryInfo">
+            <div>
+                <p><b>Delivery Address</b></p>
+                <p id="addressLine"></p>
+                <p id="addressCity"></p>
+                <p id="addressPostCode"></p>
 
-          </div>
-          <div>      
-              <p id="deliveryTime"></p>
-              <p id="ContactNumber"></p>
-          </div>
-      </div>
+            </div>
+            <div>
+                <p id="altDeliveryInfo"><b>Delivery Time & Contact Number</b></p>
+                <p id="deliveryTime"></p>
+                <p id="ContactNumber"></p>
+            </div>
+        </div>
 
-      <form id="payment-form">
-        <div id="card-element"><!--Stripe.js injects the Card Element--></div>
-        <button id="submit">
-          <div class="spinner hidden" id="spinner"></div>
-          <span id="button-text">Pay</span>
-        </button>
-        <p id="card-error" role="alert"></p>
-        <p class="result-message hidden">
-          Payment succeeded, see the result in your
-          <a href="" target="_blank">Stripe dashboard.</a> Refresh the page to pay again.
-        </p>
-      </form>
+        <h4>💳 Payment Information</h4>
+        <p id="payWithNewCardLinkptag"><a id="payWithNewCardLink" href="javascript:;">Pay with a new card</a></p>
+        
+        <div class="cardDetails">
+            <!-- <a href="" id="test">
+                <div class="card">
+                    <i id="visa" class="fa fa-cc-visa"></i>
+                    <p>&bull; &bull; &bull; &bull; 4242</p>
+                    <p class="expDate">03/12</p>
+                </div>
+            </a>
+            <a href="">
+                <div class="card">
+                    <i id="mastercard" class="fa fa-cc-mastercard"></i>
+                    <p>&bull; &bull; &bull; &bull; 4242</p>
+                    <p class="expDate">03/12</p>
+                </div>      
+            </a>            -->
+        </div>
+        <h4 id="cvcCheckText">Enter your CVC/CVV (The 3 or 4 digits on the back of your card)</h4>
+        <div id="cardCvcElement"></div>
+        
+
+
+        <form id="payment-form">
+            <div id="card-element">
+            </div>
+            <button id="submit">
+                <div class="spinner hidden" id="spinner"></div>
+                <span id="button-text">Pay</span>
+            </button>
+            <p id="card-error" role="alert"></p>
+            <p class="result-message hidden">
+                Payment succeeded, see the result in your
+                <a href="" target="_blank">Stripe dashboard.</a> Refresh the page to pay again.
+            </p>
+        </form>
+
     </main>
-    <!-- Display a payment form -->
-    
-  </body>
+    <script src="payment.js" defer></script>
+</body>
+
 </html>

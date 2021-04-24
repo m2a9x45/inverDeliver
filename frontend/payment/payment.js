@@ -5,15 +5,28 @@ const url_string = window.location.href;
 const url = new URL(url_string);
 const orderID = url.searchParams.get("orderID");
 const token = localStorage.getItem('token');
+const form = document.getElementById("payment-form");
+const cardDetails = document.querySelector('.cardDetails');
+const paymentButton = document.querySelector("button");
+const payWithNewCardLink = document.querySelector('#payWithNewCardLink');
+const cardElement = document.querySelector('#card-element');
+
+const cvcCheckText = document.querySelector('#cvcCheckText');
+const cardCvcElementHolder = document.querySelector('#cardCvcElement');
 
 let clientSecret = "";
+let selectedPaymentMethod = null;
+
+paymentButton.disabled = true;
+
+cardElement.style.display = "block";
+cardDetails.style.display = "none";
+payWithNewCardLink.style.display = "none";
 
 // check user is signed in
 if (!token) {
   window.location.replace("../signin");
 }
-
-document.querySelector("button").disabled = true;
 
 // check that the order is in a payable state
 fetch(`${API_URL}/order/status?orderID=${orderID}`, {
@@ -36,7 +49,7 @@ fetch(`${API_URL}/order/status?orderID=${orderID}`, {
       getOrderContent();
       displayDeliveryInfo(data);
       getOrCreatePaymentIntent();
-      
+      getCustomerPaymentMethods();
     } else {
       console.error("Order is not in the correct status for payment");
     }
@@ -191,7 +204,133 @@ function createPaymentIntent() {
     });
 }
 
+function getCustomerPaymentMethods() {
+  fetch(`${API_URL}/user/card`, {
+    headers: {
+      'authorization': `bearer ${token}`,
+    }
+  })
+  .then(response =>  response.json())
+  .then(data => {
+    console.log(data);
+    if (data.data.length > 0) {
+      displayCards(data.data);
+      cardElement.style.display = "none";
+      cardDetails.style.display = "block";
+      payWithNewCardLink.style.display = "Pay with a new card";
+      payWithNewCardLink.style.display = "block";
+    } else {
+      console.log("Customer has no saved cards");
+
+    }
+  });
+}
+
+function displayCards(cardData) {
+  cardData.forEach(paymentMethod => {
+    console.log(paymentMethod.id);
+    console.log(paymentMethod.card.brand);
+    console.log(paymentMethod.card.exp_month, paymentMethod.card.exp_year);
+    console.log(paymentMethod.card.last4);
+
+    const cardID = paymentMethod.id;
+    const cardBrand = paymentMethod.card.brand;
+
+    paymentMethod.card.exp_month = ( paymentMethod.card.exp_month < 10) ? `0${paymentMethod.card.exp_month}`: paymentMethod.card.exp_month;
+
+    const cardExpiryDate = `${paymentMethod.card.exp_month}/${paymentMethod.card.exp_year}`;
+    const cardLast4 = paymentMethod.card.last4;
+
+    const cardDiv = document.createElement("div");
+    cardDiv.setAttribute("class", "card");
+    cardDiv.setAttribute("id", cardID);
+
+    const cardImg = document.createElement("i");
+
+    switch (cardBrand) {
+      case "visa":
+        cardImg.setAttribute("id", "visa");
+        cardImg.setAttribute("class", "fa fa-cc-visa");
+        break;
+      case "mastercard":
+        cardImg.setAttribute("id", "mastercard");
+        cardImg.setAttribute("class", "fa fa-cc-mastercard");
+        break;
+      case "amex":
+        cardImg.setAttribute("id", "amex");
+        cardImg.setAttribute("class", "fa fa-cc-amex");
+        break;
+      default:
+        cardImg.setAttribute("id", "visa");
+        cardImg.setAttribute("class", "fa fa-credit-card");
+        break;
+    }
+    
+
+    const cardLast4Text = document.createElement("p");
+    // cardLast4 is returned from stripe but we should check it doesn't contain malisious html
+    cardLast4Text.innerHTML = `&bull; &bull; &bull; &bull; ${cardLast4}`;
+
+    const cardExpiryText = document.createElement("p");
+    cardExpiryText.setAttribute("class", "expDate");
+    cardExpiryText.innerHTML = cardExpiryDate;
+
+    const clickableCard = document.createElement("a");
+    clickableCard.setAttribute("href", "javascript:;");
+    clickableCard.addEventListener("click", (e) => {
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(card => {
+        card.style.backgroundColor = "#e6e6e628";
+      });
+      console.log(cardID);
+      selectedPaymentMethod = cardID;
+      cardDiv.style.backgroundColor = "#cfcfcf";
+
+      cvcCheckText.style.display = "block";
+      cardCvcElementHolder.style.display = "block";
+    })
+
+    cardDiv.appendChild(cardImg);
+    cardDiv.appendChild(cardLast4Text);
+    cardDiv.appendChild(cardExpiryText);
+
+    clickableCard.appendChild(cardDiv);
+
+    cardDetails.appendChild(clickableCard);
+
+  });
+}
+
+payWithNewCardLink.addEventListener("click", (e) => {
+
+  cvcCheckText.style.display = "none";
+  cardCvcElementHolder.style.display = "none";
+
+  const cards = document.querySelectorAll('.card');
+  cards.forEach(card => {
+    card.style.backgroundColor = "#e6e6e628";
+  });
+
+
+  if (cardElement.style.display === "none" || cardElement.style.display === "") {
+    cardElement.style.display = "block";
+    cardDetails.style.display = "none"
+    payWithNewCardLink.innerText = "Pay with saved card";
+    selectedPaymentMethod = null;
+  } else {
+    cardElement.style.display = "none";
+    cardDetails.style.display = "block"
+    payWithNewCardLink.innerText = "Pay with a new card";
+  }
+
+
+  // payWithNewCardLink
+
+})
+
 const elements = stripe.elements();
+
+const elements2 = stripe.elements();
 
 const style = {
   base: {
@@ -213,6 +352,13 @@ const style = {
 const card = elements.create("card", {
   style: style
 });
+
+const cardCvcElement = elements2.create("cardCvc", {
+  style: style
+});
+
+cardCvcElement.mount('#cardCvcElement');
+
 // Stripe injects an iframe into the DOM
 card.mount("#card-element");
 
@@ -222,25 +368,48 @@ card.on("change", function (event) {
   document.querySelector("#card-error").textContent = event.error ? event.error.message : "";
 });
 
-const form = document.getElementById("payment-form");
+cardCvcElement.on("change", function (event) {
+  // Disable the Pay button if there are no card details in the Element
+  document.querySelector("button").disabled = event.empty;
+  document.querySelector("#card-error").textContent = event.error ? event.error.message : "";
+});
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
+  if (selectedPaymentMethod !== null) {
+    stripe
+      .confirmCardPayment(clientSecret, {
+        payment_method: selectedPaymentMethod,
+        payment_method_options: {
+          card: {
+            cvc: cardCvcElement
+          }
+        },
+      })
+      .then((result) => {
+        if (result.error) {
+          showError(result.error.message);
+        } else {
+          localStorage.removeItem("cart");
+          orderComplete(result.paymentIntent.id);
+        }
+      });
+      return;
+  }
   payWithCard(stripe, card, clientSecret);
 });
 
 // Calls stripe.confirmCardPayment
 // If the card requires authentication Stripe shows a pop-up modal to
 // prompt the user to enter authentication details without leaving your page.
-const payWithCard = (stripe, card, clientSecret) => {
+function payWithCard(stripe, card, clientSecret) {
   loading(true);
 
   stripe.confirmCardPayment(clientSecret, {
       payment_method: {
         card: card
-        // pass in payment_method to pay with an existing card 
-        // https://stripe.com/docs/js/payment_intents/confirm_card_payment
-      }
+      },
+      setup_future_usage: 'off_session'
     })
     .then((result) => {
       if (result.error) {
