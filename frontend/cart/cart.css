@@ -1,11 +1,11 @@
 body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
-    background-color: #cec3c1;
+    background-color: rgb(241, 241, 241);
 }
 
 header {
-    background-color: #2e2a2a;
+    background-color: rgb(41, 41, 41);
     padding: 1em;
 }
 
@@ -37,24 +37,35 @@ nav ul li:first-child {
 }
 
 #navbarItem a:hover, #logo a:hover {
-    color: #f3a9af;
+    color: rgb(66, 176, 255);;
+}
+
+.content {
+    display: grid;
+    grid-template-columns: 50vw 50vw;
+}
+
+.CartSection {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.DeliverySection {
+    width: 90%;
+    margin: 0 auto;
 }
 
 #cartLabel {
-    width: 30%;
-    margin: 4rem auto 1rem auto;
     padding: 1rem 2rem 1rem 2rem;
     border-radius: 5px;
-    background-color: rgb(241, 241, 241);
+    background-color: rgb(248, 248, 248);
     text-align: center;
 }
 
 .cartContent {
-    width: 30%;
-    margin: 0rem auto 1rem auto;
     padding: 1rem 2rem 1rem 2rem;
     border-radius: 5px;
-    background-color: rgb(241, 241, 241);
+    background-color: rgb(248, 248, 248);
 }
 
 .cartItem {
@@ -76,11 +87,10 @@ nav ul li:first-child {
 }
 
 .total {
-    width: 30%;
     margin: 2rem auto;
     padding: 1rem 2rem 1rem 2rem;
     border-radius: 5px;
-    background-color: rgb(241, 241, 241);
+    background-color: rgb(248, 248, 248);
     text-align: center;
     font-size: 16pt;
 }
@@ -90,11 +100,9 @@ nav ul li:first-child {
 }
 
 .customerInfo {
-    width: 30%;
-    margin: 2rem auto;
     padding: 1rem 2rem 1rem 2rem;
     border-radius: 5px;
-    background-color: rgb(241, 241, 241);
+    background-color: rgb(248, 248, 248);
 }
 
 .customerInfo h4 {
@@ -112,36 +120,37 @@ nav ul li:first-child {
 
 .savedAddressSelector {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
     flex-direction: column;
     /* align-items: center; */
 }
 
+.addressHolder {
+    padding: 0.2rem;
+}
+
 .address {
-    border: 2px solid #0e1c31;
+    border: 1px solid rgb(66, 176, 255);
     border-radius: 5px;
-    padding: 25px 36px;
     margin: 0.5rem 0;
     font-size: 14pt;
-    /* width: 22%; */
+    text-align: center;
+    text-decoration: none;
+    color: black;
 }
 
-#street_name {
-    display: none;
+.address p {
+    margin: 0.5rem;
 }
 
-#city {
-    display: none;
-}
-
-#post_code {
+.addNewAddress {
     display: none;
 }
 
 .submit {
     width: 100%;
     /* margin: 1rem; */
-    background-color: #4CAF50; /* Green */
+    background-color: rgb(66, 176, 255); /* Green */
     border: none;
     color: white;
     padding: 15px 32px;
@@ -149,4 +158,49 @@ nav ul li:first-child {
     text-decoration: none;
     display: inline-block;
     font-size: 11pt;
+}
+
+@media screen and (max-width: 900px) {
+    .content {
+        display: grid;
+        grid-template-columns: auto;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    header {
+        padding: 0.5em;
+    }
+    .navbar {
+        width: 100%;
+    }
+    #navbarItem {
+        font-size: 14pt;
+        padding: 0.2rem;
+    }
+    .CartSection, .DeliverySection {
+        width: 100%;
+    }
+    #cartLabel {
+        margin: 0;
+    }
+    .cartItem p {
+        font-size: 14pt;
+        margin: 0;
+    }
+    .cartContent {
+        padding: 0 0.5rem;
+    }
+    .cartItem:last-child {
+        margin: 0;
+    }
+    .total {
+        margin: 0;
+        padding: 1rem 0.5rem;
+        border-bottom: 1px solid rgb(201, 201, 201);
+    }
+    .customerInfo {
+        padding: 0 0.5rem 0.5rem 0.5rem;
+    }
+
 }

@@ -20,79 +20,60 @@
             </ul>
         </nav>
     </header>
-    
     <main>
-        <h2 id="cartLabel">Your Cart 🛒</h2>
-        <div class="cartContent">
-            <!-- <div class="cartItem">
-                <div>
-                    <p>Milk</p>
-                    <label for="quantity">Quantity:</label>
-                    <input type="number" id="quantity" name="quantity" min="0" max="10" value="1">
-                </div>
-                <div>      
-                    <p>£ 6.53</p>
-                </div>
-            </div>
-            <div class="cartItem">
-                <div>
-                    <p>Orange Juice</p>
-                    <label for="quantity">Quantity:</label>
-                    <input type="number" id="quantity" name="quantity" min="0" max="10" value="1">
-                </div>
-                <div>      
-                    <p>£ 2.50</p>
-                </div>
-            </div>
-            <div class="cartItem">
-                <div>
-                    <p>VAT</p>
-                    <p></p>
-                </div>
-                <div>      
-                    <p>£ 1.00</p>
-                </div>
-            </div> -->
-        </div>
-
-        <div class="total">
-            <p id="priceTotal">Your total: £15.00</p>
-        </div>
-
-        <div class="customerInfo">
-            <form id="deliveryForm">
-                <h4>Delivery Info 🚚</h4>
-                <div>
-                    <input type="tel" name="phone" id="phone" placeholder="Your phone number" autocomplete="tel" required>
-                    <label for="">Choose your delivery day & time:</label>
-                    <input type="datetime-local" name="delivery_time" id="delivery_time" required>
-                </div>
-                <div>
-                    <h4 for="">Your delivery address:</h4>
-
-                    <div class="savedAddressSelector">
-                        <div class="address">
-                            <input type="radio" name="address" value="eea34465-16f8-465f-b3e6-cc514dd1b709">
-                            <label for="male">10a bennachie avenue, Inverurie, AB51 4QT</label>
+        <div class="content">
+            <div class="CartSection">
+                <h2 id="cartLabel">Your Cart 🛒</h2>
+                <div class="cartContent">
+                    <!-- <div class="cartItem">
+                        <div>
+                            <p>Milk</p>
+                            <label for="quantity">Quantity:</label>
+                            <input type="number" id="quantity" name="quantity" min="0" max="10" value="1">
                         </div>
-                        <div class="address">
-                            <input type="radio" name="address" value="3">
-                            <label for="female">3 Months</label>
-                        </div>     
-                    </div>
-                    <input type="text" placeholder="Street Name" autocomplete="address-line1" name="street_name" id="street_name" disabled required>
-                    <input type="text" placeholder="Town/City" autocomplete="address-level2" name="city" id="city" disabled required>
-                    <input type="text" placeholder="Postcode" autocomplete="postal-code" name="post_code" id="post_code" disabled required>
-                    <p style="text-align: center;"><a id="addNewAddressLink" href="javascript:;" onclick="showAddNewAddress()">Add a new address</a></p>
+                        <div>      
+                            <p>£ 6.53</p>
+                        </div>
+                    </div> -->
                 </div>
-                <input class="submit" type="submit" value="Continue to Payment">
-            </form>            
+                <div class="total">
+                    <p id="priceTotal">Your total: £15.00</p>
+                </div>
+            </div>
+            <div class="DeliverySection">
+                <h2 id="cartLabel">Delivery Info 🚚</h2>
+                <div class="customerInfo">
+                    <form id="deliveryForm">
+                        <div>
+                            <input type="tel" name="phone" id="phone" placeholder="Your phone number" autocomplete="tel" required>
+                            <label for="">Choose your delivery day & time:</label>
+                            <input type="datetime-local" name="delivery_time" id="delivery_time" required>
+                        </div>
+                        <div>
+                            <h4 for="">Your delivery address:</h4>
+                            <div class="savedAddressSelector">
+                                <!-- <a class="address" href="" id="test">
+                                    <div>
+                                        <p>Address_Streey</p>
+                                        <p>Address_City</p>
+                                        <p>Address_PostCode</p>
+                                    </div>
+                                </a>      -->
+                            </div>
+                            <div class="addNewAddress">
+                                <input type="text" placeholder="Street Name" autocomplete="address-line1" name="street_name" id="street_name" disabled required>
+                                <input type="text" placeholder="Town/City" autocomplete="address-level2" name="city" id="city" disabled required>
+                                <input type="text" placeholder="Postcode" autocomplete="postal-code" name="post_code" id="post_code" disabled required>
+                            </div>
+
+                            <p style="text-align: center;"><a id="addNewAddressLink" href="javascript:;" onclick="showAddNewAddress()">Add a new address</a></p>
+                        </div>
+                        <input class="submit" type="submit" value="Continue to Payment">
+                    </form>            
+                </div>
+            </div>
         </div>
-
-
     </main>
-
-
     <script src="cart.js" ></script>
 </body>
 </html>

@@ -4,9 +4,12 @@ const cartContent = document.querySelector(".cartContent");
 const priceTotal = document.querySelector("#priceTotal");
 const deliveryForm = document.querySelector('#deliveryForm');
 
-const rentdurButtons = document.querySelectorAll(".address");
-const rent = document.getElementsByName("address");
+const street_name = document.querySelector('#street_name');
+const city = document.querySelector('#city');
+const post_code = document.querySelector('#post_code');
 
+const savedAddressSelector = document.querySelector('.savedAddressSelector');
+const addNewAddress = document.querySelector('.addNewAddress');
 const addNewAddressLink = document.querySelector('#addNewAddressLink');
 
 const token = localStorage.getItem('token');
@@ -17,7 +20,7 @@ if (!token) {
 
 let total =  350;
 let cart;
-let addNewAddress = false;
+let selectedAddress = null;
 
 showCart();
 
@@ -36,7 +39,7 @@ function showCart() {
   const totalFormat = new Intl.NumberFormat('en-UK', { style: 'currency', currency: 'GBP' }).format(total / 100);
 
   priceTotal.innerText = `Your total: ${totalFormat}`;
-}
+};
 
 function displayCart(item, id) {
   const div = document.createElement("div");
@@ -99,36 +102,75 @@ function displayCart(item, id) {
 
   cartContent.appendChild(div);
 
-}
-
-function showSavedAddresses(addresses){
-  addresses.forEach(address => {
-    console.log(address);
-  });
-}
+};
 
 function showAddNewAddress() {
-  rent.forEach(button => {
-    button.checked = false;
-  });
+  selectedAddress = null;
 
   const savedAddressSelector = document.querySelector('.savedAddressSelector');
-  const street_name = document.querySelector('#street_name');
-  const city = document.querySelector('#city');
-  const post_code = document.querySelector('#post_code');
+  savedAddressSelector.style.display = "none";
+
+  const addressHolder = document.querySelectorAll('.address');
+  addressHolder.forEach(address => {
+    address.style.backgroundColor = "rgb(248, 248, 248)";
+  });
 
   street_name.disabled = !street_name.disabled;
   city.disabled = !city.disabled;
   post_code.disabled = !post_code.disabled;
 
-  addNewAddress ? addNewAddressLink.innerText = "Select a saved address" : addNewAddressLink.innerText = "Add a new address";
-  addNewAddress ? savedAddressSelector.style.display = "block" : savedAddressSelector.style.display = "none";
-  addNewAddress ? street_name.style.display = "none" : street_name.style.display = "block";
-  addNewAddress ? city.style.display = "none" : city.style.display = "block";
-  addNewAddress ? post_code.style.display = "none" : post_code.style.display = "block";
+  console.log(addNewAddress.style.display);
 
-  addNewAddress = !addNewAddress;
-}
+  if (addNewAddress.style.display === "none" || addNewAddress.style.display === "") {
+    addNewAddress.style.display = "block";
+    addNewAddressLink.innerText = "Pay with saved card";
+    // selectedPaymentMethod = null;
+  } else {
+    addNewAddress.style.display = "none";
+    savedAddressSelector.style.display = "flex";
+    addNewAddressLink.innerText = "Pay with a new card";
+  }
+};
+
+function showSavedAddresses(addresses) {
+  addresses.forEach(address => {
+    console.log(address);
+
+    const div = document.createElement("div");
+    div.setAttribute("class", "addressHolder");
+
+    const street = document.createElement("p");
+    street.innerText = address.street;
+    const city = document.createElement("p");
+    city.innerText = address.city;
+    const postCode = document.createElement("p");
+    postCode.innerText = address.post_code;
+
+    const clickableAddress = document.createElement("a");
+    clickableAddress.setAttribute("href", "javascript:;");
+    clickableAddress.setAttribute("class", "address");
+
+    clickableAddress.addEventListener("click", (e) => {
+      const addressHolder = document.querySelectorAll('.address');
+      addressHolder.forEach(address => {
+        address.style.backgroundColor = "rgb(248, 248, 248)";
+      });
+      console.log(address.address_id);
+      selectedAddress = address.address_id;
+
+      clickableAddress.style.backgroundColor = "rgba(66, 176, 255, 0.3)";
+
+    })
+
+    div.appendChild(street);
+    div.appendChild(city);
+    div.appendChild(postCode);
+
+    clickableAddress.appendChild(div);
+
+    savedAddressSelector.appendChild(clickableAddress);
+  });
+};
 
 fetch(`${API_URL}/user/phoneNumber`, {
   headers: {
@@ -181,6 +223,10 @@ deliveryForm.addEventListener("submit", (e) => {
     orderData[name] = value;
   };
 
+  if (selectedAddress !== null) {
+    orderData["address"] = selectedAddress;
+  }
+
   console.log(orderData);
 
   // convert delivery time into epoch time
@@ -215,59 +261,4 @@ deliveryForm.addEventListener("submit", (e) => {
   } else {
     console.log("Delivery time is not at least 2 hours from the current time");
   }
-})
-
-
-rentdurButtons.forEach(button => {
-  button.addEventListener("click", (e) => {
-      console.log(e.target.tagName);
-      rentdurButtons.forEach(element => {
-        element.style.borderColor = "#0e1c31";
-        element.style.backgroundColor = "#fafafa";
-    });
-
-      if (e.target.className == "address") {
-          console.log(e.srcElement.children[0].checked);
-          e.srcElement.children[0].checked = true;
-          console.log(e.srcElement.children[0].checked);
-          if (e.srcElement.children[0].checked) {
-            e.target.style.borderColor = "#2a4f87";
-            e.target.style.backgroundColor = "#e6e6e6";
-          } 
-
-      }
-
-      if (e.target.tagName == "LABEL") {
-
-          e.srcElement.previousElementSibling.checked = true;
-
-          if (e.srcElement.previousElementSibling.checked) {
-            e.srcElement.parentElement.style.borderColor = "#2a4f87";
-            e.srcElement.parentElement.style.backgroundColor = "#e6e6e6";
-          }
-
-      }
-
-      if (e.target.tagName == "INPUT") {
-        console.log(e);
-        // e.target.checked = true;
-
-        e.target.parentElement.style.borderColor = "#2a4f87";
-        e.target.parentElement.style.backgroundColor = "#e6e6e6";
-    }
-
-      rent.forEach(button => {
-          if (button.checked) {
-              // console.log(button.value);
-              duration = button.value;
-              console.log(duration);
-
-          }
-      });
-  });
 });
-
-function deselectAddress() {
-  rentdurButtons.forEach(button => {
-    button.checked = false;
-})};
