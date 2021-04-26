@@ -123,12 +123,12 @@ function showAddNewAddress() {
 
   if (addNewAddress.style.display === "none" || addNewAddress.style.display === "") {
     addNewAddress.style.display = "block";
-    addNewAddressLink.innerText = "Pay with saved card";
+    addNewAddressLink.innerText = "Select a saved address";
     // selectedPaymentMethod = null;
   } else {
     addNewAddress.style.display = "none";
     savedAddressSelector.style.display = "flex";
-    addNewAddressLink.innerText = "Pay with a new card";
+    addNewAddressLink.innerText = "Add a new address";
   }
 };
 
