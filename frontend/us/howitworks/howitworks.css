@@ -1,14 +1,14 @@
 body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
-    background-color: #eeeeee;
+    background-color: rgb(241, 241, 241);
     display: flex;
     flex-direction: column;
     height: 100vh;
 }
 
 header {
-    background-color: #2e2a2a;
+    background-color: rgb(41, 41, 41);
     padding: 1em;
     
 }
@@ -41,12 +41,12 @@ nav ul li:first-child {
 }
 
 #navbarItem a:hover, #logo a:hover {
-    color: #f3a9af;
+    color: rgb(66, 176, 255);
 }
 
 .callOutHolder {
     width: 100%;
-    background-color: rgb(147, 169, 233);
+    background-color: rgb(66, 176, 255);
     padding-top: 1.5rem;
     padding-bottom: 1.5rem;
 }
@@ -66,44 +66,14 @@ nav ul li:first-child {
     font-size: 18pt;
 }
 
-.helpContent {
-    width: 70%;
-    margin: 1rem auto;
-}
-
-.helpContent h2 {
-    text-align: center;
-}
-
-.helpContent p {
-    font-size: 18pt;
-}
-
-.helpOptionsHolder {
-    margin: 2rem auto;
-    display: grid;
-    grid-template-columns: auto auto auto;
-    text-align: center;
-}
-
-#mailImg {
-    font-size: 80pt;
-    color: rgb(117, 112, 184);
-}
-
-#phoneImg {
-    font-size: 80pt;
-    color: #FF5A5F;
-}
-
-#twitterImg {
-    font-size: 80pt;
-    color: #1DA1F2;
+.content {
+    width: 50%;
+    margin: 4rem auto;
 }
 
 footer {
+    background-color:rgba(66, 176, 255, 0.151);
     margin-top:auto; 
-    background-color:rgb(194, 194, 194);
 }
 
 .footerContainer {
@@ -126,3 +96,4 @@ footer {
     padding: 0.25rem;
     list-style-type: none;
 }
+

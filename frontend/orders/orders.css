@@ -1,11 +1,11 @@
 body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
-    background-color: #cec3c1;
+    background-color: rgb(241, 241, 241);
 }
 
 header {
-    background-color: #2e2a2a;
+    background-color: rgb(41, 41, 41);
     padding: 1em;
 
 }
@@ -38,9 +38,8 @@ nav ul li:first-child {
     color: rgb(224, 224, 224);
 }
 
-#navbarItem a:hover,
-#logo a:hover {
-    color: #f3a9af;
+#navbarItem a:hover, #logo a:hover {
+    color: rgb(66, 176, 255);
 }
 
 .loader {

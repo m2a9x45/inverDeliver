@@ -6,19 +6,19 @@
 body {
   font-family: 'Roboto', sans-serif;
   margin: 0;
-  background-color: #cec3c1;
+  background-color: rgb(241, 241, 241);
 }
 
 main {
   font-family: 'Roboto', sans-serif;
-  background-color: #cec3c1;
+  background-color: rgb(241, 241, 241);
   justify-content: center;
   align-content: center;
   width: 30%;
   margin: 1rem auto;
 }
 header {
-  background-color: #2e2a2a;
+  background-color: rgb(41, 41, 41);
   padding: 1em;
   
 }

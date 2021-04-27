@@ -169,20 +169,20 @@ function showOrderStatus(status) {
     case 1:
       
       status1.style.opacity = 1;
-      status1.style.backgroundColor = "#5bd45b";
+      status1.style.backgroundColor = "rgb(66, 176, 255)";
       break;
     case 2:
       
       status1.style.opacity = 1;
       status2.style.opacity = 1;
-      status2.style.backgroundColor = "#5bd45b";
+      status2.style.backgroundColor = "rgb(66, 176, 255)";
       break;
     case 3:
       
       status1.style.opacity = 1;
       status2.style.opacity = 1;
       status3.style.opacity = 1;
-      status3.style.backgroundColor = "#5bd45b";
+      status3.style.backgroundColor = "rgb(66, 176, 255)";
       break;
     case 4:
       
@@ -190,7 +190,7 @@ function showOrderStatus(status) {
       status2.style.opacity = 1;
       status3.style.opacity = 1;
       status4.style.opacity = 1;
-      status4.style.backgroundColor = "#5bd45b";
+      status4.style.backgroundColor = "rgb(66, 176, 255)";
       break;
     case 5:
       
@@ -199,7 +199,7 @@ function showOrderStatus(status) {
       status3.style.opacity = 1;
       status4.style.opacity = 1;
       status5.style.opacity = 1;
-      status5.style.backgroundColor = "#5bd45b";
+      status5.style.backgroundColor = "rgb(66, 176, 255)";
       break;
     case 6:
       
@@ -209,7 +209,7 @@ function showOrderStatus(status) {
       status4.style.opacity = 1;
       status5.style.opacity = 1;
       status6.style.opacity = 1;
-      status6.style.backgroundColor = "#5bd45b";
+      status6.style.backgroundColor = "rgb(66, 176, 255)";
       break;
     default:
       break;

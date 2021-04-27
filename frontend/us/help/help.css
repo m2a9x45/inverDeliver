@@ -41,7 +41,7 @@ nav ul li:first-child {
 }
 
 #navbarItem a:hover, #logo a:hover {
-    color: #f3a9af;
+    color: rgb(66, 176, 255);
 }
 
 .callOutHolder {
@@ -66,14 +66,44 @@ nav ul li:first-child {
     font-size: 18pt;
 }
 
-.content {
-    width: 50%;
-    margin: 4rem auto;
+.helpContent {
+    width: 70%;
+    margin: 1rem auto;
+}
+
+.helpContent h2 {
+    text-align: center;
+}
+
+.helpContent p {
+    font-size: 18pt;
+}
+
+.helpOptionsHolder {
+    margin: 2rem auto;
+    display: grid;
+    grid-template-columns: auto auto auto;
+    text-align: center;
+}
+
+#mailImg {
+    font-size: 80pt;
+    color: rgb(117, 112, 184);
+}
+
+#phoneImg {
+    font-size: 80pt;
+    color: #FF5A5F;
+}
+
+#twitterImg {
+    font-size: 80pt;
+    color: #1DA1F2;
 }
 
 footer {
-    background-color:rgba(66, 176, 255, 0.151);
     margin-top:auto; 
+    background-color:rgba(66, 176, 255, 0.151);
 }
 
 .footerContainer {
@@ -96,4 +126,3 @@ footer {
     padding: 0.25rem;
     list-style-type: none;
 }
-
