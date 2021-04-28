@@ -1,9 +1,9 @@
 const db = require('./conn.js');
 
-function userByGoogleID(googleID) {
+function userByExternalID(externalID, externalType) {
   return new Promise(((resolve, reject) => {
-    const sql = 'SELECT user_id FROM users WHERE g_id=(?)';
-    db.query(sql, [googleID], (err, value) => {
+    const sql = 'SELECT user_id FROM users WHERE external_id=(?) && external_type=(?)';
+    db.query(sql, [externalID, externalType], (err, value) => {
       if (err === null) {
         resolve(value);
       } else {
@@ -13,10 +13,11 @@ function userByGoogleID(googleID) {
   }));
 }
 
-function CreateAccountWithGoogleID(userID, googleID, email, firstName, lastName, stripeID) {
+function CreateAccountWithExternalID(userID, externalID, externalType, email, firstName, lastName, stripeID) {
   return new Promise(((resolve, reject) => {
-    const sql = 'INSERT INTO users (user_id, g_id, email, first_name, last_name, stripe_id) VALUES (?,?,?,?,?,?)';
-    db.query(sql, [userID, googleID, email, firstName, lastName, stripeID], (err, value) => {
+    const sql = 'INSERT INTO users (user_id, external_id, external_type, email, first_name, last_name, stripe_id) VALUES (?,?,?,?,?,?,?)';
+    db.query(sql, [userID, externalID, externalType, email,
+      firstName, lastName, stripeID], (err, value) => {
       if (err === null) {
         resolve(value);
       } else {
@@ -118,8 +119,8 @@ function updatePhoneNumber(userID, phoneNumber) {
 }
 
 module.exports = {
-  userByGoogleID,
-  CreateAccountWithGoogleID,
+  userByExternalID,
+  CreateAccountWithExternalID,
   getAccountInfo,
   getStripeID,
   updatePhoneNumber,

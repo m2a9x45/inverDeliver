@@ -14,18 +14,24 @@
     <title>Document</title>
 </head>
 <body>
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v10.0&appId=521249838906358&autoLogAppEvents=1" nonce="4Tob4fOW"></script>
     <main>
         <div class="signInSelect">
             <h1>InverDeliver</h1>
-            <div class="passwordSignInHolder">
+            <!-- <div class="passwordSignInHolder">
                 <input type="email" placeholder="Email">
                 <input type="password" placeholder="Password">
                 <button type="submit">Login</button>
-            </div>  
-            <div class="googleSignInHolder">
-                <div class="g-signin2" data-width="350" data-height="50" data-longtitle="true" data-onsuccess="onSignIn"></div>
+            </div>   -->
+            <div class="FbSignInHolder">
+                <div class="fb-login-button" onlogin="checkLoginState();" data-width="350" data-size="large" data-button-type="continue_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="false"></div>
             </div>
-            <a href="http://">Create Account</a>
+            <div class="googleSignInHolder">
+                <div class="g-signin2" data-width="350" data-height="40" data-longtitle="true" data-onsuccess="onSignIn"></div>
+            </div>
+            
+            <!-- <a href="http://">Create Account</a> -->
             <p id="errorMessage" style="color: red;"></p>
             
         </div>

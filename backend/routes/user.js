@@ -3,6 +3,7 @@ const { OAuth2Client } = require('google-auth-library');
 const { v4: uuidv4 } = require('uuid');
 const jwt = require('jsonwebtoken');
 const stripe = require('stripe')(process.env.STRIPE_KEY);
+const axios = require('axios');
 
 const dao = require('../dao/dataUser.js');
 
@@ -12,6 +13,46 @@ const authorisation = require('../middleware/auth.js');
 require('dotenv').config();
 
 const router = express.Router();
+
+async function checkUsersFbToken(accessToken, userID) {
+  try {
+    const fbDataRes = await axios.get(`https://graph.facebook.com/debug_token?input_token=${accessToken}&access_token=${process.env.FB_APP_ACCESS_TOKEN}`);
+    const fbData = fbDataRes.data.data;
+
+    logger.info('Facebook data for verfiying accessToken', { appID: fbData.app_id, userID: fbData.user_id });
+
+    if (fbData.is_valid === true && process.env.FB_APPID === fbData.app_id
+       && userID === fbData.user_id) {
+      logger.info('Verfided access token matches userID and AppID expected', { appID: process.env.FB_APPID, userID });
+      return null;
+    }
+    logger.warn('Something went wrong vaildating the users fb access token', {
+      appID: fbData.app_id,
+      userID: fbData.user_id,
+      error: fbData.error.message,
+      errorCode: fbData.error.code,
+    });
+    return fbData.error;
+  } catch (error) {
+    return (error);
+  }
+}
+
+async function createAccount(userID, externalID, externalType,
+  email, firstName, lastName, stripeID) {
+  try {
+    const acoountCreation = await dao.CreateAccountWithExternalID(userID,
+      externalID,
+      externalType,
+      email,
+      firstName,
+      lastName,
+      stripeID);
+    return acoountCreation;
+  } catch (error) {
+    return error;
+  }
+}
 
 router.post('/googleSignIn', async (req, res, next) => {
   const { token } = req.body;
@@ -30,7 +71,7 @@ router.post('/googleSignIn', async (req, res, next) => {
     // check to see if this person already has an account using the google user_id
     // if they do issue a jwt and log them in
     try {
-      const hasLinkedGoogleAcount = await dao.userByGoogleID(googleUserID);
+      const hasLinkedGoogleAcount = await dao.userByExternalID(googleUserID, 'GOOGLE');
       logger.info(`User accounts found: ${hasLinkedGoogleAcount.length}`, { googleID: googleUserID });
       if (hasLinkedGoogleAcount.length !== 0) {
         // Checking to see if more than 1 user account matches the googleID we've been given
@@ -62,14 +103,14 @@ router.post('/googleSignIn', async (req, res, next) => {
 
         logger.info('Stripe Customer ID creatted', { googleID: googleUserID, userID, StripeID: stripeCustomer.id });
         // Create User account via sign in with google
-        const acoountCreation = await dao.CreateAccountWithGoogleID(
-          userID,
+
+        const acoountCreation = await createAccount(userID,
           googleUserID,
+          'GOOGLE',
           payload.email,
           payload.given_name,
           payload.family_name,
-          stripeCustomer.id,
-        );
+          stripeCustomer.id);
 
         logger.info('Customers Account Created', {
           userID,
@@ -96,6 +137,88 @@ router.post('/googleSignIn', async (req, res, next) => {
       }
     } catch (error) {
       next(error);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/fbSignIn', async (req, res, next) => {
+  console.log(req.body);
+  const { accessToken } = req.body;
+  const fbUserID = req.body.userID;
+
+  const err = await checkUsersFbToken(accessToken, fbUserID);
+  if (err) {
+    return res.status(400).json(err);
+  }
+
+  // check to see if user allready has an account
+  try {
+    const hasLinkedFbAccount = await dao.userByExternalID(fbUserID, 'FB');
+    if (hasLinkedFbAccount.length !== 0) {
+      if (hasLinkedFbAccount.length > 1) {
+        logger.warn('More than one userID to fbID match', { fbID: fbUserID, matched: hasLinkedFbAccount });
+      }
+
+      logger.info('Account found with matching fbID', { fbID: fbUserID, userID: hasLinkedFbAccount[0].user_id });
+
+      const userID = hasLinkedFbAccount[0].user_id;
+      jwt.sign({ userID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
+        if (!err) {
+          logger.info('User signed in', { userID });
+          res.json({ token: jwtToken });
+        } else {
+          next(err);
+        }
+      });
+    } else {
+      // not found account so create one
+      const userID = uuidv4();
+      logger.info('Account not found via FBID', { fbID: fbUserID, userID });
+
+      // get facebook profile info
+      const fbUserInfo = await axios.get(`https://graph.facebook.com/me?access_token=${accessToken}&fields=id,email,first_name,last_name`);
+      const payload = fbUserInfo.data;
+
+      // generate a stripe customer ID
+      const stripeCustomer = await stripe.customers.create({
+        name: `${payload.first_name}`,
+        metadata: { userID }, // Look at adding more data to the create customer part of Stripe
+      });
+
+      logger.info('Stripe Customer ID creatted', { fbID: fbUserID, userID, StripeID: stripeCustomer.id });
+      // Create User account via sign in with google
+      const acoountCreation = await createAccount(userID,
+        fbUserID,
+        'FB',
+        payload.email,
+        payload.first_name,
+        payload.last_name,
+        stripeCustomer.id);
+
+      logger.info('Customers Account Created', {
+        userID,
+        fbID: fbUserID,
+        StripeID: stripeCustomer.id,
+        dbID: acoountCreation.insertId,
+      });
+
+      jwt.sign({ userID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (error, jwtToken) => {
+        if (!error) {
+          logger.info('JWT Created & Sent', {
+            userID,
+            fbID: fbUserID,
+            email: payload.email,
+            firstName: payload.first_name,
+            lastName: payload.last_name,
+            jwt: jwtToken,
+          });
+          res.json({ token: jwtToken });
+        } else {
+          next(err);
+        }
+      });
     }
   } catch (error) {
     next(error);
