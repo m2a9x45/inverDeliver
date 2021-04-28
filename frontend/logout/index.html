@@ -16,9 +16,6 @@
 </head>
 
 <body>
-    <script async defer crossorigin="anonymous"
-        src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v10.0&appId=521249838906358&autoLogAppEvents=1"
-        nonce="4Tob4fOW"></script>
     <main>
         <p>You've been logged out</p>
         <div class="g-signin2" data-onsuccess="onSignIn" style="display: none;"></div>
@@ -28,12 +25,14 @@
 
     <a href="#" onclick="signOut();">Sign out</a>
     <script>
-    function signOut() {
-        var auth2 = gapi.auth2.getAuthInstance();
-        auth2.signOut().then(function () {
-        console.log('User signed out.');
-        });
-    }
+        function signOut() {
+            localStorage.removeItem('token');
+
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+                console.log('User signed out.');
+            });
+        }
     </script>
 
 </body>

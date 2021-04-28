@@ -18,7 +18,21 @@ const token = localStorage.getItem('token');
 
 if (!token) {
   window.location.replace("../signin");
+} else {
+    const jwtExp = JSON.parse(atob(token.split('.')[1]));
+  
+    if (Date.now() < jwtExp.exp * 1000) {
+      // we think token is vaild
+      const logout = document.querySelector('#logout');
+      logout.innerText = "Logout";
+      logout.setAttribute("href", "../logout");
+    } else {
+      localStorage.removeItem("token");
+      window.location.replace('../signin');
+    }
 }
+
+
 
 getCustomerAccount();
 getCustomersAddresses();

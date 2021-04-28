@@ -14,6 +14,19 @@ if (localStorage.getItem("cart")) {
   cart = JSON.parse(localStorage.getItem("cart"));
 }
 
+if (localStorage.getItem("token")) {
+  const token = localStorage.getItem("token");
+  const jwtExp = JSON.parse(atob(token.split('.')[1]));
+
+  console.log(Date.now(), jwtExp.exp * 1000);
+  if (Date.now() < jwtExp.exp * 1000) {
+    // we think token is vaild
+    const logout = document.querySelector('#logout');
+    logout.innerText = "Logout";
+    logout.setAttribute("href", "./logout");
+  } 
+}
+
 fetch(`${API_URL}/product/standard`)
   .then(response => {
     loader.style.display = "none";
