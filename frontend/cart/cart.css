@@ -115,7 +115,7 @@ nav ul li:first-child {
     font-size: 16pt;
 }
 
-.customerInfo input[type=text], .customerInfo input[type=datetime-local] {
+.customerInfo input[type=text], .customerInfo input[type=datetime-local], .customerInfo input[type=tel] {
     width: 100%;
     padding: 12px 20px;
     margin: 8px 0;
