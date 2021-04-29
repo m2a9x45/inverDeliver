@@ -1,0 +1,105 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background-color: rgb(241, 241, 241);
+}
+
+header {
+    background-color: rgb(41, 41, 41);
+    padding: 1em;
+}
+
+main {
+    justify-content: center;
+    align-content: center;
+    width: 30%;
+    margin: 1rem auto;
+    padding: 1rem;
+    background-color: rgb(255, 255, 255);
+    border-radius: 15px;
+}
+
+main a {
+    color: rgb(66, 176, 255);
+    text-decoration: none;
+}
+
+h1, h4 {
+    text-align: center;
+}
+
+.navbar {
+    margin: 0 auto;
+    width: 75%;
+}
+
+.navbarList {
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+#navbarItem {
+    display: inline-block;
+    list-style-type: none;
+    font-size: 16pt;
+    padding: 0.5rem;
+}
+
+nav ul li:first-child {
+    margin-right: auto;
+}
+
+#navbarItem a, #logo a {
+    text-decoration: none;
+    color: rgb(241, 241, 241);
+}
+
+#navbarItem a:hover, #logo a:hover {
+    color: rgb(66, 176, 255);
+}
+
+#signoff {
+    text-align: center;
+}
+
+
+@media screen and (max-width: 1300px) {
+    main {
+        width: 60%;
+        padding: 1rem 2rem;
+    }
+}
+
+@media screen and (max-width: 900px) {
+    main {
+        width: 80%;
+        padding: 1rem 2rem;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    header {
+        padding: 0.5em;
+    }
+
+    .navbar {
+        width: 100%;
+    }
+
+    #navbarItem {
+        font-size: 14pt;
+        padding: 0.2rem;
+    }
+
+    #order {
+        display: none;
+    }
+
+    main {
+        width: 100%;
+        margin: 0;
+        padding: 0.5rem;
+        border-radius: 0;
+    }
+}

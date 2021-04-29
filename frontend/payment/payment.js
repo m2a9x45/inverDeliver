@@ -445,6 +445,9 @@ var orderComplete = function (paymentIntentId) {
     );
   document.querySelector(".result-message").classList.remove("hidden");
   document.querySelector("button").disabled = true;
+
+  window.location.replace(`./success/?id=${paymentIntentId}&orderID=${orderID}`);
+
 };
 // Show the customer the error from Stripe if their card fails to charge
 var showError = function (errorMsgText) {

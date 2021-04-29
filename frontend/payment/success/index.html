@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="stylesheet" href="success.css" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@150;300;400&display=swap" rel="stylesheet">
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script>
+    <script src="https://use.fontawesome.com/844b628bbf.js"></script>
+
+    <title>food - payment</title>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <ul class="navbarList">
+                <li id="navbarItem"><a href="../../">InverDeliver</a></li>
+                <li id="navbarItem"><a id="order" href="../../orders/">Orders</a></li>
+                <li id="navbarItem"><a id="cart" href="../../cart/">Cart</a></li>
+                <li id="navbarItem"><a id="cart" href="../../us/">Help</a></li>
+                <li id="navbarItem"><a id="cart" href="../../account/">Account</a></li>
+                <li id="navbarItem"><a id="logout" href="../../signin">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h1>Payment Successful 🎉</h1>
+        <h3>Your order is on the way 🙌 </h3>
+        <p>
+            We've gotten your order and the payment has come though. 
+            You can track you order status <a id="orderTrackingLink" target="_blank" href="">here.</a> And if you need any Help
+            please let us know <a target="_blank" href="../../us/help/">here.</a>
+        </p>
+        <p>
+            Thanks for chossing to shop with us. We really apperate it more 
+            than you realise.  
+        </p>
+        <p id="signoff">
+            Lewis, InverDeliver 🚀
+        </p>
+
+        <script>
+            const url_string = window.location.href;
+            const url = new URL(url_string);
+            const token = localStorage.getItem('token');
+
+            const orderID = url.searchParams.get("orderID");
+            const paymentID = url.searchParams.get("id");
+
+            if (!token || !orderID || !paymentID) {
+                window.location.replace("../signin");
+            } else {
+                const jwtExp = JSON.parse(atob(token.split('.')[1]));
+            
+                if (Date.now() < jwtExp.exp * 1000) {
+                    // we think token is vaild
+                    const logout = document.querySelector('#logout');
+                    logout.innerText = "Logout";
+                    logout.setAttribute("href", "../../logout");
+                }
+            }
+
+            const orderTrackingLink = document.querySelector('#orderTrackingLink');
+            orderTrackingLink.setAttribute("href", `../../orders/info/?orderID=${orderID}`);
+        </script>
+    </main>
+</body>
+
+</html>
