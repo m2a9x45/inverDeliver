@@ -1,32 +1,61 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect  } from 'react';
 import './App.css';
 
 function App() {
 
-  const [text, setText] = useState("");
+  const [data, setData] = useState([]);
+  const [order, setOrder] = useState('');
 
-  async function search(e) {
-    if (e.keyCode === 13) {
-      console.log(text);
+  useEffect(() => {
 
-      try {
-        const result = await fetch('http://localhost:3001/product/standard');
-        const json = await result.json();
-        console.log(json);
-      } catch (error) {
-        console.error(error);
-      }
+    const fecthData = async () => {
+      const result = await fetch('http://localhost:3001/order/all');
+      const json = await result.json();
+      setData(json);
     }
-  }
+
+    fecthData();
+  }, []);
 
   return (
     <div className="App">
-      <div>
-        <input value={text} onInput={(e) => setText(e.target.value)} onKeyDown={(e) => search(e)} type="text" placeholder="Search"/>
+      <div className="Layout">
+        <div className="Sidebar">
+          {data.map(order => (
+            <Order key={order.order_id} orderID={order.order_id} status={order.status} time={order.time} setOrder={setOrder}/>
+          ))}
+        </div>
+        <div className="Content">
+            <p>Content {order}</p>
+        </div>
       </div>
-      
     </div>
   );
+}
+
+function Order(props) {
+
+  function prettyTime(time){
+      return new Date(time).toLocaleDateString("en-GB", {
+        month: 'short',
+        day: 'numeric',
+        hour:'numeric',
+        minute: 'numeric',
+        hour12: true,
+    });
+  }
+
+  function truncate(str) {
+    return str.length > 10 ? str.substring(0, 15) + "..." : str;
+  }
+
+  return (
+    <div className="order" onClick={() => props.setOrder(props.orderID)}>
+      <p>Order ID: {truncate(props.orderID)}</p>
+      <p>{prettyTime(props.time)}</p>
+      <p>{props.status}</p>
+    </div>
+  )
 }
 
 export default App;
