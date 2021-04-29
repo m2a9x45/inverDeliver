@@ -6,8 +6,12 @@ backend/package-lock.json
 *.gz
 backend/public
 
-tools
-
 frontend/email
 
 .vscode
+
+tools/backroom/node_modules
+tools/backroom/package-lock.json
+
+tools/fruit.html
+tools/itemGetter.py
