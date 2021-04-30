@@ -2,12 +2,12 @@ const express = require('express');
 const cors = require('cors');
 
 const app = express();
-const port = 3001;
+const port = 3002;
 
 const orders = require('./routes/order.js');
 
 const corsOptions = {
-  origin: ['http://localhost:3002'],
+  origin: ['http://localhost:3003'],
   optionsSuccessStatus: 200,
 };
 

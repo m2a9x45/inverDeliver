@@ -1,15 +1,29 @@
 import React, { useState, useEffect  } from 'react';
+import Order from './components/ordersList';
+import OrderDetails from './components/orderDetails';
 import './App.css';
 
 function App() {
 
   const [data, setData] = useState([]);
-  const [order, setOrder] = useState('');
+  const [displayOrder, setDisplayOrder] = useState([]);
+
+  function handleChange(orderID) {
+
+    const getOrderContent = async () => {
+      const result = await fetch(`http://localhost:3002/order/${orderID}`);
+      const json = await result.json();
+      console.log(json);
+      setDisplayOrder(json);
+    }
+
+    getOrderContent();
+  }
 
   useEffect(() => {
 
     const fecthData = async () => {
-      const result = await fetch('http://localhost:3001/order/all');
+      const result = await fetch('http://localhost:3002/order/all');
       const json = await result.json();
       setData(json);
     }
@@ -22,40 +36,19 @@ function App() {
       <div className="Layout">
         <div className="Sidebar">
           {data.map(order => (
-            <Order key={order.order_id} orderID={order.order_id} status={order.status} time={order.time} setOrder={setOrder}/>
+            <Order key={order.order_id} handleChange={handleChange} orderID={order.order_id} status={order.status} time={order.time}/>
           ))}
         </div>
         <div className="Content">
-            <p>Content {order}</p>
+          <div className="orderContent">
+            {displayOrder.map(product => (
+              <OrderDetails key={product.product_id} name={product.name} image_url={product.image_url} quantity={product.quantity} price={product.price}/>
+            ))}
+          </div>
         </div>
       </div>
     </div>
   );
-}
-
-function Order(props) {
-
-  function prettyTime(time){
-      return new Date(time).toLocaleDateString("en-GB", {
-        month: 'short',
-        day: 'numeric',
-        hour:'numeric',
-        minute: 'numeric',
-        hour12: true,
-    });
-  }
-
-  function truncate(str) {
-    return str.length > 10 ? str.substring(0, 15) + "..." : str;
-  }
-
-  return (
-    <div className="order" onClick={() => props.setOrder(props.orderID)}>
-      <p>Order ID: {truncate(props.orderID)}</p>
-      <p>{prettyTime(props.time)}</p>
-      <p>{props.status}</p>
-    </div>
-  )
 }
 
 export default App;
