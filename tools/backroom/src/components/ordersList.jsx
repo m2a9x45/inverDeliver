@@ -3,8 +3,8 @@ import './ordersList.css';
 
 function Order(props) {
 
-    function handleChange(orderID) {
-      props.handleChange(orderID);
+    function handleChange(orderData) {
+      props.handleChange(orderData);
     }
   
     function prettyTime(time){
@@ -22,10 +22,9 @@ function Order(props) {
     }
   
     return (
-      <div className="order" onClick={() => handleChange(props.orderID)}>
+      <div className="order" style={{backgroundColor: props.colour}} onClick={() => handleChange(props)}>
         <p>Order ID: {truncate(props.orderID)}</p>
         <p>{prettyTime(props.time)}</p>
-        <p>{props.status}</p>
       </div>
     )
   }

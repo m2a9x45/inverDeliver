@@ -6,7 +6,7 @@ async function getOrders() {
       'd.address_id', 'd.time', 'a.street', 'a.city', 'a.post_code').from('order AS o')
       .join('delivery AS d', 'o.delivery_id', 'd.delivery_id')
       .join('addresses AS a', 'd.address_id', ' a.address_id')
-      .where('o.status', '>', '0');
+      .whereBetween('o.status', [1, 4]);
 
     return selectedRows;
   } catch (error) {
@@ -26,13 +26,17 @@ async function getOrderContent(orderID) {
   }
 }
 
+async function updateOrderStatus(orderID) {
+  try {
+    const selectedRows = await db.knex('order').where('order_id', orderID).increment('status', 1);
+    return selectedRows;
+  } catch (error) {
+    return error;
+  }
+}
+
 module.exports = {
   getOrders,
   getOrderContent,
+  updateOrderStatus,
 };
-
-// 'SELECT d.product_id, d.quantity, p.price, p.name, p.image_url
-// FROM details d
-// INNER JOIN product p ON d.product_id=p.product_id
-// INNER JOIN food.order o ON d.order_id=o.order_id
-// WHERE d.order_id=(?);

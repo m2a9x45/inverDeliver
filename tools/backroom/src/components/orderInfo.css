@@ -1,0 +1,9 @@
+.orderInfo {
+    display: flex;
+    flex-direction: row;
+    justify-content:center
+}
+
+.orderInfo p {
+    padding: 0 0.2rem;
+}

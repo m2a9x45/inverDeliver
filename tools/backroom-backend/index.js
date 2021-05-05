@@ -20,7 +20,7 @@ app.get('/', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`food app listening at http://localhost:${port}`);
+  console.log(`InverDeliver Internal API listening at http://localhost:${port}`);
 });
 
 app.use((err, req, res, next) => {
