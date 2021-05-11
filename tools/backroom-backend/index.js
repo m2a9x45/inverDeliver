@@ -5,6 +5,7 @@ const app = express();
 const port = 3002;
 
 const orders = require('./routes/order.js');
+const planning = require('./routes/planning.js');
 
 const corsOptions = {
   origin: ['http://localhost:3003'],
@@ -14,6 +15,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use('/order', orders);
+app.use('/planning', planning);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');

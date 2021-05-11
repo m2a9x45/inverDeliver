@@ -4,6 +4,9 @@ const { v4: uuidv4 } = require('uuid');
 const jwt = require('jsonwebtoken');
 const stripe = require('stripe')(process.env.STRIPE_KEY);
 const axios = require('axios');
+const Redis = require('ioredis');
+
+const redis = new Redis();
 
 const dao = require('../dao/dataUser.js');
 
@@ -322,6 +325,12 @@ router.delete('/address', authorisation.isAuthorized, async (req, res, next) => 
   } catch (error) {
     next(error);
   }
+});
+
+router.patch('/address', async (req, res, next) => {
+  const { addressID } = req.body;
+  redis.publish('new_address_added', addressID);
+  res.sendStatus(200);
 });
 
 module.exports = router;

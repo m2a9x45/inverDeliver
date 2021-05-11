@@ -53,6 +53,7 @@ router.post('/create', async (req, res, next) => {
       orderInfo = await dao.createOrderWithNewAddress(res.locals.user,
         orderID, deliveryID, addressID, data);
       logger.info('create order with a new address', { orderID, userID: res.locals.user, addressID });
+      // This is where we'd want to emit an address added event.
     }
 
     const addProductToOrder = await dao.addOrderDetails(productsArray);
