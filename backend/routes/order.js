@@ -1,11 +1,11 @@
 const express = require('express');
-const {
-  v4: uuidv4,
-} = require('uuid');
+const { v4: uuidv4 } = require('uuid');
+const Redis = require('ioredis');
 
 const logger = require('../middleware/logger.js');
 
 const router = express.Router();
+const redis = new Redis();
 const dao = require('../dao/dataOrder.js');
 const daoUser = require('../dao/dataUser');
 
@@ -54,6 +54,7 @@ router.post('/create', async (req, res, next) => {
         orderID, deliveryID, addressID, data);
       logger.info('create order with a new address', { orderID, userID: res.locals.user, addressID });
       // This is where we'd want to emit an address added event.
+      redis.publish('new_address_added', addressID);
     }
 
     const addProductToOrder = await dao.addOrderDetails(productsArray);

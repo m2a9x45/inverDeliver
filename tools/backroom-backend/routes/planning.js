@@ -65,4 +65,39 @@ redis.on('message', (channel, message) => {
   getAddressCoords(message);
 });
 
+router.post('/generateRoutes', async (req, res, next) => {
+  // lists all orders that need deliveryed by postcode area
+  try {
+    const locations = await dao.getDeliveries();
+    const shortCodes = [];
+    // group by postcode
+
+    for (let i = 0; i < locations.length; i += 1) {
+      const shortPostCode = locations[i].post_code.replace(/\s/g, '').match(/^[a-zA-Z]+\d\d?[a-zA-Z]?\s*\d+/)[0];
+
+      if (shortCodes.includes(shortPostCode.toUpperCase()) === false) {
+        shortCodes.push(shortPostCode.toUpperCase());
+      }
+
+      locations[i].short_post_code = shortPostCode;
+    }
+
+    // console.log(locations);
+    // console.log(shortCodes);
+
+    shortCodes.forEach((code) => {
+      const locationsByShortCode = locations.filter((item) => item.short_post_code === code);
+      // console.log(locationsByShortCode);
+
+      locationsByShortCode.forEach((location) => {
+        console.log(location.short_post_code, location.lat, location.long);
+      });
+    });
+
+    res.json(locations);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;
