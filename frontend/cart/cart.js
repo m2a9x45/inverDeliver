@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3001";
+const API_URL = "https://api.inverdeliver.com";
 
 const cartContent = document.querySelector(".cartContent");
 const priceTotal = document.querySelector("#priceTotal");

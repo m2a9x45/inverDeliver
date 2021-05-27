@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3001";
+const API_URL = "https://api.inverdeliver.com";
 
 const userDetailsNameHeading = document.querySelector('#userDetailsNameHeading');
 const userJoinNum = document.querySelector('#userJoinNum');
