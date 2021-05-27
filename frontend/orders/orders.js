@@ -141,7 +141,7 @@ function displayOrders(order) {
     deliveryInfo.appendChild(deliveryCity);
 
     const deliveryPostCode = document.createElement("p");
-    deliveryPostCode.innerText = order.post_code;
+    deliveryPostCode.innerText = order.post_code.replace(/^(.*)(\d)/, "$1 $2");
     deliveryInfo.appendChild(deliveryPostCode);
 
     orderbody.appendChild(deliveryInfo); // Adding delivery info to the orderbody

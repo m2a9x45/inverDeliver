@@ -1,0 +1,30 @@
+.App {
+  background-color: rgb(241, 241, 241);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.Layout {
+  display: grid;
+  grid-template-columns: 15% auto;
+}
+
+.Sidebar {
+  background-color: rgb(41, 41, 41);
+  color: white;
+  height: 100vh;
+}
+
+.Content {
+  margin: 1rem;
+}
+
+
+.orderContent {
+  width: 65%;
+  margin: 0 auto;
+  background-color: white;
+  border-radius: 5px;
+}
+

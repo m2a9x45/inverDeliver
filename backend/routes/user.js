@@ -164,12 +164,12 @@ router.post('/fbSignIn', async (req, res, next) => {
       logger.info('Account found with matching fbID', { fbID: fbUserID, userID: hasLinkedFbAccount[0].user_id });
 
       const userID = hasLinkedFbAccount[0].user_id;
-      jwt.sign({ userID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
-        if (!err) {
+      jwt.sign({ userID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (error, jwtToken) => {
+        if (!error) {
           logger.info('User signed in', { userID });
           res.json({ token: jwtToken });
         } else {
-          next(err);
+          next(error);
         }
       });
     } else {

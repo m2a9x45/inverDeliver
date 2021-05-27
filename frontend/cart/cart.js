@@ -156,7 +156,7 @@ function showSavedAddresses(addresses) {
     const city = document.createElement("p");
     city.innerText = address.city;
     const postCode = document.createElement("p");
-    postCode.innerText = address.post_code;
+    postCode.innerText = address.post_code.replace(/^(.*)(\d)/, "$1 $2");
 
     const clickableAddress = document.createElement("a");
     clickableAddress.setAttribute("href", "javascript:;");
