@@ -20,10 +20,11 @@ async function addLatLongToAddress(addressID, lat, long) {
 }
 
 // only select orders that are paid for
-async function getDeliveries() {
+async function getDeliveries(areaCode) {
   try {
-    const selectedRows = await db.knex.select('d.delivery_id', 'a.post_code', 'a.lat', 'a.long').from('delivery AS d')
-      .join('addresses AS a', 'd.address_id', 'a.address_id');
+    const selectedRows = await db.knex.select('d.delivery_id', 'a.id', 'a.post_code', 'a.lat', 'a.long').from('delivery AS d')
+      .join('addresses AS a', 'd.address_id', 'a.address_id')
+      .where('a.post_code', 'like', `${areaCode}%`);
     return selectedRows;
   } catch (error) {
     return error;

@@ -50,6 +50,7 @@ router.post('/create', async (req, res, next) => {
       logger.info('create order with exsiting address', { orderID, userID: res.locals.user, addressID });
     } else {
       // add new address to DB
+      data.post_code = data.post_code.replace(/\s/g, '');
       orderInfo = await dao.createOrderWithNewAddress(res.locals.user,
         orderID, deliveryID, addressID, data);
       logger.info('create order with a new address', { orderID, userID: res.locals.user, addressID });

@@ -176,7 +176,7 @@ function displayDeliveryInfo(addressInfo) {
 
   addressLine.innerText = addressInfo.street;
   addressCity.innerText = addressInfo.city;
-  addressPostCode.innerText = addressInfo.post_code;
+  addressPostCode.innerText = addressInfo.post_code.replace(/^(.*)(\d)/, "$1 $2");
 
   const deliveryDate = new Date(addressInfo.time);
   const options = {

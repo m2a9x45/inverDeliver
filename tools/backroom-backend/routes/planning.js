@@ -65,39 +65,58 @@ redis.on('message', (channel, message) => {
   getAddressCoords(message);
 });
 
-router.post('/generateRoutes', async (req, res, next) => {
-  // lists all orders that need deliveryed by postcode area
+router.post('/generateRoutes/:id', async (req, res, next) => {
+  const areaCode = req.params.id;
+
   try {
-    const locations = await dao.getDeliveries();
-    const shortCodes = [];
-    // group by postcode
+    const locations = await dao.getDeliveries(areaCode);
 
-    for (let i = 0; i < locations.length; i += 1) {
-      const shortPostCode = locations[i].post_code.replace(/\s/g, '').match(/^[a-zA-Z]+\d\d?[a-zA-Z]?\s*\d+/)[0];
+    const getAllSubsets = (theArray) => theArray.reduce(
+      (subsets, value) => subsets.concat(
+        subsets.map((set) => [value, ...set]),
+      ),
+      [[]],
+    );
 
-      if (shortCodes.includes(shortPostCode.toUpperCase()) === false) {
-        shortCodes.push(shortPostCode.toUpperCase());
+    const result = [];
+
+    getAllSubsets(locations).forEach((element) => {
+      if (element.length > 1 && element.length < 3) {
+        result.push(element);
       }
-
-      locations[i].short_post_code = shortPostCode;
-    }
-
-    // console.log(locations);
-    // console.log(shortCodes);
-
-    shortCodes.forEach((code) => {
-      const locationsByShortCode = locations.filter((item) => item.short_post_code === code);
-      // console.log(locationsByShortCode);
-
-      locationsByShortCode.forEach((location) => {
-        console.log(location.short_post_code, location.lat, location.long);
-      });
     });
 
-    res.json(locations);
+    const devliverdistances = [];
+
+    result.forEach((pair) => {
+      const distance = Math.sqrt(Math.abs((pair[1].lat ** 2 - pair[0].lat ** 2) + (pair[1].long ** 2 - pair[0].long ** 2)));
+      devliverdistances.push({ dis: distance, point: pair });
+    });
+
+
+
+    res.json(devliverdistances);
   } catch (error) {
     next(error);
   }
 });
 
 module.exports = router;
+
+
+    // const orderedDeliveryDis = devliverdistances.sort((a, b) => parseFloat(a.dis) - parseFloat(b.dis));
+
+    // // [0] p1 is the start point now we need to add stops to the routes
+
+    // const stops = [];
+
+    // stops.push(orderedDeliveryDis[0].p1);
+    // stops.push(orderedDeliveryDis[1].p2);
+
+    // orderedDeliveryDis.splice(1,0);
+
+    // for (let i = 0; i < orderedDeliveryDis.length; i++) {
+    //   if (orderedDeliveryDis[i] === stops[i + 1]) {
+        
+    //   }
+    // }

@@ -150,7 +150,7 @@ function displayDeliveryInfo(data) {
 
   streetName.innerText = data.street;
   city.innerText = data.city;
-  postCode.innerText = data.post_code;
+  postCode.innerText = data.post_code.replace(/^(.*)(\d)/, "$1 $2");
 
   const deliveryDate = new Date(data.time);
   const displaydate = deliveryDate.toLocaleDateString("en-GB", {
