@@ -120,6 +120,8 @@ nav ul li:first-child {
     padding: 12px 20px;
     margin: 8px 0;
     box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 }
 
 .savedAddressSelector {
@@ -166,6 +168,8 @@ nav ul li:first-child {
     text-decoration: none;
     display: inline-block;
     font-size: 11pt;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 }
 
 .submit:hover {
