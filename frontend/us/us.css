@@ -22,6 +22,19 @@ h2 {
     width: 75%;
 }
 
+.navbarToggle {
+    display: none;
+}
+
+.navbarToggle:hover {
+    color: rgb(66, 176, 255);
+}
+
+.mainNav {
+    display: flex;
+    flex-direction: row;
+}
+
 .navbarList {
     margin: 0;
     padding: 0;
@@ -35,17 +48,13 @@ h2 {
     padding: 0.5rem;
 }
 
-nav ul li:first-child {
-    margin-right: auto;
-}
-
 #navbarItem a, #logo a {
     text-decoration: none;
     color: rgb(224, 224, 224);
 }
 
 #navbarItem a:hover, #logo a:hover {
-    color: rgb(66, 176, 255);;
+    color: rgb(66, 176, 255);
 }
 
 .callOutHolder {
@@ -106,15 +115,54 @@ footer {
     list-style-type: none;
 }
 
-@media screen and (max-width: 500px) {
+@media only screen and (max-width: 800px) {
+    .callOut {
+        width: 100%;
+    }
+    .callOut h4 {
+        font-size: 28pt;
+    }
+    .content {
+        width: 90%;
+        margin: 2rem auto;
+    }
+    .footerContainer {
+        width: 90%;
+        justify-content: space-evenly;
+        padding: 1rem 0.5rem 1rem 0.5rem;
+    }
+}
+
+
+@media only screen and (max-width: 680px) {
     header {
         padding: 0.5em;
     }
     .navbar {
         width: 100%;
     }
+    .navbarList {
+        flex-direction: column;
+    }
+    .mainNav {
+        display: none;
+        flex-direction: column;
+        text-align: center;
+    }
     #navbarItem {
         font-size: 14pt;
         padding: 0.2rem;
+        text-align: center;
+    }
+    .navbarToggle {
+        display: block;
+        position: absolute;
+        right: 20px;
+        cursor: pointer; 
+        color: rgba(255,255,255,0.8);
+        font-size: 24px;
+    }
+    .footerSection {
+        margin: 0 0.5rem;
     }
 }
