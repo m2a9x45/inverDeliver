@@ -1,5 +1,7 @@
 const API_URL = "http://localhost:3001";
 
+const navBarToggle = document.querySelector('.navbarToggle');
+const navtoggle = document.querySelector('.mainNav');
 const cartContent = document.querySelector(".cartContent");
 const priceTotal = document.querySelector("#priceTotal");
 const deliveryForm = document.querySelector('#deliveryForm');
@@ -29,6 +31,25 @@ if (!token) {
       window.location.replace('../signin');
     }
 }
+
+// Navbar toggle code
+const x = window.matchMedia("(max-width: 680px)");
+
+x.addEventListener("change", () => {
+  if (x.matches) { 
+    navtoggle.style.display = "none";
+  } else {
+    navtoggle.style.display = "flex";
+  }
+})
+
+navBarToggle.addEventListener("click", () => {
+  if (navtoggle.style.display === "none" || navtoggle.style.display === "") {
+    navtoggle.style.display = "flex";
+  } else {
+    navtoggle.style.display = "none";
+  }
+});
 
 let total =  350;
 let cart;

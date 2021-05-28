@@ -14,6 +14,19 @@ header {
     width: 75%;
 }
 
+.navbarToggle {
+    display: none;
+}
+
+.navbarToggle:hover {
+    color: rgb(66, 176, 255);
+}
+
+.mainNav {
+    display: flex;
+    flex-direction: row;
+}
+
 .navbarList {
     margin: 0;
     padding: 0;
@@ -25,10 +38,6 @@ header {
     list-style-type: none;
     font-size: 16pt;
     padding: 0.5rem;
-}
-
-nav ul li:first-child {
-    margin-right: auto;
 }
 
 #navbarItem a, #logo a {
@@ -179,16 +188,32 @@ nav ul li:first-child {
     }
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 680px) {
     header {
         padding: 0.5em;
     }
     .navbar {
         width: 100%;
     }
+    .navbarList {
+        flex-direction: column;
+    }
+    .mainNav {
+        display: none;
+        flex-direction: column;
+        text-align: center;
+    }
     #navbarItem {
         font-size: 14pt;
         padding: 0.2rem;
+    }
+    .navbarToggle {
+        display: block;
+        position: absolute;
+        right: 20px;
+        cursor: pointer; 
+        color: rgba(255,255,255,0.8);
+        font-size: 24px;
     }
     .CartSection, .DeliverySection {
         width: 100%;

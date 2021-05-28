@@ -1,4 +1,7 @@
 const API_URL = "http://localhost:3001";
+
+const navBarToggle = document.querySelector('.navbarToggle');
+const navtoggle = document.querySelector('.mainNav');
 const stripe = Stripe("pk_test_51H7AsMK7XxBFOf2KD3wGhUSnQRncvlSgpaez5NPRCilzrFxxJPsKgUNU0li9EHwtSigGZV1Y1Y6gtYu7kmbjs9KC00LtASdb7Q");
 const cartContent = document.querySelector(".cartContent");
 const url_string = window.location.href;
@@ -39,6 +42,26 @@ if (!token) {
       window.location.replace('../signin');
     }
 }
+
+// Navbar toggle code
+const x = window.matchMedia("(max-width: 680px)");
+
+x.addEventListener("change", () => {
+  if (x.matches) { 
+    navtoggle.style.display = "none";
+  } else {
+    navtoggle.style.display = "flex";
+  }
+})
+
+navBarToggle.addEventListener("click", () => {
+  if (navtoggle.style.display === "none" || navtoggle.style.display === "") {
+    navtoggle.style.display = "flex";
+  } else {
+    navtoggle.style.display = "none";
+  }
+});
+
 
 // check that the order is in a payable state
 fetch(`${API_URL}/order/status?orderID=${orderID}`, {

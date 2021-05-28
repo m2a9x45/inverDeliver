@@ -15,6 +15,19 @@ header {
     width: 75%;
 }
 
+.navbarToggle {
+    display: none;
+}
+
+.navbarToggle:hover {
+    color: rgb(66, 176, 255);
+}
+
+.mainNav {
+    display: flex;
+    flex-direction: row;
+}
+
 .navbarList {
     margin: 0;
     padding: 0;
@@ -26,10 +39,6 @@ header {
     list-style-type: none;
     font-size: 16pt;
     padding: 0.5rem;
-}
-
-nav ul li:first-child {
-    margin-right: auto;
 }
 
 #navbarItem a, #logo a {
@@ -240,8 +249,35 @@ footer {
 }
 
 @media only screen and (max-width: 680px) {
+    header {
+        padding: 0.5em;
+    }
+    .navbar {
+        width: 100%;
+    }
+    .navbarList {
+        flex-direction: column;
+    }
+    .mainNav {
+        display: none;
+        flex-direction: column;
+        text-align: center;
+    }
+    #navbarItem {
+        font-size: 14pt;
+        padding: 0.2rem;
+        text-align: center;
+    }
+    .navbarToggle {
+        display: block;
+        position: absolute;
+        right: 20px;
+        cursor: pointer; 
+        color: rgba(255,255,255,0.8);
+        font-size: 24px;
+    }
     .grid-container {
-        grid-template-columns: auto auto;
+        grid-template-columns: auto;
     }
     #learnMoreButton {
         width: 75%;
@@ -249,7 +285,21 @@ footer {
 }
 
 @media only screen and (max-width: 465px) {
-    .grid-container {
-        grid-template-columns: auto;
+
+    header {
+        padding: 0.5em;
+    }
+    .navbar {
+        width: 100%;
+    }
+    #navbarItem {
+        font-size: 14pt;
+        padding: 0.2rem;
+    }
+    .productsContainer {
+        width: 95%;
+    }
+    .grid-item {
+        padding: 1rem 0.1rem 1rem 0.1rem;
     }
 }

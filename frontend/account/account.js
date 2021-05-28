@@ -1,5 +1,7 @@
 const API_URL = "http://localhost:3001";
 
+const navBarToggle = document.querySelector('.navbarToggle');
+const navtoggle = document.querySelector('.mainNav');
 const userDetailsNameHeading = document.querySelector('#userDetailsNameHeading');
 const userJoinNum = document.querySelector('#userJoinNum');
 const userJoinDate = document.querySelector('#userJoinDate');
@@ -32,6 +34,25 @@ if (!token) {
     }
 }
 
+// Navbar toggle code
+const x = window.matchMedia("(max-width: 680px)");
+
+x.addEventListener("change", () => {
+  if (x.matches) { 
+    navtoggle.style.display = "none";
+  } else {
+    navtoggle.style.display = "flex";
+  }
+})
+
+navBarToggle.addEventListener("click", () => {
+  if (navtoggle.style.display === "none" || navtoggle.style.display === "") {
+    navtoggle.style.display = "flex";
+  } else {
+    navtoggle.style.display = "none";
+  }
+});
+
 
 
 getCustomerAccount();
@@ -43,7 +64,14 @@ function getCustomerAccount() {
       'authorization': `bearer ${token}`,
     }
   })
-  .then(response => response.json())
+  .then(response => {
+    if (response.status === 401) {
+      localStorage.removeItem('token');
+      window.location.replace("../signin");
+    }
+
+    return response.json();
+  })
   .then(data => {
     console.log(data);
     displayUserInfo(data);
