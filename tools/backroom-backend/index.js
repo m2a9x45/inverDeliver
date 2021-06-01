@@ -8,7 +8,7 @@ const orders = require('./routes/order.js');
 const planning = require('./routes/planning.js');
 
 const corsOptions = {
-  origin: ['http://localhost:3003'],
+  origin: ['http://localhost:8080'],
   optionsSuccessStatus: 200,
 };
 
