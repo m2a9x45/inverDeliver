@@ -4,56 +4,23 @@ body {
     background-color: rgb(241, 241, 241);
 }
 
-.orderItem {
-    background-color: rgb(255, 255, 255);
-    padding: 0.5rem 0;
-    border-bottom: 1px solid rgb(173, 173, 173);
-}
-
-.orderImageAndName {
-    display: flex;
+.ordersList {
+    width: 90%;
     margin: 0 auto;
-    width: 70%;
-    justify-content: space-between;
-}
-
-.buttonGroup {
-    margin: 0.5rem auto;
     display: flex;
-    justify-content: center;
+    justify-content: space-evenly;
+    flex-direction: column;
 }
 
-#noItemButton {
-    margin: 0 0.1rem;
-    background-color: hsl(20, 100%, 53%); /* Green */
-    border: none;
-    padding: 0.5rem 2rem;
+.order {
+    border: 1px solid rgb(66, 176, 255);
+    border-radius: 5px;
+    margin: 0.5rem 0;
     text-align: center;
     text-decoration: none;
-    display: inline-block;
-    font-size: 12pt;
-    width: 40%;
+    color: black;
 }
 
-#yesnoItemButton {
-    margin: 0 0.1rem;
-    background-color: hsl(93, 77%, 44%); /* Green */
-    border: none;
-    padding: 0.5rem 2rem;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 12pt;
-    width: 40%;
-}
-
-#completeButton {
-    background-color: hsl(93, 77%, 44%); /* Green */
-    border: none;
-    padding: 0.5rem 2rem;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 14pt;
-    width: 100%;
+.orderText {
+    padding: 0.2rem;
 }
