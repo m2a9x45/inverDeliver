@@ -16,11 +16,13 @@
     "google-auth-library": "^6.1.6",
     "ioredis": "^4.27.2",
     "jsonwebtoken": "^8.5.1",
+    "libphonenumber-js": "^1.9.19",
     "mailgun-js": "^0.22.0",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
     "prom-client": "^13.1.0",
     "stripe": "^8.131.1",
+    "twilio": "^3.63.1",
     "uuid": "^8.3.2",
     "winston": "^3.3.3"
   },

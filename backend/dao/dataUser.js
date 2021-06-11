@@ -96,7 +96,7 @@ function getStripeID(userID) {
 
 function getPhoneNumber(userID) {
   return new Promise(((resolve, reject) => {
-    const sql = 'SELECT phone_number FROM users WHERE user_id=(?)';
+    const sql = 'SELECT phone_number, phone_verified FROM users WHERE user_id=(?)';
     db.query(sql, [userID], (err, value) => {
       if (err === null) {
         resolve(value[0]);
@@ -120,6 +120,19 @@ function updatePhoneNumber(userID, phoneNumber) {
   }));
 }
 
+function validatePhoneNumber(userID) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'UPDATE users SET phone_verified=(?) WHERE user_id=(?)';
+    db.query(sql, [true, userID], (err, value) => {
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
 module.exports = {
   userByExternalID,
   CreateAccountWithExternalID,
@@ -129,5 +142,6 @@ module.exports = {
   getAddresses,
   deleteAddresses,
   getPhoneNumber,
+  validatePhoneNumber,
   getAddress,
 };

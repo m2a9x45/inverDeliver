@@ -5,6 +5,11 @@ const navtoggle = document.querySelector('.mainNav');
 const cartContent = document.querySelector(".cartContent");
 const priceTotal = document.querySelector("#priceTotal");
 const deliveryForm = document.querySelector('#deliveryForm');
+const addphoneNumberForm = document.querySelector('#addphoneNumberForm');
+const phoneNumberInput = document.querySelector('#phone');
+
+const verfiyphoneNumberForm = document.querySelector('#verfiyphoneNumberForm');
+const verificationCodeInput = document.querySelector('#verificationCode'); 
 
 const street_name = document.querySelector('#street_name');
 const city = document.querySelector('#city');
@@ -205,6 +210,61 @@ function showSavedAddresses(addresses) {
   });
 };
 
+addphoneNumberForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  if (phoneNumberInput.value !== '') {
+    console.log(phoneNumberInput.value);
+
+    fetch(`${API_URL}/user/generateSMScode`, {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+        'authorization': `bearer ${token}`,
+      },
+      body: JSON.stringify({
+        "phoneNumber": phoneNumberInput.value,
+      })
+    })
+    .then(response => {
+      console.log(response);
+      if (response.ok) {
+        verfiyphoneNumberForm.style.display = 'block';
+        addphoneNumberForm.style.display = "none";
+      } else {
+        return response.json();
+      }
+    })
+    .then((data) => {console.log(data);})
+    .catch((error) => { console.error('Error:', error) });
+  }
+});
+
+verfiyphoneNumberForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  if (verificationCodeInput.value !== '') {
+    console.log(verificationCodeInput.value);
+
+    fetch(`${API_URL}/user/updatePhoneNumber`, {
+      method: "PATCH",
+      headers: {
+        'Content-Type': 'application/json',
+        'authorization': `bearer ${token}`,
+      },
+      body: JSON.stringify({
+        "SMScode": verificationCodeInput.value,
+      })
+    })
+    .then(response => {
+      console.log(response);
+      if (response.ok) {
+        verfiyphoneNumberForm.style.display = 'none';
+        deliveryForm.style.display = 'block';
+      }
+    })
+    .catch((error) => { console.error('Error:', error) });
+  }
+})
+
 fetch(`${API_URL}/user/phoneNumber`, {
   headers: {
     'authorization': `bearer ${token}`,
@@ -213,10 +273,17 @@ fetch(`${API_URL}/user/phoneNumber`, {
 .then(response => response.json())
 .then(data => {
   console.log(data);
-  if (data.phone_number !== null) {
-    const phoneNumberInput = document.querySelector('#phone');
-    phoneNumberInput.disabled = "disabled";
-    phoneNumberInput.style.display = "none";
+  const phoneNumberInput = document.querySelector('#phone');
+  // check to see if phone number is added but not verfied
+  if (data.phone_verified === 0 && data.phone_number !== null) {
+    verfiyphoneNumberForm.style.display = 'block';
+    addphoneNumberForm.style.display = 'none';
+  }
+  // check to see if phone number is added and verfied 
+  if (data.phone_verified === 1 && data.phone_number !== null) {
+    verfiyphoneNumberForm.style.display = 'none';
+    addphoneNumberForm.style.display = 'none';
+    deliveryForm.style.display = 'block';
   }
 })
 .catch((error) => {
@@ -286,7 +353,7 @@ deliveryForm.addEventListener("submit", (e) => {
     .then(response => response.json())
     .then(data => {
       console.log('Success:', data);
-      window.location.replace(`../payment/index.html?orderID=${data.order_id}`);
+      // window.location.replace(`../payment/index.html?orderID=${data.order_id}`);
     })
     .catch((error) => {
       console.error('Error:', error);

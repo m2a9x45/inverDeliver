@@ -53,9 +53,25 @@
             <div class="DeliverySection">
                 <h2 id="cartLabel">Delivery Info 🚚</h2>
                 <div class="customerInfo">
+                    <form id="addphoneNumberForm">
+                        <input type="tel" name="phone" id="phone" placeholder="Your phone number" autocomplete="tel" required>
+                        <button id="addPhoneNumber" class="submit">Add phone number</button>
+                    </form>
+
+                    <form id="verfiyphoneNumberForm">
+                        <p>
+                            We've just sent you a verfication code to your phone number.
+                            Please enter it below to verify your number. Thanks 👍
+                        </p>
+                        <input id="verificationCode" type="tel" inputmode="numeric" placeholder="6 digit - Vefication Code" maxlength="6" pattern="[0-9]*"
+                        autocomplete="one-time-code">
+                        <button class="submit">Verfiy Phone Number</button>
+                        <a href="http://">change phone number</a>
+                    </form>
+                    
                     <form id="deliveryForm">
                         <div>
-                            <input type="tel" name="phone" id="phone" placeholder="Your phone number" autocomplete="tel" required>
+                            
                             <label for="">Choose your delivery day & time:</label>
                             <input type="datetime-local" name="delivery_time" id="delivery_time" required>
                         </div>

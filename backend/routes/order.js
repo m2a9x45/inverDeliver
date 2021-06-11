@@ -2,22 +2,34 @@ const express = require('express');
 const { v4: uuidv4 } = require('uuid');
 const Redis = require('ioredis');
 
-const logger = require('../middleware/logger.js');
+const logger = require('../middleware/logger');
 
 const router = express.Router();
 const redis = new Redis();
-const dao = require('../dao/dataOrder.js');
+const dao = require('../dao/dataOrder');
 const daoUser = require('../dao/dataUser');
 
-const email = require('../helper/email.js');
+const email = require('../helper/email');
 
 router.post('/create', async (req, res, next) => {
+  // add check to see if phone number is verfied.
   const data = req.body;
   const productsArray = [];
 
   const orderID = uuidv4();
   const deliveryID = uuidv4();
   const addressID = data.address ? data.address : uuidv4();
+
+  try {
+    const phoneNumberVerfied = await daoUser.getPhoneNumber(res.locals.user);
+    if (phoneNumberVerfied.phone_verified === 0) {
+      logger.warn('phone number not verfied', { userID: res.locals.user, phoneNumber: phoneNumberVerfied.phone_number });
+      res.json({ error: 'You have not verfied your phone number' });
+      return null;
+    }
+  } catch (error) {
+    next(error);
+  }
 
   logger.info('Create new order request', {
     orderID,

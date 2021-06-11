@@ -131,6 +131,19 @@ header {
     box-sizing: border-box;
 }
 
+#addphoneNumberForm {
+    padding: 1rem 0;
+}
+
+#verfiyphoneNumberForm {
+    display: none;
+    padding: 1rem 0;
+}
+
+#deliveryForm {
+    display: none;
+}
+
 .savedAddressSelector {
     display: flex;
     justify-content: space-evenly;
