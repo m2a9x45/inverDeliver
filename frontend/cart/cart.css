@@ -177,6 +177,16 @@ header {
     display: none;
 }
 
+#deliveryNote {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+    font-size: 12pt;
+    resize: vertical;
+}
+
 .submit {
     width: 100%;
     /* margin: 1rem; */

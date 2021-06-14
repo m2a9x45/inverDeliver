@@ -24,7 +24,7 @@ function displayOrder(order) {
     link.setAttribute("class", "order");
     link.addEventListener("click", () => {
         console.log("click");
-        window.location.href = `./order/?orderID=${order.order_id}`
+        window.location.href = `../order/?orderID=${order.order_id}`
     })
 
     const div = document.createElement("div");
@@ -34,7 +34,7 @@ function displayOrder(order) {
     orderID.innerHTML = order.order_id;
 
     const userID = document.createElement("p");
-    userID.innerHTML = order.user_id;
+    userID.innerHTML = `userID: ${order.user_id}`;
 
     const deliveryDate = new Date(order.time);
     const displaydate = deliveryDate.toLocaleDateString("en-GB", {

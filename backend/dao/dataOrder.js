@@ -16,9 +16,9 @@ function createOrderWithNewAddress(userID, orderID, deliveryID, addressID, order
 
         // orderData.street_name, orderData.city, orderData.post_code
         // should reflect the new delivery table with ref to address table
-        return db.query('INSERT INTO delivery (delivery_id, time, address_id) VALUES (?,?,?)',
+        return db.query('INSERT INTO delivery (delivery_id, time, address_id, note) VALUES (?,?,?,?)',
           [deliveryID, new Date(orderData.delivery_time),
-            addressID], (errorDelivery, valueDelivery) => {
+            addressID, orderData.delivery_note], (errorDelivery, valueDelivery) => {
             if (errorDelivery) {
               return db.rollback(() => {
                 reject(errorDelivery);
@@ -68,9 +68,9 @@ function createOrder(userID, orderID, deliveryID, addressID, orderData) {
 
         // orderData.street_name, orderData.city, orderData.post_code
         // should reflect the new delivery table with ref to address table
-        return db.query('INSERT INTO delivery (delivery_id, time, address_id) VALUES (?,?,?)',
+        return db.query('INSERT INTO delivery (delivery_id, time, address_id, note) VALUES (?,?,?,?)',
           [deliveryID, new Date(orderData.delivery_time),
-            addressID], (errorDelivery, valueDelivery) => {
+            addressID, orderData.delivery_note], (errorDelivery, valueDelivery) => {
             if (errorDelivery) {
               return db.rollback(() => {
                 reject(errorDelivery);
