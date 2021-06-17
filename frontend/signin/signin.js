@@ -5,30 +5,49 @@ const token = localStorage.getItem('token');
 const emailInput = document.querySelector('#email');
 const nameInput = document.querySelector('#name');
 const passwordInput = document.querySelector('#password');
-const loginButton = document.querySelector('#loginButton');
+const continueButton = document.querySelector('#continueButton');
 const createAccountButton = document.querySelector('#createAccountButton');
+const loginButton = document.querySelector('#loginButton');
 
 if (token) {
     window.location.replace("../");
 }
 
-loginButton.addEventListener('click', (e) => {
+emailInput.addEventListener('change', () => {
+    nameInput.style.display = 'none';
+    passwordInput.style.display = 'none';
+    createAccountButton.style.display = 'none';
+    loginButton.style.display = 'none';
+    continueButton.style.display = 'block';
+})
+
+continueButton.addEventListener('click', (e) => {
     console.log(emailInput.value);
     // check to see if email is linked to an account
-
     fetch(`${API_URL}/user/hasAccount/${emailInput.value}`)
     .then(response => response.json())
     .then((data) => {
         console.log(data);
+        // new user
         if (data.newAccount === true) {
-            // new user
+            
             nameInput.style.display = 'block';
             passwordInput.style.display = 'block';
             createAccountButton.style.display = 'block';
-            loginButton.style.display = 'none';
+            continueButton.style.display = 'none';
+        } 
+
+        // email password login
+        if (data.newAccount === false && data.isSocial === false) {
+            passwordInput.style.display = 'block';
+            continueButton.style.display = 'none';
+            loginButton.style.display = 'block';
+        }
+        // social login
+        if (data.newAccount === false && data.isSocial === true) {
+            // Tell user to use social login
         }
     })
-
 });
 
 createAccountButton.addEventListener('click', (e) => {
@@ -37,9 +56,54 @@ createAccountButton.addEventListener('click', (e) => {
         email: emailInput.value,
         password: passwordInput.value,
     }
+
+    fetch(`${API_URL}/user/createAccount`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then((data) => {
+        console.log(data);
+        if (data.token) {
+            localStorage.setItem('token', data.token);
+            window.location = './';
+        }
+    })
+    .catch((error) => console.error(error))
+
+})
+
+loginButton.addEventListener('click', (e) => {
+    const data = {
+        email: emailInput.value,
+        password: passwordInput.value,
+    }
     console.log(data);
 
-    // send post request to create user
+    fetch(`${API_URL}/user/login`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then((data) => {
+        console.log(data);
+        if (data.token) {
+            localStorage.setItem('token', data.token);
+            window.location = './';
+        }
+        if (data.message) {
+            console.log('here');
+            errorMessage.innerHTML = data.message;
+            errorMessage.style.display = 'block';
+        }
+    })
+    .catch((error) => console.error(error))
 
 })
 

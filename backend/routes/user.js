@@ -9,10 +9,10 @@ const Redis = require('ioredis');
 const phone = require('libphonenumber-js');
 const bcrypt = require('bcrypt');
 
-const dao = require('../dao/dataUser.js');
+const dao = require('../dao/dataUser');
 
-const logger = require('../middleware/logger.js');
-const authorisation = require('../middleware/auth.js');
+const logger = require('../middleware/logger');
+const authorisation = require('../middleware/auth');
 
 require('dotenv').config();
 
@@ -253,7 +253,7 @@ router.post('/createAccount', async (req, res, next) => {
     const account = await dao.hasAccountByEmail(email);
     if (account.length !== 0) {
       logger.info('Account linked with that email', { email, userID: account[0].user_id });
-      res.json({ newAccount: false });
+      res.json({ emailInUse: true });
       return;
     }
     const userID = uuidv4();
@@ -264,21 +264,60 @@ router.post('/createAccount', async (req, res, next) => {
     logger.info('Stripe Customer ID creatted', { userID, StripeID: stripeCustomer.id });
 
     // hash password and store new user in database
-    bcrypt.hash(password.trim(), 10, (err, hash) => {
-      console.log(err, hash);
-      // if no error store hashed password in DB
-      try {
-        const addedUser = await dao.
-      } catch (error) {
-  
+    const hash = await bcrypt.hash(password.trim(), 10);
+
+    const createdAccount = await dao.createAccountWithEmail(userID, email,
+      name, hash, stripeCustomer.id);
+    logger.info('Account created', { userID, DBID: createdAccount.insertId });
+    // send JWT
+
+    jwt.sign({ userID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
+      if (!err) {
+        logger.info('JWT Created & Sent', { userID, jwt: jwtToken });
+        res.json({ token: jwtToken });
+      } else {
+        next(err);
       }
-  
     });
   } catch (error) {
     next(error);
   }
+});
 
+router.post('/login', async (req, res, next) => {
+  const { email, password } = req.body;
+  try {
+    const hash = await dao.getHash(email);
+    if (hash.length !== 1) {
+      logger.info('Account not found', { email });
+      res.json({ accountFound: false });
+      return;
+    }
 
+    if (hash[0].password) {
+      const result = await bcrypt.compare(password.trim(), hash[0].password);
+
+      if (result !== true) {
+        logger.info('Incorrect password', { email, userID: hash[0].user_id });
+        res.json({ message: 'Sorry we couldn\'t log you in, it looks like your email address or password wasn\'t right' });
+        return;
+      }
+
+      jwt.sign({ userID: hash[0].user_id }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
+        if (!err) {
+          logger.info('JWT Created & Sent', { userID: hash[0].user_id, jwt: jwtToken });
+          res.json({ token: jwtToken });
+        } else {
+          next(err);
+        }
+      });
+    } else {
+      logger.info('Account found for social login', { userID: hash[0].user_id, email });
+      res.json({ isSocial: true });
+    }
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.get('/hasAccount/:id', async (req, res, next) => {
@@ -299,7 +338,7 @@ router.get('/hasAccount/:id', async (req, res, next) => {
       return;
     }
 
-    if (account.length === 1 && account[0].externalID !== null) {
+    if (account.length === 1 && account[0].external_id !== null) {
       // account exist with that email and is a social login
       logger.info('Account found with that email, linked to social login', {
         email,
@@ -307,16 +346,17 @@ router.get('/hasAccount/:id', async (req, res, next) => {
         loginType: account[0].external_type,
       });
       res.json({
+        newAccount: false,
         isSocial: true,
         socialType: account[0].external_type,
       });
       return;
     }
 
-    if (account.length === 1 && account[0].externalID === null) {
+    if (account.length === 1 && account[0].external_id === null) {
       // account exist with that email and isn't a social login
       logger.info('Account found with that email', { email });
-      res.json({ isSocial: false });
+      res.json({ newAccount: false, isSocial: false });
     }
     return;
   } catch (error) {

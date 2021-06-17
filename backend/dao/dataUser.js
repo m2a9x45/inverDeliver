@@ -1,4 +1,4 @@
-const db = require('./conn.js');
+const db = require('./conn');
 
 function userByExternalID(externalID, externalType) {
   return new Promise(((resolve, reject) => {
@@ -20,6 +20,35 @@ function CreateAccountWithExternalID(userID, externalID, externalType,
     db.query(sql, [userID, externalID, externalType, email,
       firstName, lastName, stripeID,
     ], (err, value) => {
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
+function createAccountWithEmail(userID, email, firstName, password, stripeID) {
+  return new Promise(((resolve, reject) => {
+    const sql = `INSERT INTO users (user_id, email, 
+      password, first_name, stripe_id) VALUES (?,?,?,?,?)`;
+    db.query(sql, [userID, email, password,
+      firstName, stripeID,
+    ], (err, value) => {
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
+function getHash(email) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT user_id, password FROM users WHERE email=(?)';
+    db.query(sql, [email], (err, value) => {
       if (err === null) {
         resolve(value);
       } else {
@@ -149,6 +178,7 @@ function validatePhoneNumber(userID) {
 module.exports = {
   userByExternalID,
   CreateAccountWithExternalID,
+  createAccountWithEmail,
   getAccountInfo,
   getStripeID,
   updatePhoneNumber,
@@ -158,4 +188,5 @@ module.exports = {
   validatePhoneNumber,
   getAddress,
   hasAccountByEmail,
+  getHash,
 };
