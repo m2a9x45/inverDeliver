@@ -7,6 +7,7 @@ const axios = require('axios');
 const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 const Redis = require('ioredis');
 const phone = require('libphonenumber-js');
+const bcrypt = require('bcrypt');
 
 const dao = require('../dao/dataUser.js');
 
@@ -239,6 +240,85 @@ router.get('/account', authorisation.isAuthorized, async (req, res, next) => {
       logger.error('Athenticated usersID does not match customer info in DB', { userID: res.locals.user });
       res.json('User Not Found');
     }
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/createAccount', async (req, res, next) => {
+  const { email, name, password } = req.body;
+
+  try {
+    // check that this is a new user
+    const account = await dao.hasAccountByEmail(email);
+    if (account.length !== 0) {
+      logger.info('Account linked with that email', { email, userID: account[0].user_id });
+      res.json({ newAccount: false });
+      return;
+    }
+    const userID = uuidv4();
+    const stripeCustomer = await stripe.customers.create({
+      name,
+      metadata: { userID },
+    });
+    logger.info('Stripe Customer ID creatted', { userID, StripeID: stripeCustomer.id });
+
+    // hash password and store new user in database
+    bcrypt.hash(password.trim(), 10, (err, hash) => {
+      console.log(err, hash);
+      // if no error store hashed password in DB
+      try {
+        const addedUser = await dao.
+      } catch (error) {
+  
+      }
+  
+    });
+  } catch (error) {
+    next(error);
+  }
+
+
+});
+
+router.get('/hasAccount/:id', async (req, res, next) => {
+  const email = req.params.id;
+
+  try {
+    const account = await dao.hasAccountByEmail(email);
+    // checks if an account with that email has been found and if more than one has been found
+    if (account.length === 0) {
+      logger.info('No account linked with that email', { email });
+      res.json({ newAccount: true });
+      return;
+    }
+
+    if (account.length > 1) {
+      logger.error('More than one account found for email address', { email, account });
+      res.json({ message: 'Someting went wrong' });
+      return;
+    }
+
+    if (account.length === 1 && account[0].externalID !== null) {
+      // account exist with that email and is a social login
+      logger.info('Account found with that email, linked to social login', {
+        email,
+        userID: account[0].user_id,
+        loginType: account[0].external_type,
+      });
+      res.json({
+        isSocial: true,
+        socialType: account[0].external_type,
+      });
+      return;
+    }
+
+    if (account.length === 1 && account[0].externalID === null) {
+      // account exist with that email and isn't a social login
+      logger.info('Account found with that email', { email });
+      res.json({ isSocial: false });
+    }
+    return;
   } catch (error) {
     next(error);
   }

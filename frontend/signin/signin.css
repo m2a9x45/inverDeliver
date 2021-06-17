@@ -5,18 +5,13 @@ body {
 }
 
 .signInSelect {
-    margin: 15rem auto;
+    margin: 10rem auto;
     text-align: center;
 }
 
 .passwordSignInHolder {
-    width: 25%;
+    width: 350px;
     margin: 0 auto;
-}
-
-.passwordSignInHolder input {
-    width: 100%;
-    margin: 0.2rem;
 }
 
 .googleSignInHolder {
@@ -24,3 +19,37 @@ body {
     margin: 1rem auto;
 }
 
+.loginInput {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 0.3rem 0;
+    box-sizing: border-box;
+}
+
+#name, #password, #createAccountButton {
+    display: none;
+}
+
+#loginButton {
+    width: 100%;
+    margin: 0.5rem 0 0.2rem 0;
+    background-color: rgb(66, 176, 255); /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 14pt;
+}
+
+#createAccountButton {
+    width: 100%;
+    margin: 0.5rem 0 0.2rem 0;
+    background-color: rgb(66, 176, 255); /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 14pt;
+}

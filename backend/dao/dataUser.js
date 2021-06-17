@@ -42,6 +42,19 @@ function getAccountInfo(userID) {
   }));
 }
 
+function hasAccountByEmail(email) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT user_id, external_id, external_type FROM users WHERE email=(?)';
+    db.query(sql, [email], (err, value) => {
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
 function getAddresses(userID) {
   return new Promise(((resolve, reject) => {
     const sql = 'SELECT address_id, street, city, post_code FROM addresses WHERE user_id=(?) AND deleted_at IS NULL';
@@ -144,4 +157,5 @@ module.exports = {
   getPhoneNumber,
   validatePhoneNumber,
   getAddress,
+  hasAccountByEmail,
 };

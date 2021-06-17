@@ -2,9 +2,46 @@ const API_URL = "http://localhost:3001";
 const errorMessage = document.querySelector('#errorMessage');
 const token = localStorage.getItem('token');
 
+const emailInput = document.querySelector('#email');
+const nameInput = document.querySelector('#name');
+const passwordInput = document.querySelector('#password');
+const loginButton = document.querySelector('#loginButton');
+const createAccountButton = document.querySelector('#createAccountButton');
+
 if (token) {
     window.location.replace("../");
 }
+
+loginButton.addEventListener('click', (e) => {
+    console.log(emailInput.value);
+    // check to see if email is linked to an account
+
+    fetch(`${API_URL}/user/hasAccount/${emailInput.value}`)
+    .then(response => response.json())
+    .then((data) => {
+        console.log(data);
+        if (data.newAccount === true) {
+            // new user
+            nameInput.style.display = 'block';
+            passwordInput.style.display = 'block';
+            createAccountButton.style.display = 'block';
+            loginButton.style.display = 'none';
+        }
+    })
+
+});
+
+createAccountButton.addEventListener('click', (e) => {
+    const data = {
+        name: nameInput.value,
+        email: emailInput.value,
+        password: passwordInput.value,
+    }
+    console.log(data);
+
+    // send post request to create user
+
+})
 
 function onSignIn(googleUser) {
     var id_token = googleUser.getAuthResponse().id_token;
@@ -31,7 +68,6 @@ function onSignIn(googleUser) {
             errorMessage.innerText = "Something when wrong, let us know if it continues";
         });
 }
-
 
 function statusChangeCallback(res) {
     console.log(res);

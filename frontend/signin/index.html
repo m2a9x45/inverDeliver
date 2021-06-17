@@ -8,7 +8,7 @@
     <meta name="google-signin-client_id" content="367206505484-duqc704rjojig4ogbkb5k372v0pk4gnd.apps.googleusercontent.com">
 
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@150;300;400&display=swap" rel="stylesheet">
+    <link  href="https://fonts.googleapis.com/css2?family=Roboto:wght@150;300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="signin.css">
 
     <title>Document</title>
@@ -19,11 +19,15 @@
     <main>
         <div class="signInSelect">
             <h1>InverDeliver</h1>
-            <!-- <div class="passwordSignInHolder">
-                <input type="email" placeholder="Email">
-                <input type="password" placeholder="Password">
-                <button type="submit">Login</button>
-            </div>   -->
+            <div class="passwordSignInHolder">
+                <input class="loginInput" id="email" type="email" placeholder="Email">
+                <input class="loginInput" id="name" type="text"  placeholder="Name">
+                <input class="loginInput" id="password" type="password" placeholder="Password">
+                <button id="loginButton" type="submit">Continue</button>
+                <button id="createAccountButton" type="submit">Create Account</button>
+            </div>
+            
+            <p>You can also</p>
             <div class="FbSignInHolder">
                 <div class="fb-login-button" onlogin="checkLoginState();" data-width="350" data-size="large" data-button-type="continue_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="false"></div>
             </div>

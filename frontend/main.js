@@ -44,7 +44,9 @@ if (localStorage.getItem("token")) {
     const logout = document.querySelector('#logout');
     logout.innerText = "Logout";
     logout.setAttribute("href", "./logout");
-  } 
+  } else {
+    localStorage.removeItem('token');
+  }
 }
 
 fetch(`${API_URL}/product/standard`)
