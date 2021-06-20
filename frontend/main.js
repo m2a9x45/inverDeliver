@@ -111,12 +111,14 @@ function addProducts(productArray) {
     gridDiv.setAttribute("class", "grid-item");
 
     const img = document.createElement("img");
-    img.setAttribute("src", product.image_url ? product.image_url : "");
+    img.setAttribute("src", product.image_url ? `http://localhost:3001/productImage/${product.image_url}` : "");
+    img.setAttribute("loading", "lazy");
     img.setAttribute("width", "150px");
     img.setAttribute("height", "150px");
+    img.setAttribute("alt", product.name)
 
     const title = document.createElement("p");
-    title.innerText = `${product.name} - ${product.des}`;
+    title.innerText = `${product.name} - ${product.size}`;
 
     const productLinksDiv = document.createElement("div");
     productLinksDiv.setAttribute("class", "productLinks");

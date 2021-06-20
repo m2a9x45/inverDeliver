@@ -1,8 +1,8 @@
-const db = require('./conn.js');
+const db = require('./conn');
 
 function products() {
   return new Promise(((resolve, reject) => {
-    const sql = 'SELECT id, product_id, category, brand, name, des, image_url, price FROM product';
+    const sql = 'SELECT id, product_id, category, brand, name, image_url, price, size FROM product LIMIT 50';
     db.query(sql, (err, value) => {
       if (err === null) {
         resolve(value);
@@ -15,7 +15,7 @@ function products() {
 
 function product(searchTerm) {
   return new Promise(((resolve, reject) => {
-    const sql = 'SELECT id, product_id, category, brand, name, des, image_url, price FROM product WHERE name LIKE (?)';
+    const sql = 'SELECT id, product_id, category, brand, name, image_url, price, size FROM product WHERE name LIKE (?)';
     db.query(sql, [`%${searchTerm}%`], (err, value) => {
       // console.log(err, value);
       if (err === null) {

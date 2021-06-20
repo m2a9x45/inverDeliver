@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="We're on a mission to make grocery delivery as simple as possible. Try us out now">
 
-    <link rel="stylesheet" href="main.css">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@150;300;400&display=swap" rel="stylesheet">
+    <link rel="preload" href="main.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preconnect" href="https://fonts.gstatic.com" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preconnect" href="https://fonts.googleapis.com/css2?family=Roboto:wght@150;300;400&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
 
     <script src="https://use.fontawesome.com/844b628bbf.js"></script>
 
@@ -25,8 +26,8 @@
                 <div class="mainNav">
                     <li id="navbarItem"><a id="order" href="./orders/">Orders</a></li>
                     <li id="navbarItem"><a id="cart" href="./cart/">Cart</a></li>
-                    <li id="navbarItem"><a id="cart" href="./us/">Help</a></li>
-                    <li id="navbarItem"><a id="cart" href="./account/">Account</a></li>
+                    <li id="navbarItem"><a id="help" href="./us/">Help</a></li>
+                    <li id="navbarItem"><a id="account" href="./account/">Account</a></li>
                     <li id="navbarItem"><a id="logout" href="./signin">Login</a></li>
                 </div>
             </ul>
@@ -137,7 +138,7 @@
         </div>
 
     </footer>
-    <script src="main.js"></script>
+    <script defer src="main.js"></script>
 </body>
 
 </html>
