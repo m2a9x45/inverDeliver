@@ -122,7 +122,7 @@ function displayUserInfo(customerInfo) {
   userDetailsNameHeading.innerHTML = `Hey ${customerInfo.first_name} 👋`;
   userJoinNum.innerText = `InverDeliver customer #${customerInfo.id}`;
   userJoinDate.innerText = `Since ${displayDate}`;
-  userName.innerText = `${customerInfo.first_name} ${customerInfo.last_name}`;
+  userName.innerText = customerInfo.last_name ? `${customerInfo.first_name} ${customerInfo.last_name}` : `${customerInfo.first_name}`; 
   userEmail.innerText = customerInfo.email;
 
   switch (customerInfo.phone_number != null) {

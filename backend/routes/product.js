@@ -45,4 +45,19 @@ router.get('/productById', async (req, res, next) => {
   }
 });
 
+router.get('/category/:id', async (req, res, next) => {
+  const category = req.params.id;
+  console.log(category);
+  try {
+    const products = await dao.productByCategory(category);
+    if (products.length === 0) {
+      res.json({ data: null, message: 'No products found' });
+      return null;
+    }
+    return res.json({ data: products });
+  } catch (error) {
+    return next(error);
+  }
+});
+
 module.exports = router;

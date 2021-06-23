@@ -196,7 +196,32 @@ function toggleToast(name) {
   }, 500);
 }
 
+function category(category) {
+  console.log(category);
+  gridCcontainer.innerHTML = '';
+  showError(false);
+  loader.style.display = "block";
+  fetch(`${API_URL}/product/category/${category}`)
+  .then(response => {
+    loader.style.display = "none";
+    return response.json()
+  })
+  .then(data => {
+    console.log(data);
+    addProducts(data.data)
+  })
+  .catch((error) => {
+    loader.style.display = "none";
+    showError(true);
+    errorMessage.innerText = "Something went wrong, if this continues please get in touch"
+    console.error(error);
+  });
+}
 
+// write functions to toggle the loading icon and error messgae
+function showError(show) {
+  show ? errorMessage.style.display = 'block' : errorMessage.style.display = 'none';
+}
 
 
 
