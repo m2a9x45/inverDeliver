@@ -128,7 +128,7 @@ function displayOrderContent(item) {
     
   } else {
     img = document.createElement("img");
-    img.setAttribute("src", item.image_url);
+    img.setAttribute("src", `${API_URL}/productImage/${item.image_url}`);
 
     quantity = document.createElement("p");
     quantity.innerText = `Quantity: ${item.quantity}`;
