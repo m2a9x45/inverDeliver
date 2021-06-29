@@ -95,13 +95,23 @@ header {
 
 .categoryHolder a {
     width: fit-content;
-    background-color: rgb(122, 176, 236);
+    
+    border: 3px solid rgb(122, 176, 236);
     padding: 0.5rem 1rem;
     margin: 0.5rem 0.5rem;
     border-radius: 15px;
     text-decoration: none;
     color: black;
 }
+
+.selected {
+    background-color: rgb(122, 176, 236);
+}
+
+.productsContainer {
+    margin: 0.5rem auto;
+}
+
 
 .loader {
     margin: 1rem auto;

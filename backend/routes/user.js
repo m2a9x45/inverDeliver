@@ -442,24 +442,23 @@ router.post('/generateSMScode', authorisation.isAuthorized, async (req, res, nex
   try {
     const phoneNumberParsed = phone.parsePhoneNumber(phoneNumber, 'GB');
     logger.info('Parseed phone number', { userID: res.locals.user, phoneNumber, parsedPhoneNumber: phoneNumberParsed.number });
-    const SMScode = Math.floor(Math.random() * 99999) + 10000;
-
-    // Add error checking for redis set
-    redis.set(res.locals.user, SMScode);
-    logger.info('SMS code generated and added to redis', { userID: res.locals.user, SMScode, parsedPhoneNumber: phoneNumberParsed.number });
-
-    // Send Verification SMS code.
-    // client.messages
-    //   .create({
-    //     body: `Hey 👋 your verfication code is ${SMScode}`,
-    //     from: '+17608535041',
-    //     to: '+447561161109',
-    //   })
-    //   .then((message) => console.log(message));
 
     const updated = await dao.updatePhoneNumber(res.locals.user, phoneNumberParsed.number);
     if (updated.changedRows === 1) {
       logger.info('Adding unverfied phone number to database', { userID: res.locals.user, parsedPhoneNumber: phoneNumberParsed.number });
+      const SMScode = Math.floor(Math.random() * 99999) + 10000;
+
+      // Add error checking for redis set
+      redis.set(res.locals.user, SMScode);
+      logger.info('SMS code generated and added to redis', { userID: res.locals.user, SMScode, parsedPhoneNumber: phoneNumberParsed.number });
+      // Send Verification SMS code.
+      client.messages
+        .create({
+          body: `Hey 👋 your verfication code is ${SMScode}`,
+          messagingServiceSid: 'MGad653ffd0889357ac879d70dafc51478',
+          to: phoneNumberParsed.number,
+        })
+        .then((message) => console.log(message));
       res.sendStatus(204);
     } else {
       logger.error('The number of rows in the DB that were updated was not 1', { userID: res.locals.user, parsedPhoneNumber: phoneNumberParsed.number });

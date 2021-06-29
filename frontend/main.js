@@ -4,6 +4,7 @@ const gridCcontainer = document.querySelector('.grid-container');
 const productSearch = document.querySelector('#productSearch');
 const navBarToggle = document.querySelector('.navbarToggle');
 const navtoggle = document.querySelector('.mainNav');
+const catogoryItems = document.querySelectorAll('.categoryItem');
 const loader = document.querySelector('.loader');
 const errorMessage = document.querySelector('#errorMessage');
 
@@ -196,8 +197,12 @@ function toggleToast(name) {
   }, 500);
 }
 
-function category(category) {
-  console.log(category);
+function category(e, category) {
+  catogoryItems.forEach(item => {
+    item.classList.remove("selected");
+  });
+
+  e.classList.add("selected");
   gridCcontainer.innerHTML = '';
   showError(false);
   loader.style.display = "block";
