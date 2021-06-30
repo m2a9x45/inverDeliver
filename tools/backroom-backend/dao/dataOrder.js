@@ -16,7 +16,7 @@ async function getOrders() {
 
 async function getOrderContent(orderID) {
   try {
-    const selectedRows = await db.knex.select('d.product_id', 'd.quantity', 'p.price', 'p.name', 'p.image_url').from('details AS d')
+    const selectedRows = await db.knex.select('d.product_id', 'd.quantity', 'p.price', 'p.name', 'p.image_url', 'p.size').from('details AS d')
       .join('product AS p', 'd.product_id', 'p.product_id')
       .join('order AS o', 'd.order_id', 'o.order_id ')
       .where('d.order_id', orderID);

@@ -7,7 +7,7 @@ const map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v11',
     center: [-3.194890, 55.948842],
-    zoom: 11
+    zoom: 14
 });
 
 map.addControl(new mapboxgl.NavigationControl());
@@ -55,16 +55,36 @@ function showDelivery(delivery) {
     const customerNumber = document.querySelector('#customerNumber');
     const completeButton = document.querySelector('#completeButton');
 
-    deliveryTime.innerHTML = delivery.time;
+    const deliveryDate = new Date(delivery.time);
+    const options = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true
+    };
+    const displaydate = deliveryDate.toLocaleDateString("en-GB", options)
+  
+    deliveryTime.innerHTML = displaydate;
     orderID.innerHTML = delivery.order_id;
     addressLine.innerHTML = delivery.street;
     addressCity.innerHTML = delivery.city;
     addressPostcode.innerHTML = delivery.post_code;
     latLong.innerHTML = `${delivery.lat} ${delivery.long}`;
+    latLong.href = `https://www.google.com/maps/search/?api=1&query=${delivery.lat},${delivery.long}`;
     note.innerHTML = delivery.note;
-    customerName.innerHTML = delivery.first_name;
+    customerName.innerHTML = `Customer Name: ${delivery.first_name}`;
     customerNumber.href = `tel:${delivery.phone_number}`;
     customerNumber.innerHTML = delivery.phone_number;
+
+    const marker1 = new mapboxgl.Marker()
+        .setLngLat([delivery.long, delivery.lat])
+        .addTo(map);
+    map.flyTo({
+        center: [delivery.long, delivery.lat]
+    })
 
     completeButton.addEventListener('click', (e) => {
         completeOrder(delivery.delivery_id);

@@ -44,11 +44,11 @@ function displayOrder(product) {
     imageAndNameDiv.setAttribute("class", "orderImageAndName");
 
     const img = document.createElement("img");
-    img.setAttribute("src", product.image_url);
+    img.setAttribute("src", `http://localhost:3001/productImage/${product.image_url}`);
     img.setAttribute("width", "75px");;
 
     const productName = document.createElement("p");
-    productName.innerHTML = `(${product.quantity}x) ${product.name}`;
+    productName.innerHTML = `(${product.quantity}x) ${product.name} - ${product.size}`;
 
     imageAndNameDiv.appendChild(img);
     imageAndNameDiv.appendChild(productName);
