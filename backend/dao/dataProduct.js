@@ -53,9 +53,23 @@ function productByCategory(category) {
   }));
 }
 
+function productByCategoryAndSearch(category, search) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT id, product_id, category, brand, name, image_url, price, size FROM product WHERE category LIKE (?) AND product.name LIKE (?)';
+    db.query(sql, [category, `%${search}%`], (err, value) => {
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
 module.exports = {
   products,
   product,
   productById,
   productByCategory,
+  productByCategoryAndSearch,
 };

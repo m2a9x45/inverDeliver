@@ -2,6 +2,7 @@ const API_URL = "http://localhost:3002";
 
 const orderList = document.querySelector(".orderList");
 const completeButton = document.querySelector("#completeButton");
+const shoppingNowButton = document.querySelector('#shoppingNowButton');
 
 const url_string = window.location.href;
 const url = new URL(url_string);
@@ -9,12 +10,16 @@ const orderID = url.searchParams.get("orderID");
 console.log(orderID);
 
 completeButton.addEventListener("click", () => {
-    completeOrder(orderID);
+    updateStatus(orderID, 3);
 })
 
-async function completeOrder(orderID) {
+shoppingNowButton.addEventListener("click", () => {
+    updateStatus(orderID, 2);
+})
+
+async function updateStatus(orderID, status) {
     try {
-        const response = await fetch(`${API_URL}/order/status/${orderID}`, {"method": "PATCH"});
+        const response = await fetch(`${API_URL}/order/status/${orderID}/${status}`, {"method": "PATCH"});
         console.log(response);
     } catch (error) {
         console.error(error);

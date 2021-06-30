@@ -8,6 +8,8 @@ const catogoryItems = document.querySelectorAll('.categoryItem');
 const loader = document.querySelector('.loader');
 const errorMessage = document.querySelector('#errorMessage');
 
+let selectedCategory; 
+
 // Navbar toggle code
 const x = window.matchMedia("(max-width: 680px)");
 
@@ -65,45 +67,6 @@ fetch(`${API_URL}/product/standard`)
     errorMessage.innerText = "Something went wrong, if this continues please get in touch"
     console.error(error);
   });
-
-productSearch.addEventListener("keypress", (e) => {
-  if (e.key === 'Enter' && productSearch.value !== "") {
-    loader.style.display = "block";
-    console.log(productSearch.value);
-    fetch(`${API_URL}/product/search?productName=${productSearch.value}`)
-      .then(response => {
-        loader.style.display = "none";
-        switch (response.status) {
-          case 200:
-            return response.json()
-          default:
-            console.log("🚨 Something went wrong");
-        }
-      })
-      .then(data => {
-        console.log(data);
-        if (data.length != 0) {
-          console.log("found product");
-          gridCcontainer.innerHTML = "";
-          addProducts(data);
-        } else {
-          console.log("didn't product");
-        }
-      })
-      .catch(error => {
-        loader.style.display = "none";
-        errorMessage.innerText = "Something went wrong, if this continues please get in touch"
-        console.error(error);
-      })
-  }
-
-  if (e.key === 'Enter' && productSearch.value === "") {
-    gridCcontainer.innerHTML = "";
-    if (initProducts) {
-      addProducts(initProducts);
-    }
-  }
-})
 
 function addProducts(productArray) {
   productArray.forEach(product => {
@@ -197,16 +160,67 @@ function toggleToast(name) {
   }, 500);
 }
 
-function category(e, category) {
-  catogoryItems.forEach(item => {
-    item.classList.remove("selected");
-  });
+function showError(show) {
+  show ? errorMessage.style.display = 'block' : errorMessage.style.display = 'none';
+}
 
-  e.classList.add("selected");
-  gridCcontainer.innerHTML = '';
-  showError(false);
-  loader.style.display = "block";
-  fetch(`${API_URL}/product/category/${category}`)
+function category(e, category) {
+  productSearch.value = '';
+
+  if (e.className.includes('selected')) {
+    catogoryItems.forEach(item => {
+      e.classList.remove("selected");
+    });
+    getproducts();
+
+  } else {
+    catogoryItems.forEach(item => {
+      item.classList.remove("selected");
+    });
+    e.classList.add("selected");
+    selectedCategory = category; 
+    gridCcontainer.innerHTML = '';
+    showError(false);
+    loader.style.display = "block";
+  
+    getproducts(category, null)
+  }
+}
+
+productSearch.addEventListener("keypress", (e) => {
+  if (e.key === 'Enter' && productSearch.value !== "") {
+    loader.style.display = "block";
+    console.log(productSearch.value);
+    getproducts(selectedCategory, productSearch.value);
+  }
+
+  if (e.key === 'Enter' && productSearch.value === "") {
+    gridCcontainer.innerHTML = "";
+    if (initProducts) {
+      addProducts(initProducts);
+    }
+  }
+})
+
+function getproducts(category, search) {
+  console.log(category, search);
+  gridCcontainer.innerHTML = "";
+  let url;
+  
+  if (search && category) {
+    url = `category=${category}&search=${search}`;
+  } else {
+    if (category) {
+      url = `category=${category}`;
+    }
+  
+    if (search) {
+      url = `search=${search}`;
+    }
+  
+  }
+
+  fetch(`${API_URL}/product/standard?${url}`)
   .then(response => {
     loader.style.display = "none";
     return response.json()
@@ -222,11 +236,5 @@ function category(e, category) {
     console.error(error);
   });
 }
-
-// write functions to toggle the loading icon and error messgae
-function showError(show) {
-  show ? errorMessage.style.display = 'block' : errorMessage.style.display = 'none';
-}
-
 
 

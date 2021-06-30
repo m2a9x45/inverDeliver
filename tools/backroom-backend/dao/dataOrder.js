@@ -6,7 +6,7 @@ async function getOrders() {
       'd.address_id', 'd.time', 'a.street', 'a.city', 'a.post_code').from('order AS o')
       .join('delivery AS d', 'o.delivery_id', 'd.delivery_id')
       .join('addresses AS a', 'd.address_id', ' a.address_id')
-      .whereBetween('o.status', [1, 4]);
+      .whereBetween('o.status', [1, 2]);
 
     return selectedRows;
   } catch (error) {
@@ -26,9 +26,9 @@ async function getOrderContent(orderID) {
   }
 }
 
-async function updateOrderStatus(orderID) {
+async function updateOrderStatus(orderID, status) {
   try {
-    const selectedRows = await db.knex('order').where('order_id', orderID).increment('status', 1);
+    const selectedRows = await db.knex('order').where('order_id', orderID).update({ status });
     return selectedRows;
   } catch (error) {
     return error;
