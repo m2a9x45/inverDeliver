@@ -306,6 +306,11 @@ button:disabled {
   text-align: right;
 }
 
+#priceTotal {
+  text-align: center;
+  font-size: 16pt;
+}
+
 @-webkit-keyframes loading {
   0% {
     -webkit-transform: rotate(0deg);
