@@ -36,11 +36,17 @@
                 <h2 id="cartLabel">Your Cart 🛒</h2>
                 <div class="cartContent">
                     <!-- <div class="cartItem">
-                        <div>
-                            <p>Milk</p>
-                            <label for="quantity">Quantity:</label>
-                            <input type="number" id="quantity" name="quantity" min="0" max="10" value="1">
-                        </div>
+                            <div class="orderItemImgAndName">
+                                <img src="http://localhost:3001/productImage/d45b890b-4107-42fb-bcd0-bbea680f0724.jpeg" alt="" width="70px">
+                                <div class="itemInfo">
+                                    <p>Milk</p>
+                                    <p>product description</p>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="quantity">Quantity:</label>
+                                <input type="number" id="quantity" name="quantity" min="0" max="10" value="1">
+                            </div>
                         <div>      
                             <p>£ 6.53</p>
                         </div>
@@ -96,8 +102,10 @@
 
                             <label for="delivery_note">Delivery Instructions</label>
                             <textarea id="deliveryNote" name="delivery_note" placeholder="Door code, who to leave your shopping with. etc."></textarea>
+                            
                         </div>
                         <input class="submit" type="submit" value="Continue to Payment">
+                        <p id="errorMessage">Error message</p>
                     </form>            
                 </div>
             </div>

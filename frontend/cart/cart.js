@@ -7,6 +7,7 @@ const priceTotal = document.querySelector("#priceTotal");
 const deliveryForm = document.querySelector('#deliveryForm');
 const addphoneNumberForm = document.querySelector('#addphoneNumberForm');
 const phoneNumberInput = document.querySelector('#phone');
+const errorMessage = document.querySelector('#errorMessage');
 
 const verfiyphoneNumberForm = document.querySelector('#verfiyphoneNumberForm');
 const verificationCodeInput = document.querySelector('#verificationCode'); 
@@ -64,6 +65,9 @@ showCart();
 
 function showCart() {
   cart = JSON.parse(localStorage.getItem("cart"));
+  if (cart === null || Object.keys(cart).length === 0 && cart.constructor === Object) {
+    window.location = '../';
+  }
   console.log(cart);
 
   for (const [key, value] of Object.entries(cart)) {
@@ -114,6 +118,11 @@ function displayCart(item, id) {
 
       console.log(cart);
       localStorage.setItem("cart", JSON.stringify(cart));
+      console.log("here",Object.keys(cart).length);
+
+      if (cart === null || Object.keys(cart).length === 0 && cart.constructor === Object) {
+        window.location = '../';
+      }
 
       cartContent.innerHTML = "";
       total = 350;
@@ -305,6 +314,7 @@ fetch(`${API_URL}/user/addresses`, {
 });
 
 deliveryForm.addEventListener("submit", (e) => {
+  errorMessage.style.display = 'none';
   e.preventDefault();
 
   const orderData = {
@@ -352,8 +362,14 @@ deliveryForm.addEventListener("submit", (e) => {
     })
     .then(response => response.json())
     .then(data => {
-      console.log('Success:', data);
-      window.location.replace(`../payment/index.html?orderID=${data.order_id}`);
+      console.log(data);
+      if (data.order_id) {
+        window.location.replace(`../payment/index.html?orderID=${data.order_id}`);
+      } else {
+        console.log('something went wrong');
+        errorMessage.style.display = 'block';
+        errorMessage.innerHTML = data.message;
+      }
     })
     .catch((error) => {
       console.error('Error:', error);

@@ -9,6 +9,7 @@ const products = require('./routes/product');
 const orders = require('./routes/order');
 const payments = require('./routes/payment');
 const users = require('./routes/user');
+const support = require('./routes/support');
 const authorisation = require('./middleware/auth');
 const logger = require('./middleware/logger');
 const metric = require('./routes/metric');
@@ -31,6 +32,7 @@ app.use('/product', products);
 app.use('/order', authorisation.isAuthorized, orders);
 app.use('/payment', payments);
 app.use('/user', users);
+app.use('/support', support);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');

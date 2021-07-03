@@ -54,8 +54,7 @@ router.post('/create', async (req, res, next) => {
       const vaildAddressID = await daoUser.getAddress(res.locals.user, addressID);
       if (vaildAddressID === undefined) {
         logger.warn('No address found for the addressID given', { orderID, userID: res.locals.user, addressID });
-        res.json("Something went wrong we couldn't find the address you've selected");
-        return;
+        return res.json("Something went wrong we couldn't find the address you've selected");
       }
       // link address to order
       orderInfo = await dao.createOrder(res.locals.user, orderID, deliveryID, addressID, data);
@@ -63,6 +62,18 @@ router.post('/create', async (req, res, next) => {
     } else {
       // add new address to DB
       data.post_code = data.post_code.replace(/\s/g, '');
+      const regixPostCode = data.post_code.toUpperCase().match(/^[A-Z][A-Z]{0,1}[0-9][A-Z0-9]{0,1}[0-9]/);
+
+      // List of postcode sectors where we operater
+      const operatingArea = ['EH11', 'EH12', 'EH13', 'EH21', 'EH22', 'EH23', 'EH24', 'EH35', 'EH36', 'EH37', 'EH38', 'EH39',
+        'EH126', 'EH125', 'EH112', 'EH111', 'EH104', 'EH91', 'EH92', 'EH89', 'EH89', 'EH165', 'EH87', 'EH88', 'EH75', 'EH74', 'EH41', 'EH42', 'EH43'];
+
+      // checing to see if the postcode sector the user has entered is one that we operater in
+      if (!operatingArea.includes(regixPostCode[0])) {
+        logger.warn('Deliver address outside of operating area', { userID: res.locals.userID, postCode: data.post_code });
+        return res.json({ withInOpArea: false, message: 'Sorry something went wrong the selected postcode is not part of our operating area' });
+      }
+
       orderInfo = await dao.createOrderWithNewAddress(res.locals.user,
         orderID, deliveryID, addressID, data);
       logger.info('create order with a new address', { orderID, userID: res.locals.user, addressID });

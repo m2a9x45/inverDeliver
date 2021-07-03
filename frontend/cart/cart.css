@@ -86,11 +86,21 @@ header {
     border-bottom: 1px solid rgb(201, 201, 201);
     padding-bottom: 0.5rem;
     margin-bottom: 0.5rem;
+    align-items: center;
 }
 
 .cartItem p {
     font-size: 12pt;
     margin: 0;
+}
+
+.orderItemImgAndName {
+    display: flex;
+    align-items: center;
+}
+
+.itemInfo {
+    padding-left: 1rem;
 }
 
 #quantity {
@@ -202,6 +212,12 @@ header {
 
 .submit:hover {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#errorMessage {
+    display: none;
+    color: red;
+    text-align: center;
 }
 
 @media screen and (max-width: 900px) {

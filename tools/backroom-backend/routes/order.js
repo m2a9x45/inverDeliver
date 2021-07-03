@@ -13,10 +13,11 @@ router.get('/all', async (req, res, next) => {
   }
 });
 
-router.patch('/status/:id', async (req, res, next) => {
+router.patch('/status/:id/:status', async (req, res, next) => {
   const orderID = req.params.id;
+  const { status } = req.params;
   try {
-    const update = await dao.updateOrderStatus(orderID);
+    const update = await dao.updateOrderStatus(orderID, status);
     if (update === 0) {
       res.sendStatus(400);
       return;

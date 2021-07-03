@@ -93,8 +93,6 @@ router.post('/generateRoutes/:id', async (req, res, next) => {
       devliverdistances.push({ dis: distance, point: pair });
     });
 
-
-
     res.json(devliverdistances);
   } catch (error) {
     next(error);
@@ -103,20 +101,19 @@ router.post('/generateRoutes/:id', async (req, res, next) => {
 
 module.exports = router;
 
+// const orderedDeliveryDis = devliverdistances.sort((a, b) => parseFloat(a.dis) - parseFloat(b.dis));
 
-    // const orderedDeliveryDis = devliverdistances.sort((a, b) => parseFloat(a.dis) - parseFloat(b.dis));
+// // [0] p1 is the start point now we need to add stops to the routes
 
-    // // [0] p1 is the start point now we need to add stops to the routes
+// const stops = [];
 
-    // const stops = [];
+// stops.push(orderedDeliveryDis[0].p1);
+// stops.push(orderedDeliveryDis[1].p2);
 
-    // stops.push(orderedDeliveryDis[0].p1);
-    // stops.push(orderedDeliveryDis[1].p2);
+// orderedDeliveryDis.splice(1,0);
 
-    // orderedDeliveryDis.splice(1,0);
+// for (let i = 0; i < orderedDeliveryDis.length; i++) {
+//   if (orderedDeliveryDis[i] === stops[i + 1]) {
 
-    // for (let i = 0; i < orderedDeliveryDis.length; i++) {
-    //   if (orderedDeliveryDis[i] === stops[i + 1]) {
-        
-    //   }
-    // }
+//   }
+// }
