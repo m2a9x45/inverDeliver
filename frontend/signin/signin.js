@@ -19,6 +19,7 @@ emailInput.addEventListener('change', () => {
     createAccountButton.style.display = 'none';
     loginButton.style.display = 'none';
     continueButton.style.display = 'block';
+    errorMessage.style.display = 'none';
 })
 
 continueButton.addEventListener('click', (e) => {
@@ -46,6 +47,8 @@ continueButton.addEventListener('click', (e) => {
         // social login
         if (data.newAccount === false && data.isSocial === true) {
             // Tell user to use social login
+            errorMessage.innerHTML = 'It looks like your email is linked to a social login';
+            errorMessage.style.display = 'block';
         }
     })
 });
@@ -98,7 +101,6 @@ loginButton.addEventListener('click', (e) => {
             window.location = './';
         }
         if (data.message) {
-            console.log('here');
             errorMessage.innerHTML = data.message;
             errorMessage.style.display = 'block';
         }

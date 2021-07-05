@@ -1,6 +1,7 @@
 const express = require('express');
 const { OAuth2Client } = require('google-auth-library');
 const { v4: uuidv4 } = require('uuid');
+const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const stripe = require('stripe')(process.env.STRIPE_KEY);
 const axios = require('axios');
@@ -245,80 +246,94 @@ router.get('/account', authorisation.isAuthorized, async (req, res, next) => {
   }
 });
 
-router.post('/createAccount', async (req, res, next) => {
-  const { email, name, password } = req.body;
+router.post('/createAccount',
+  body('email').isEmail({ domain_specific_validation: true }),
+  body('password').isLength({ min: 7 }),
+  body('name').isAlphanumeric(),
+  async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-  try {
+    const { email, name, password } = req.body;
+
+    try {
     // check that this is a new user
-    const account = await dao.hasAccountByEmail(email);
-    if (account.length !== 0) {
-      logger.info('Account linked with that email', { email, userID: account[0].user_id });
-      res.json({ emailInUse: true });
-      return;
-    }
-    const userID = uuidv4();
-    const stripeCustomer = await stripe.customers.create({
-      name,
-      metadata: { userID },
-    });
-    logger.info('Stripe Customer ID creatted', { userID, StripeID: stripeCustomer.id });
-
-    // hash password and store new user in database
-    const hash = await bcrypt.hash(password.trim(), 10);
-
-    const createdAccount = await dao.createAccountWithEmail(userID, email,
-      name, hash, stripeCustomer.id);
-    logger.info('Account created', { userID, DBID: createdAccount.insertId });
-    // send JWT
-
-    jwt.sign({ userID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
-      if (!err) {
-        logger.info('JWT Created & Sent', { userID, jwt: jwtToken });
-        res.json({ token: jwtToken });
-      } else {
-        next(err);
+      const account = await dao.hasAccountByEmail(email);
+      if (account.length !== 0) {
+        logger.info('Account linked with that email', { email, userID: account[0].user_id });
+        return res.json({ emailInUse: true });
       }
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+      const userID = uuidv4();
+      const stripeCustomer = await stripe.customers.create({
+        name,
+        metadata: { userID },
+      });
+      logger.info('Stripe Customer ID creatted', { userID, StripeID: stripeCustomer.id });
 
-router.post('/login', async (req, res, next) => {
-  const { email, password } = req.body;
-  try {
-    const hash = await dao.getHash(email);
-    if (hash.length !== 1) {
-      logger.info('Account not found', { email });
-      res.json({ accountFound: false });
-      return;
+      // hash password and store new user in database
+      const hash = await bcrypt.hash(password.trim(), 10);
+      const createdAccount = await dao.createAccountWithEmail(userID, email,
+        name, hash, stripeCustomer.id);
+
+      logger.info('Account created', { userID, DBID: createdAccount.insertId });
+      // send JWT
+      jwt.sign({ userID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
+        if (!err) {
+          logger.info('JWT Created & Sent', { userID, jwt: jwtToken });
+          res.json({ token: jwtToken });
+        }
+        next(err);
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+router.post('/login',
+  body('email').isEmail({ domain_specific_validation: true }),
+  body('password').isLength({ min: 7 }),
+  async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    if (hash[0].password) {
-      const result = await bcrypt.compare(password.trim(), hash[0].password);
-
-      if (result !== true) {
-        logger.info('Incorrect password', { email, userID: hash[0].user_id });
-        res.json({ message: 'Sorry we couldn\'t log you in, it looks like your email address or password wasn\'t right' });
+    const { email, password } = req.body;
+    try {
+      const hash = await dao.getHash(email);
+      if (hash.length !== 1) {
+        logger.info('Account not found', { email });
+        res.json({ accountFound: false });
         return;
       }
 
-      jwt.sign({ userID: hash[0].user_id }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
-        if (!err) {
-          logger.info('JWT Created & Sent', { userID: hash[0].user_id, jwt: jwtToken });
-          res.json({ token: jwtToken });
-        } else {
-          next(err);
+      if (hash[0].password) {
+        const result = await bcrypt.compare(password.trim(), hash[0].password);
+
+        if (result !== true) {
+          logger.info('Incorrect password', { email, userID: hash[0].user_id });
+          res.json({ message: 'Sorry we couldn\'t log you in, it looks like your email address or password wasn\'t right' });
+          return;
         }
-      });
-    } else {
-      logger.info('Account found for social login', { userID: hash[0].user_id, email });
-      res.json({ isSocial: true });
+
+        jwt.sign({ userID: hash[0].user_id }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
+          if (!err) {
+            logger.info('JWT Created & Sent', { userID: hash[0].user_id, jwt: jwtToken });
+            res.json({ token: jwtToken });
+          } else {
+            next(err);
+          }
+        });
+      } else {
+        logger.info('Account found for social login', { userID: hash[0].user_id, email });
+        res.json({ isSocial: true });
+      }
+    } catch (error) {
+      next(error);
     }
-  } catch (error) {
-    next(error);
-  }
-});
+  });
 
 router.get('/hasAccount/:id', async (req, res, next) => {
   const email = req.params.id;
@@ -413,62 +428,78 @@ router.get('/phoneNumber', authorisation.isAuthorized, async (req, res, next) =>
   }
 });
 
-router.patch('/updatePhoneNumber', authorisation.isAuthorized, async (req, res, next) => {
-  const { SMScode } = req.body;
-  logger.info('Updated phone number request', { userID: res.locals.user, SMScode });
-
-  const result = await redis.get(res.locals.user);
-  logger.info('redis code for the user', { userID: res.locals.user, SMScode, redis: result });
-
-  if (SMScode === result) {
-    logger.info('SMS code matches redis code for user', { userID: res.locals.user, SMScode, redisCode: result });
-    const validateNumber = await dao.validatePhoneNumber(res.locals.user);
-    if (validateNumber.affectedRows !== 1) {
-      logger.warn('Phone number not updated, either no number was updated or too many werer',
-        { userID: res.locals.user });
-      next('Something went wrong vaildating oyur phone number');
-      return;
+router.patch('/updatePhoneNumber', authorisation.isAuthorized,
+  body('SMScode').isNumeric().isLength({ min: 5, max: 5 }),
+  async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: 'Invalid SMS code' });
     }
-    res.sendStatus(201);
-  } else {
-    logger.info('Could not validate phone number', { userID: res.locals.user, SMScode, redisCode: result });
-    res.json({ error: 'Sadly we can not validate your phone number' });
-  }
-});
 
-router.post('/generateSMScode', authorisation.isAuthorized, async (req, res, next) => {
-  const { phoneNumber } = req.body;
-  logger.info('asked to generate a new SMS verfication code', { userID: res.locals.user, phoneNumber });
-  try {
-    const phoneNumberParsed = phone.parsePhoneNumber(phoneNumber, 'GB');
-    logger.info('Parseed phone number', { userID: res.locals.user, phoneNumber, parsedPhoneNumber: phoneNumberParsed.number });
+    const { SMScode } = req.body;
+    logger.info('Updated phone number request', { userID: res.locals.user, SMScode });
 
-    const updated = await dao.updatePhoneNumber(res.locals.user, phoneNumberParsed.number);
-    if (updated.changedRows === 1) {
-      logger.info('Adding unverfied phone number to database', { userID: res.locals.user, parsedPhoneNumber: phoneNumberParsed.number });
-      const SMScode = Math.floor(Math.random() * 99999) + 10000;
+    const result = await redis.get(res.locals.user);
+    console.log('redis result', result);
+    logger.info('redis code for the user', { userID: res.locals.user, SMScode, redis: result });
 
-      // Add error checking for redis set
-      redis.set(res.locals.user, SMScode);
-      logger.info('SMS code generated and added to redis', { userID: res.locals.user, SMScode, parsedPhoneNumber: phoneNumberParsed.number });
-      // Send Verification SMS code.
-      client.messages
-        .create({
-          body: `Hey 👋 your verfication code is ${SMScode}`,
-          messagingServiceSid: 'MGad653ffd0889357ac879d70dafc51478',
-          to: phoneNumberParsed.number,
-        })
-        .then((message) => console.log(message));
-      res.sendStatus(204);
+    if (SMScode === result) {
+      logger.info('SMS code matches redis code for user', { userID: res.locals.user, SMScode, redisCode: result });
+      const validateNumber = await dao.validatePhoneNumber(res.locals.user);
+      if (validateNumber.affectedRows !== 1) {
+        logger.warn('Phone number not updated, either no number was updated or too many werer',
+          { userID: res.locals.user });
+        next('Something went wrong vaildating oyur phone number');
+        return;
+      }
+      // If SMScode has been validated we should remobe the SMS code from redis to stop repeat request
+      res.sendStatus(201);
     } else {
-      logger.error('The number of rows in the DB that were updated was not 1', { userID: res.locals.user, parsedPhoneNumber: phoneNumberParsed.number });
-      res.sendStatus(404);
+      logger.info('Could not validate phone number', { userID: res.locals.user, SMScode, redisCode: result });
+      res.json({ error: 'Sadly we can not validate your phone number' });
     }
-  } catch (error) {
-    res.status(500);
-    next(error);
-  }
-});
+  });
+
+router.post('/generateSMScode', authorisation.isAuthorized,
+  body('phoneNumber').isMobilePhone(['en-GB']),
+  async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: 'Invalid Phone Number' });
+    }
+
+    const { phoneNumber } = req.body;
+    logger.info('asked to generate a new SMS verfication code', { userID: res.locals.user, phoneNumber });
+    try {
+      const phoneNumberParsed = phone.parsePhoneNumber(phoneNumber, 'GB');
+      logger.info('Parseed phone number', { userID: res.locals.user, phoneNumber, parsedPhoneNumber: phoneNumberParsed.number });
+
+      const updated = await dao.updatePhoneNumber(res.locals.user, phoneNumberParsed.number);
+      if (updated.changedRows === 1) {
+        logger.info('Adding unverfied phone number to database', { userID: res.locals.user, parsedPhoneNumber: phoneNumberParsed.number });
+        const SMScode = Math.floor(Math.random() * 99999) + 10000;
+
+        // Add error checking for redis set
+        redis.set(res.locals.user, SMScode);
+        logger.info('SMS code generated and added to redis', { userID: res.locals.user, SMScode, parsedPhoneNumber: phoneNumberParsed.number });
+        // Send Verification SMS code.
+        client.messages
+          .create({
+            body: `Hey 👋 your verfication code is ${SMScode}`,
+            messagingServiceSid: 'MGad653ffd0889357ac879d70dafc51478',
+            to: phoneNumberParsed.number,
+          })
+          .then((message) => console.log(message));
+        res.sendStatus(204);
+      } else {
+        logger.error('The number of rows in the DB that were updated was not 1', { userID: res.locals.user, parsedPhoneNumber: phoneNumberParsed.number });
+        res.sendStatus(404);
+      }
+    } catch (error) {
+      res.status(500);
+      next(error);
+    }
+  });
 
 router.delete('/address', authorisation.isAuthorized, async (req, res, next) => {
   const { addressID } = req.query;

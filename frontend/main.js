@@ -165,13 +165,15 @@ function showError(show) {
 }
 
 function category(e, category) {
+  showError(false);
   productSearch.value = '';
 
   if (e.className.includes('selected')) {
     catogoryItems.forEach(item => {
       e.classList.remove("selected");
     });
-    getproducts();
+    selectedCategory = null;
+    getproducts(null);
 
   } else {
     catogoryItems.forEach(item => {
@@ -188,6 +190,7 @@ function category(e, category) {
 }
 
 productSearch.addEventListener("keypress", (e) => {
+  showError(false)
   if (e.key === 'Enter' && productSearch.value !== "") {
     loader.style.display = "block";
     console.log(productSearch.value);
@@ -227,6 +230,10 @@ function getproducts(category, search) {
   })
   .then(data => {
     console.log(data);
+    if (data.data.length === 0) {
+      errorMessage.innerHTML = 'Sorry we cannot find any products with that name'
+      showError(true);
+    }
     addProducts(data.data)
   })
   .catch((error) => {
