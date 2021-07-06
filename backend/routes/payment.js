@@ -1,8 +1,9 @@
 /* eslint-disable no-case-declarations */
 const express = require('express');
-require('dotenv').config();
-
+const { body, validationResult } = require('express-validator');
 const stripe = require('stripe')(process.env.STRIPE_KEY);
+
+require('dotenv').config();
 
 const router = express.Router();
 const dao = require('../dao/dataOrder.js');
@@ -10,12 +11,22 @@ const daoUser = require('../dao/dataUser.js');
 const authorisation = require('../middleware/auth.js');
 const logger = require('../middleware/logger.js');
 
-router.post('/create-payment-intent', authorisation.isAuthorized, async (req, res, next) => {
+router.post('/create-payment-intent', authorisation.isAuthorized, body('orderID'), async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   const { orderID } = req.body;
   logger.info('Payment Intent creation for order', { orderID, userID: res.locals.user });
 
   try {
     const products = await dao.caculateOrderPrice(orderID);
+    if (products.length === 0) {
+      logger.warn('No order found for that ID', { userID: res.locals.user, orderID });
+      return res.status(500).json({ error: 'Mo order found with that ID' });
+    }
+
     logger.debug('The products the order is for', { orderID, userID: res.locals.user, products });
 
     // This is the delivery charge we apply to all orders,
@@ -133,7 +144,7 @@ router.post('/webhook', async (req, res, next) => {
       // Unexpected event type
       logger.info('Stripe webhook warning', { event: `${event.type}`, eventID: event.id });
   }
-  res.send();
+  return res.send();
 });
 
 module.exports = router;

@@ -46,6 +46,7 @@ router.get('/standard', async (req, res, next) => {
 });
 
 // Get a product via a serach term
+// This route has been replaced with /standard and query params
 router.get('/search', async (req, res, next) => {
   const { productName } = req.query;
 
@@ -72,6 +73,7 @@ router.get('/productById', async (req, res, next) => {
   }
 });
 
+// This route has been replaced with /standard and query params
 router.get('/category/:id', async (req, res, next) => {
   const category = req.params.id;
   console.log(category);

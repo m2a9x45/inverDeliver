@@ -12,7 +12,6 @@ const daoUser = require('../dao/dataUser');
 const email = require('../helper/email');
 
 router.post('/create', async (req, res, next) => {
-  // add check to see if phone number is verfied.
   const data = req.body;
   const productsArray = [];
 
@@ -82,21 +81,6 @@ router.post('/create', async (req, res, next) => {
     }
 
     const addProductToOrder = await dao.addOrderDetails(productsArray);
-
-    if (data.phone) {
-      const updatePhoneNumebr = await daoUser.updatePhoneNumber(res.locals.user, data.phone);
-      if (updatePhoneNumebr.changedRows === 1) {
-        logger.info('Updated users phone number', {
-          userID: res.locals.user,
-          phoneNumber: data.phone,
-        });
-      } else {
-        logger.error('Failed to updated users phone number', {
-          userID: res.locals.user,
-          phoneNumber: data.phone,
-        });
-      }
-    }
 
     logger.debug('Reply from DB when creating order', {
       orderID,

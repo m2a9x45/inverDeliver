@@ -112,7 +112,6 @@ function caculateOrderPrice(orderID) {
   return new Promise(((resolve, reject) => {
     const sql = 'SELECT d.quantity, p.price FROM details d INNER JOIN product p ON d.product_id=p.product_id WHERE d.order_id=(?)';
     db.query(sql, [orderID], (err, value) => {
-      console.log(err, value);
       if (err === null) {
         resolve(value);
       } else {
