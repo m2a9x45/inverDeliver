@@ -13,6 +13,7 @@ const support = require('./routes/support');
 const authorisation = require('./middleware/auth');
 const logger = require('./middleware/logger');
 const metric = require('./routes/metric');
+const seller = require('./routes/seller');
 
 const corsOptions = {
   origin: ['http://localhost:8080', 'http://127.0.0.1:5500', 'http://localhost:3002'],
@@ -33,6 +34,7 @@ app.use('/order', authorisation.isAuthorized, orders);
 app.use('/payment', payments);
 app.use('/user', users);
 app.use('/support', support);
+app.use('/seller', seller);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');

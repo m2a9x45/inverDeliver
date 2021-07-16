@@ -11,6 +11,7 @@ const phone = require('libphonenumber-js');
 const bcrypt = require('bcrypt');
 
 const dao = require('../dao/dataUser');
+const metrics = require('./metric');
 
 const logger = require('../middleware/logger');
 const authorisation = require('../middleware/auth');
@@ -19,6 +20,24 @@ require('dotenv').config();
 
 const router = express.Router();
 const redis = new Redis();
+
+const loginsMetric = new metrics.client.Counter({
+  name: 'login_attempts',
+  help: 'Total number of login attempts',
+  labelNames: ['type', 'success', 'status'],
+});
+
+const createAccountMetric = new metrics.client.Counter({
+  name: 'create_account_attempts',
+  help: 'Total number of account creation attempts',
+  labelNames: ['type', 'status'],
+});
+
+const twilioSMS = new metrics.client.Counter({
+  name: 'twilio_requests',
+  help: 'Totla number of twilio request',
+  labelNames: ['status'],
+});
 
 async function checkUsersFbToken(accessToken, userID) {
   try {
@@ -54,8 +73,10 @@ async function createAccount(userID, externalID, externalType,
       firstName,
       lastName,
       stripeID);
+    createAccountMetric.inc({ type: externalType, status: 200 });
     return acoountCreation;
   } catch (error) {
+    createAccountMetric.inc({ type: externalType, status: 500 });
     return error;
   }
 }
@@ -83,6 +104,8 @@ router.post('/googleSignIn', async (req, res, next) => {
         // Checking to see if more than 1 user account matches the googleID we've been given
         if (hasLinkedGoogleAcount.length > 1) {
           logger.warn('More than one userID to googleID match', { googleID: googleUserID, matched: hasLinkedGoogleAcount });
+          loginsMetric.inc({ type: 'google', success: false, status: 500 });
+          // return an error
         }
 
         logger.info('Account found with matching googleID', { googleID: googleUserID, userID: hasLinkedGoogleAcount[0].user_id });
@@ -92,6 +115,7 @@ router.post('/googleSignIn', async (req, res, next) => {
           if (!err) {
             logger.info('User signed in', { userID });
             res.json({ token: jwtToken });
+            loginsMetric.inc({ type: 'google', success: true, status: 200 });
           } else {
             next(err);
           }
@@ -165,6 +189,7 @@ router.post('/fbSignIn', async (req, res, next) => {
     if (hasLinkedFbAccount.length !== 0) {
       if (hasLinkedFbAccount.length > 1) {
         logger.warn('More than one userID to fbID match', { fbID: fbUserID, matched: hasLinkedFbAccount });
+        loginsMetric.inc({ type: 'facebook', success: false, status: 500 });
       }
 
       logger.info('Account found with matching fbID', { fbID: fbUserID, userID: hasLinkedFbAccount[0].user_id });
@@ -174,6 +199,7 @@ router.post('/fbSignIn', async (req, res, next) => {
         if (!error) {
           logger.info('User signed in', { userID });
           res.json({ token: jwtToken });
+          loginsMetric.inc({ type: 'facebook', success: true, status: 200 });
         } else {
           next(error);
         }
@@ -253,6 +279,7 @@ router.post('/createAccount',
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      createAccountMetric.inc({ type: 'email', status: 400 });
       return res.status(400).json({ errors: errors.array() });
     }
 
@@ -283,10 +310,12 @@ router.post('/createAccount',
         if (!err) {
           logger.info('JWT Created & Sent', { userID, jwt: jwtToken });
           res.json({ token: jwtToken });
+          createAccountMetric.inc({ type: 'email', status: 200 });
         }
         next(err);
       });
     } catch (error) {
+      createAccountMetric.inc({ type: 'email', status: 500 });
       next(error);
     }
   });
@@ -305,8 +334,8 @@ router.post('/login',
       const hash = await dao.getHash(email);
       if (hash.length !== 1) {
         logger.info('Account not found', { email });
-        res.json({ accountFound: false });
-        return;
+        loginsMetric.inc({ type: 'email', success: false, status: 500 });
+        return res.json({ accountFound: false });
       }
 
       if (hash[0].password) {
@@ -314,14 +343,15 @@ router.post('/login',
 
         if (result !== true) {
           logger.info('Incorrect password', { email, userID: hash[0].user_id });
-          res.json({ message: 'Sorry we couldn\'t log you in, it looks like your email address or password wasn\'t right' });
-          return;
+          loginsMetric.inc({ type: 'email', success: false, status: 500 });
+          return res.json({ message: 'Sorry we couldn\'t log you in, it looks like your email address or password wasn\'t right' });
         }
 
         jwt.sign({ userID: hash[0].user_id }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
           if (!err) {
             logger.info('JWT Created & Sent', { userID: hash[0].user_id, jwt: jwtToken });
             res.json({ token: jwtToken });
+            loginsMetric.inc({ type: 'email', success: true, status: 200 });
           } else {
             next(err);
           }
@@ -329,8 +359,10 @@ router.post('/login',
       } else {
         logger.info('Account found for social login', { userID: hash[0].user_id, email });
         res.json({ isSocial: true });
+        loginsMetric.inc({ type: 'email', success: false, status: 500 });
       }
     } catch (error) {
+      loginsMetric.inc({ type: 'email', success: false, status: 500 });
       next(error);
     }
   });
@@ -489,7 +521,15 @@ router.post('/generateSMScode', authorisation.isAuthorized,
             messagingServiceSid: 'MGad653ffd0889357ac879d70dafc51478',
             to: phoneNumberParsed.number,
           })
-          .then((message) => console.log(message));
+          .then((message) => {
+            twilioSMS.inc({ status: 200 });
+            logger.info('Requested SMS code to be sent', {
+              userID: res.locals.user,
+              twilioRes: message.status,
+              twilioSID: message.sid,
+              twllioErrorCode: message.errorCode,
+            });
+          });
         res.sendStatus(204);
       } else {
         logger.error('The number of rows in the DB that were updated was not 1', { userID: res.locals.user, parsedPhoneNumber: phoneNumberParsed.number });
