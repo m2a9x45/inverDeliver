@@ -1,7 +1,7 @@
 const express = require('express');
 
 const router = express.Router();
-const dao = require('../dao/dataProduct');
+const dao = require('../dao/dataProduct.js');
 const logger = require('../middleware/logger.js');
 
 // Get the defult product list
