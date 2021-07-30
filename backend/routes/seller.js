@@ -8,6 +8,7 @@ require('dotenv').config();
 
 const logger = require('../middleware/logger');
 const dao = require('../dao/dataSeller');
+const authorisation = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -20,7 +21,7 @@ router.post('/create', async (req, res, next) => {
     // check if their's an account tied to that email
     const account = await dao.checkAccountexists(email);
     if (account.length > 0) {
-      res.json({ data: 'Account with the email allready exists' });
+      res.json({ error: 'Account with the email allready exists' });
       return;
     }
 
@@ -29,10 +30,10 @@ router.post('/create', async (req, res, next) => {
       type: 'express',
     });
 
-    const userID = `seller_${uuidv4()}`;
+    const sellerID = `seller_${uuidv4()}`;
     const hash = await bcrypt.hash(password.trim(), 10);
 
-    const seller = await dao.createSeller(userID, stripeAccount.id,
+    const seller = await dao.createSeller(sellerID, stripeAccount.id,
       firstName, lastName, email, hash);
     if (!seller.insertId) {
       // something went wrong
@@ -40,14 +41,14 @@ router.post('/create', async (req, res, next) => {
 
     const accountLinks = await stripe.accountLinks.create({
       account: stripeAccount.id,
-      refresh_url: 'http://localhost:8080/reauth',
-      return_url: 'http://example.com/return',
+      refresh_url: 'http://localhost:8080/seller/reauth',
+      return_url: 'http://localhost:8080/seller/complete',
       type: 'account_onboarding',
     });
 
-    jwt.sign({ userID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
+    jwt.sign({ sellerID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
       if (!err) {
-        logger.info('JWT Created & Sent', { userID, jwt: jwtToken });
+        logger.info('JWT Created & Sent', { sellerID, jwt: jwtToken });
         res.json({
           data: {
             token: jwtToken,
@@ -61,18 +62,38 @@ router.post('/create', async (req, res, next) => {
   }
 });
 
-router.post('/resume', async (req, res, next) => {
-  // generate a new account link from stripe
-  const { account } = req.body;
-  // check account ID in DB, this will be a userID in the future
-  const accountLinks = await stripe.accountLinks.create({
-    account,
-    refresh_url: 'http://localhost:8080/reauth',
-    return_url: 'http://example.com/return',
-    type: 'account_onboarding',
-  });
+router.get('/status', authorisation.isAuthorizedSeller, async (req, res, next) => {
+  try {
+    const stripeID = await dao.getStripeID(res.locals.seller);
+    if (stripeID === undefined) {
+      res.status(404).json({ data: null });
+      return;
+    }
+    console.log(stripeID);
 
-  res.json({ data: accountLinks.url });
+    const account = await stripe.accounts.retrieve(stripeID.stripe_id);
+
+    // checking if seller has submitted the required details
+    if (account.details_submitted === false) {
+      const accountLink = await stripe.accountLinks.create({
+        account: account.id,
+        refresh_url: 'http://localhost:8080/seller/reauth',
+        return_url: 'http://localhost:8080/seller/complete',
+        type: 'account_onboarding',
+      });
+      res.json(accountLink);
+    }
+
+    if (account.charges_enabled === false) {
+      // There's some reason for this
+    }
+
+    // update DB to show account onboarding has passed
+    const updatedStatus = await dao.updateSignupStatus(res.locals.seller, 'complete');
+    res.json(account);
+  } catch (error) {
+    next(error);
+  }
 });
 
 module.exports = router;

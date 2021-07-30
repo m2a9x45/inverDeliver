@@ -82,7 +82,7 @@ nav ul li:first-child {
 .helpOptionsHolder {
     margin: 2rem auto;
     display: grid;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: auto auto auto auto;
     text-align: center;
 }
 
@@ -99,6 +99,46 @@ nav ul li:first-child {
 #twitterImg {
     font-size: 80pt;
     color: #1DA1F2;
+}
+
+.callbackForm {
+    display: none;
+    margin: 2rem auto;
+    padding: 1rem;
+    border-radius: 15px;
+    width: 50%;
+    background-color: rgb(255, 255, 255);
+}
+
+.callbackForm h2, p {
+    text-align: center;
+}
+
+.callbackForm textarea {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+.callbackForm input[type="tel"], input[type="email"] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+}
+
+.callbackForm button {
+    width: 100%;
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
 }
 
 footer {

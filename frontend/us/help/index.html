@@ -55,11 +55,26 @@
                     <i class="fa fa-twitter" id="twitterImg"></i>
                     <p><a target="_blank" href="https://twitter.com/inverdeliver">@inverdeliver</a></p>    
                 </div>
+                <div>
+                    <p>Ask for a callback</p>
+                    <i class="fa fa-phone" id="phoneImg"></i>
+                    <p><a href="javascript:;" onclick="toggleCallForm();">Request a call</a></p>    
+                </div>
             </div>
-            
-        
-            <!-- <h3>Stuff you might find useful</h3> -->
         </div>
+
+        <form class="callbackForm">
+            <h2>Callback Request</h2>
+            <label for="">Enter your email address</label>
+            <input type="email" name="" id="" placeholder="John.Doe@email.com">
+            <p>Avoid waiting on hold and let us call you</p>
+            <label for="">Let us know how we can help?</label>
+            <textarea name="" id="" cols="30" rows="5" placeholder="Let us what you need help with the more detail the better"></textarea>
+            <p>We'll call you on the phone number linked with you account</p>
+            <label for="">If you'd like us to call you on a different phone number, enter it below</label>
+            <input type="tel" name="" id="" placeholder="Phone number you'd like us to call you on">
+            <button type="submit">Request Callback</button>
+        </form>
 
     </main>
     <footer>
@@ -91,6 +106,7 @@
         </div>
 
     </footer>
+    <script src="help.js"></script>
 </body>
 
 </html>

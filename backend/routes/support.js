@@ -34,6 +34,22 @@ router.get('/queue', (req, res) => {
     .then((member) => console.log(member.callSid));
 });
 
+router.post('/callback', async (req, res, next) => {
+  const {
+    userID, email, issue, phoneNumber,
+  } = req.body;
+
+  // Try to link request to an account:
+  //   - If logged in / has a token via userID
+  //   - Then via email
+  //   - Finally via phone number
+  //   - If none of the above work then log it without an account
+
+  // Add userID, customer issue and phoneNumber to DB along with status
+  // Send discord webhook to notify me of support request
+  // https://discord.com/api/webhooks/870091265813917747/kYedk4-2mTicijK8K8Aoc1-fTe11SAH2wzKaErd96cR3q5r_F3KDPTBl876EjVX0yl65
+});
+
 module.exports = router;
 
 // QU1be15279610de02195081fbdd4d88405
