@@ -8,18 +8,25 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@150;300;400&display=swap" rel="stylesheet">
 
+    <script src="https://kit.fontawesome.com/4c9a84b417.js" crossorigin="anonymous"></script>
+
     <title>food - cart</title>
 </head>
 <body>
     <header>
         <nav class="navbar">
+            <span class="navbarToggle">
+                <i class="fa fa-bars"></i>
+            </span>
             <ul class="navbarList">
-                <li id="navbarItem"><a href="../" >Home</a></li>
-                <li id="navbarItem"><a id="order" href="../orders/">Orders</a></li>
-                <li id="navbarItem"><a id="cart" href=".">Cart</a></li>
-                <li id="navbarItem"><a id="cart" href="../us/">Help</a></li>
-                <li id="navbarItem"><a id="cart" href="../account/">Account</a></li>
-                <li id="navbarItem"><a id="logout" href="../signin">Login</a></li>
+                <li id="navbarItem" style="margin-right: auto;"><a href="../">Home</a></li>
+                <div class="mainNav">
+                    <li id="navbarItem"><a id="order" href="../orders/">Orders</a></li>
+                    <li id="navbarItem"><a id="cart" href=".">Cart</a></li>
+                    <li id="navbarItem"><a id="cart" href="../us/">Help</a></li>
+                    <li id="navbarItem"><a id="cart" href="../account/">Account</a></li>
+                    <li id="navbarItem"><a id="logout" href="../signin">Login</a></li>
+                </div>
             </ul>
         </nav>
     </header>
@@ -29,11 +36,17 @@
                 <h2 id="cartLabel">Your Cart 🛒</h2>
                 <div class="cartContent">
                     <!-- <div class="cartItem">
-                        <div>
-                            <p>Milk</p>
-                            <label for="quantity">Quantity:</label>
-                            <input type="number" id="quantity" name="quantity" min="0" max="10" value="1">
-                        </div>
+                            <div class="orderItemImgAndName">
+                                <img src="http://localhost:3001/productImage/d45b890b-4107-42fb-bcd0-bbea680f0724.jpeg" alt="" width="70px">
+                                <div class="itemInfo">
+                                    <p>Milk</p>
+                                    <p>product description</p>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="quantity">Quantity:</label>
+                                <input type="number" id="quantity" name="quantity" min="0" max="10" value="1">
+                            </div>
                         <div>      
                             <p>£ 6.53</p>
                         </div>
@@ -46,9 +59,25 @@
             <div class="DeliverySection">
                 <h2 id="cartLabel">Delivery Info 🚚</h2>
                 <div class="customerInfo">
+                    <form id="addphoneNumberForm">
+                        <input type="tel" name="phone" id="phone" placeholder="Your phone number" autocomplete="tel" required>
+                        <button id="addPhoneNumber" class="submit">Add phone number</button>
+                    </form>
+
+                    <form id="verfiyphoneNumberForm">
+                        <p>
+                            We've just sent you a verfication code to your phone number.
+                            Please enter it below to verify your number. Thanks 👍
+                        </p>
+                        <input id="verificationCode" type="tel" inputmode="numeric" placeholder="6 digit - Vefication Code" maxlength="6" pattern="[0-9]*"
+                        autocomplete="one-time-code">
+                        <button class="submit">Verfiy Phone Number</button>
+                        <a href="http://">change phone number</a>
+                    </form>
+                    
                     <form id="deliveryForm">
                         <div>
-                            <input type="tel" name="phone" id="phone" placeholder="Your phone number" autocomplete="tel" required>
+                            
                             <label for="">Choose your delivery day & time:</label>
                             <input type="datetime-local" name="delivery_time" id="delivery_time" required>
                         </div>
@@ -70,8 +99,13 @@
                             </div>
 
                             <p style="text-align: center;"><a id="addNewAddressLink" href="javascript:;" onclick="showAddNewAddress()">Add a new address</a></p>
+
+                            <label for="delivery_note">Delivery Instructions</label>
+                            <textarea id="deliveryNote" name="delivery_note" placeholder="Door code, who to leave your shopping with. etc."></textarea>
+                            
                         </div>
                         <input class="submit" type="submit" value="Continue to Payment">
+                        <p id="errorMessage">Error message</p>
                     </form>            
                 </div>
             </div>

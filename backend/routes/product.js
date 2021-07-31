@@ -5,20 +5,48 @@ const dao = require('../dao/dataProduct.js');
 const logger = require('../middleware/logger.js');
 
 // Get the defult product list
+// product/standard?catagory=drinks?search=cola
 router.get('/standard', async (req, res, next) => {
-  try {
-    const products = await dao.products();
+  const { category } = req.query;
+  const { search } = req.query;
 
-    res.json({
-      message: 'success',
-      data: products,
-    });
+  try {
+    if (category && search) {
+      const products = await dao.productByCategoryAndSearch(category, search);
+      if (products.length === 0) {
+        res.json({ data: null, message: 'No products found' });
+        return null;
+      }
+      return res.json({ data: products });
+    }
+
+    if (category) {
+      const products = await dao.productByCategory(category);
+      if (products.length === 0) {
+        res.json({ data: null, message: 'No products found' });
+        return null;
+      }
+      return res.json({ data: products });
+    }
+
+    if (search) {
+      try {
+        const product = await dao.product(search);
+        return res.json({ data: product });
+      } catch (error) {
+        next(error);
+      }
+    }
+
+    const products = await dao.products();
+    return res.json({ data: products });
   } catch (error) {
     next(error);
   }
 });
 
 // Get a product via a serach term
+// This route has been replaced with /standard and query params
 router.get('/search', async (req, res, next) => {
   const { productName } = req.query;
 
@@ -42,6 +70,22 @@ router.get('/productById', async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  }
+});
+
+// This route has been replaced with /standard and query params
+router.get('/category/:id', async (req, res, next) => {
+  const category = req.params.id;
+  console.log(category);
+  try {
+    const products = await dao.productByCategory(category);
+    if (products.length === 0) {
+      res.json({ data: null, message: 'No products found' });
+      return null;
+    }
+    return res.json({ data: products });
+  } catch (error) {
+    return next(error);
   }
 });
 

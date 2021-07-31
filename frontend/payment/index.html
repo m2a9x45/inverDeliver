@@ -11,7 +11,7 @@
 
     <script src="https://js.stripe.com/v3/"></script>
     <script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script>
-    <script src="https://use.fontawesome.com/844b628bbf.js"></script>
+    <script src="https://kit.fontawesome.com/4c9a84b417.js" crossorigin="anonymous"></script>
 
     <title>food - payment</title>
 </head>
@@ -19,13 +19,18 @@
 <body>
     <header>
         <nav class="navbar">
+            <span class="navbarToggle">
+                <i class="fa fa-bars"></i>
+            </span>
             <ul class="navbarList">
-                <li id="navbarItem"><a href="../">InverDeliver</a></li>
-                <li id="navbarItem"><a id="order" href="../orders/">Orders</a></li>
-                <li id="navbarItem"><a id="cart" href="../cart/">Cart</a></li>
-                <li id="navbarItem"><a id="cart" href="../us/">Help</a></li>
-                <li id="navbarItem"><a id="cart" href="../account/">Account</a></li>
-                <li id="navbarItem"><a id="logout" href="../signin">Login</a></li>
+                <li id="navbarItem" style="margin-right: auto;"><a href="../">Home</a></li>
+                <div class="mainNav">
+                    <li id="navbarItem"><a id="order" href="../orders/">Orders</a></li>
+                    <li id="navbarItem"><a id="cart" href="../cart/">Cart</a></li>
+                    <li id="navbarItem"><a id="cart" href="../us/">Help</a></li>
+                    <li id="navbarItem"><a id="cart" href="../account/">Account</a></li>
+                    <li id="navbarItem"><a id="logout" href="../signin">Login</a></li>
+                </div>
             </ul>
         </nav>
     </header>
@@ -74,8 +79,9 @@
 
             </div>
             <div>
-                <p id="altDeliveryInfo"><b>Delivery Time & Contact Number</b></p>
+                <p id="altDeliveryInfo"><b>Delivery Time</b></p>
                 <p id="deliveryTime"></p>
+                <p id="altDeliveryInfo"><b>Contact Number</b></p>
                 <p id="ContactNumber"></p>
             </div>
         </div>

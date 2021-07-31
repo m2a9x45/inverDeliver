@@ -5,19 +5,23 @@ const morgan = require('morgan');
 const app = express();
 const port = 3001;
 
-const products = require('./routes/product.js');
-const orders = require('./routes/order.js');
-const payments = require('./routes/payment.js');
-const users = require('./routes/user.js');
-const authorisation = require('./middleware/auth.js');
-const logger = require('./middleware/logger.js');
-const metric = require('./routes/metric.js');
+const products = require('./routes/product');
+const orders = require('./routes/order');
+const payments = require('./routes/payment');
+const users = require('./routes/user');
+const support = require('./routes/support');
+const authorisation = require('./middleware/auth');
+const logger = require('./middleware/logger');
+const metric = require('./routes/metric');
+const seller = require('./routes/seller');
+const bussiness = require('./routes/bussiness');
 
 const corsOptions = {
-  origin: ['http://127.0.0.1:8080', 'http://localhost:8080', 'http://127.0.0.1:5500', 'http://localhost:3002'],
+  origin: ['http://localhost:8080', 'http://127.0.0.1:5500', 'http://localhost:3002'],
   optionsSuccessStatus: 200,
 };
 
+app.set('trust proxy', true);
 app.use(morgan('combined', { stream: logger.stream }));
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -30,6 +34,9 @@ app.use('/product', products);
 app.use('/order', authorisation.isAuthorized, orders);
 app.use('/payment', payments);
 app.use('/user', users);
+app.use('/support', support);
+app.use('/seller', seller);
+app.use('/bussiness', authorisation.isAuthorizedSeller);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
@@ -52,6 +59,6 @@ app.use((err, req, res, next) => {
   });
   res.status(res.statusCode || 500);
   res.json({
-    error: err,
+    error: err.message,
   });
 });

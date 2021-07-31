@@ -2,6 +2,9 @@ body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
     background-color: rgb(241, 241, 241);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
 }
 
 header {
@@ -15,6 +18,19 @@ header {
     width: 75%;
 }
 
+.navbarToggle {
+    display: none;
+}
+
+.navbarToggle:hover {
+    color: rgb(66, 176, 255);
+}
+
+.mainNav {
+    display: flex;
+    flex-direction: row;
+}
+
 .navbarList {
     margin: 0;
     padding: 0;
@@ -26,10 +42,6 @@ header {
     list-style-type: none;
     font-size: 16pt;
     padding: 0.5rem;
-}
-
-nav ul li:first-child {
-    margin-right: auto;
 }
 
 #navbarItem a, #logo a {
@@ -74,11 +86,35 @@ nav ul li:first-child {
     border-radius: 5px;
 }
 
-.productsContainer {
-    width: 80%;
-    margin: 2rem auto;
-    min-height: 40vh;
+.categoryHolder {
+    width: 95%;
+    margin: 1rem auto;
+    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    flex-direction: row;
 }
+
+.categoryHolder a {
+    width: fit-content;
+    
+    border: 3px solid rgb(122, 176, 236);
+    padding: 0.5rem 1rem;
+    margin: 0.5rem 0.5rem;
+    border-radius: 15px;
+    text-decoration: none;
+    color: black;
+}
+
+.selected {
+    background-color: rgb(122, 176, 236);
+}
+
+.productsContainer {
+    margin: 0.5rem auto;
+}
+
 
 .loader {
     margin: 1rem auto;
@@ -108,7 +144,7 @@ nav ul li:first-child {
 .grid-container {
     display: grid;
     grid-template-columns: auto auto auto auto auto auto;
-    max-width: fit-content;
+    justify-content: center;
     margin: 0 auto;
   }
 
@@ -182,6 +218,7 @@ img {
 
 footer {
     background-color:rgba(66, 176, 255, 0.151);
+    margin-top:auto; 
 }
 
 .footerContainer {
@@ -240,8 +277,35 @@ footer {
 }
 
 @media only screen and (max-width: 680px) {
+    header {
+        padding: 0.5em;
+    }
+    .navbar {
+        width: 100%;
+    }
+    .navbarList {
+        flex-direction: column;
+    }
+    .mainNav {
+        display: none;
+        flex-direction: column;
+        text-align: center;
+    }
+    #navbarItem {
+        font-size: 14pt;
+        padding: 0.2rem;
+        text-align: center;
+    }
+    .navbarToggle {
+        display: block;
+        position: absolute;
+        right: 20px;
+        cursor: pointer; 
+        color: rgba(255,255,255,0.8);
+        font-size: 24px;
+    }
     .grid-container {
-        grid-template-columns: auto auto;
+        grid-template-columns: auto;
     }
     #learnMoreButton {
         width: 75%;
@@ -249,7 +313,21 @@ footer {
 }
 
 @media only screen and (max-width: 465px) {
-    .grid-container {
-        grid-template-columns: auto;
+
+    header {
+        padding: 0.5em;
+    }
+    .navbar {
+        width: 100%;
+    }
+    #navbarItem {
+        font-size: 14pt;
+        padding: 0.2rem;
+    }
+    .productsContainer {
+        width: 95%;
+    }
+    .grid-item {
+        padding: 1rem 0.1rem 1rem 0.1rem;
     }
 }

@@ -1,8 +1,16 @@
 const API_URL = "https://api.inverdeliver.com";
 
+const navBarToggle = document.querySelector('.navbarToggle');
+const navtoggle = document.querySelector('.mainNav');
 const cartContent = document.querySelector(".cartContent");
 const priceTotal = document.querySelector("#priceTotal");
 const deliveryForm = document.querySelector('#deliveryForm');
+const addphoneNumberForm = document.querySelector('#addphoneNumberForm');
+const phoneNumberInput = document.querySelector('#phone');
+const errorMessage = document.querySelector('#errorMessage');
+
+const verfiyphoneNumberForm = document.querySelector('#verfiyphoneNumberForm');
+const verificationCodeInput = document.querySelector('#verificationCode'); 
 
 const street_name = document.querySelector('#street_name');
 const city = document.querySelector('#city');
@@ -30,6 +38,25 @@ if (!token) {
     }
 }
 
+// Navbar toggle code
+const x = window.matchMedia("(max-width: 680px)");
+
+x.addEventListener("change", () => {
+  if (x.matches) { 
+    navtoggle.style.display = "none";
+  } else {
+    navtoggle.style.display = "flex";
+  }
+})
+
+navBarToggle.addEventListener("click", () => {
+  if (navtoggle.style.display === "none" || navtoggle.style.display === "") {
+    navtoggle.style.display = "flex";
+  } else {
+    navtoggle.style.display = "none";
+  }
+});
+
 let total =  350;
 let cart;
 let selectedAddress = null;
@@ -38,6 +65,9 @@ showCart();
 
 function showCart() {
   cart = JSON.parse(localStorage.getItem("cart"));
+  if (cart === null || Object.keys(cart).length === 0 && cart.constructor === Object) {
+    window.location = '../';
+  }
   console.log(cart);
 
   for (const [key, value] of Object.entries(cart)) {
@@ -88,6 +118,11 @@ function displayCart(item, id) {
 
       console.log(cart);
       localStorage.setItem("cart", JSON.stringify(cart));
+      console.log("here",Object.keys(cart).length);
+
+      if (cart === null || Object.keys(cart).length === 0 && cart.constructor === Object) {
+        window.location = '../';
+      }
 
       cartContent.innerHTML = "";
       total = 350;
@@ -184,6 +219,61 @@ function showSavedAddresses(addresses) {
   });
 };
 
+addphoneNumberForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  if (phoneNumberInput.value !== '') {
+    console.log(phoneNumberInput.value);
+
+    fetch(`${API_URL}/user/generateSMScode`, {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+        'authorization': `bearer ${token}`,
+      },
+      body: JSON.stringify({
+        "phoneNumber": phoneNumberInput.value,
+      })
+    })
+    .then(response => {
+      console.log(response);
+      if (response.ok) {
+        verfiyphoneNumberForm.style.display = 'block';
+        addphoneNumberForm.style.display = "none";
+      } else {
+        return response.json();
+      }
+    })
+    .then((data) => {console.log(data);})
+    .catch((error) => { console.error('Error:', error) });
+  }
+});
+
+verfiyphoneNumberForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  if (verificationCodeInput.value !== '') {
+    console.log(verificationCodeInput.value);
+
+    fetch(`${API_URL}/user/updatePhoneNumber`, {
+      method: "PATCH",
+      headers: {
+        'Content-Type': 'application/json',
+        'authorization': `bearer ${token}`,
+      },
+      body: JSON.stringify({
+        "SMScode": verificationCodeInput.value,
+      })
+    })
+    .then(response => {
+      console.log(response);
+      if (response.ok) {
+        verfiyphoneNumberForm.style.display = 'none';
+        deliveryForm.style.display = 'block';
+      }
+    })
+    .catch((error) => { console.error('Error:', error) });
+  }
+})
+
 fetch(`${API_URL}/user/phoneNumber`, {
   headers: {
     'authorization': `bearer ${token}`,
@@ -192,10 +282,17 @@ fetch(`${API_URL}/user/phoneNumber`, {
 .then(response => response.json())
 .then(data => {
   console.log(data);
-  if (data.phone_number !== null) {
-    const phoneNumberInput = document.querySelector('#phone');
-    phoneNumberInput.disabled = "disabled";
-    phoneNumberInput.style.display = "none";
+  const phoneNumberInput = document.querySelector('#phone');
+  // check to see if phone number is added but not verfied
+  if (data.phone_verified === 0 && data.phone_number !== null) {
+    verfiyphoneNumberForm.style.display = 'block';
+    addphoneNumberForm.style.display = 'none';
+  }
+  // check to see if phone number is added and verfied 
+  if (data.phone_verified === 1 && data.phone_number !== null) {
+    verfiyphoneNumberForm.style.display = 'none';
+    addphoneNumberForm.style.display = 'none';
+    deliveryForm.style.display = 'block';
   }
 })
 .catch((error) => {
@@ -217,6 +314,7 @@ fetch(`${API_URL}/user/addresses`, {
 });
 
 deliveryForm.addEventListener("submit", (e) => {
+  errorMessage.style.display = 'none';
   e.preventDefault();
 
   const orderData = {
@@ -264,8 +362,14 @@ deliveryForm.addEventListener("submit", (e) => {
     })
     .then(response => response.json())
     .then(data => {
-      console.log('Success:', data);
-      window.location.replace(`../payment/index.html?orderID=${data.order_id}`);
+      console.log(data);
+      if (data.order_id) {
+        window.location.replace(`../payment/index.html?orderID=${data.order_id}`);
+      } else {
+        console.log('something went wrong');
+        errorMessage.style.display = 'block';
+        errorMessage.innerHTML = data.message;
+      }
     })
     .catch((error) => {
       console.error('Error:', error);

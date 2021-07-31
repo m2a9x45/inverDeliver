@@ -19,6 +19,19 @@ h2 {
     width: 75%;
 }
 
+.navbarToggle {
+    display: none;
+}
+
+.navbarToggle:hover {
+    color: rgb(66, 176, 255);
+}
+
+.mainNav {
+    display: flex;
+    flex-direction: row;
+}
+
 .navbarList {
     margin: 0;
     padding: 0;
@@ -32,18 +45,13 @@ h2 {
     padding: 0.5rem;
 }
 
-nav ul li:first-child {
-    margin-right: auto;
-}
-
-#navbarItem a,
-#logo a {
+#navbarItem a, #logo a {
     text-decoration: none;
     color: rgb(224, 224, 224);
 }
 
 #navbarItem a:hover, #logo a:hover {
-    color: rgb(66, 176, 255);
+    color: rgb(66, 176, 255);;
 }
 
 .loader {
@@ -164,13 +172,30 @@ nav ul li:first-child {
     text-align: right;
 }
 
-@media only screen and (max-width: 540px) {
+@media only screen and (max-width: 680px) {
+    header {
+        padding: 0.5em;
+    }
     .navbar {
-        margin: 0 auto;
         width: 100%;
     }
-
+    .navbarList {
+        flex-direction: column;
+    }
+    .mainNav {
+        display: none;
+        flex-direction: column;
+        text-align: center;
+    }
     #navbarItem {
         font-size: 14pt;
+        padding: 0.2rem;
     }
-}
+    .navbarToggle {
+        display: block;
+        position: absolute;
+        right: 20px;
+        cursor: pointer; 
+        color: rgba(255,255,255,0.8);
+        font-size: 24px;
+    }

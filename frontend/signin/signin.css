@@ -5,18 +5,26 @@ body {
 }
 
 .signInSelect {
-    margin: 15rem auto;
+    margin: 10rem auto;
+    padding: 0.5rem;
+    width: 40%;
+    background-color: #fafafa;
+    border-radius: 15px;
+}
+
+.signInSelect h1 {
     text-align: center;
 }
 
-.passwordSignInHolder {
-    width: 25%;
-    margin: 0 auto;
+#otherSignInOptions {
+    text-align: center;
+    font-weight: bolder;
+    font-size: 14pt;
 }
 
-.passwordSignInHolder input {
-    width: 100%;
-    margin: 0.2rem;
+.passwordSignInHolder {
+    width: 350px;
+    margin: 0 auto;
 }
 
 .googleSignInHolder {
@@ -24,3 +32,60 @@ body {
     margin: 1rem auto;
 }
 
+.FbSignInHolder {
+    width: 350px;
+    margin: 1rem auto;
+}
+
+.loginInput {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 0.3rem 0;
+    box-sizing: border-box;
+}
+
+#name, #password, #createAccountButton {
+    display: none;
+}
+
+#continueButton {
+    width: 100%;
+    margin: 0.5rem 0 0.2rem 0;
+    background-color: rgb(66, 176, 255); /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 14pt;
+}
+
+#createAccountButton {
+    display: none;
+    width: 100%;
+    margin: 0.5rem 0 0.2rem 0;
+    background-color: rgb(66, 176, 255); /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 14pt;
+}
+
+#loginButton {
+    display: none;
+    width: 100%;
+    margin: 0.5rem 0 0.2rem 0;
+    background-color: rgb(66, 176, 255); /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 14pt;
+}
+
+#forgotPassword {
+    text-align: center;
+}

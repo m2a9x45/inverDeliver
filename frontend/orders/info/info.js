@@ -1,4 +1,8 @@
-const API_URL = "https://api.inverdeliver.com";
+const API_URL = "http://localhost:3001";
+
+const navBarToggle = document.querySelector('.navbarToggle');
+const navtoggle = document.querySelector('.mainNav');
+
 const orderContentDiv = document.querySelector(".orderContent");
 const priceTotal = document.querySelector('#priceTotal');
 
@@ -23,6 +27,25 @@ if (!token) {
       window.location.replace('../../signin');
     }
 }
+
+// Navbar toggle code
+const x = window.matchMedia("(max-width: 680px)");
+
+x.addEventListener("change", () => {
+  if (x.matches) { 
+    navtoggle.style.display = "none";
+  } else {
+    navtoggle.style.display = "flex";
+  }
+})
+
+navBarToggle.addEventListener("click", () => {
+  if (navtoggle.style.display === "none" || navtoggle.style.display === "") {
+    navtoggle.style.display = "flex";
+  } else {
+    navtoggle.style.display = "none";
+  }
+});
 
 fetch(`${API_URL}/order/status?orderID=${orderID}`, {
     headers: {
@@ -106,7 +129,7 @@ function displayOrderContent(item) {
     
   } else {
     img = document.createElement("img");
-    img.setAttribute("src", item.image_url);
+    img.setAttribute("src", `${API_URL}/productImage/${item.image_url}`);
 
     quantity = document.createElement("p");
     quantity.innerText = `Quantity: ${item.quantity}`;
@@ -212,16 +235,6 @@ function showOrderStatus(status) {
       status4.style.opacity = 1;
       status5.style.opacity = 1;
       status5.style.backgroundColor = "rgb(66, 176, 255)";
-      break;
-    case 6:
-      
-      status1.style.opacity = 1;
-      status2.style.opacity = 1;
-      status3.style.opacity = 1;
-      status4.style.opacity = 1;
-      status5.style.opacity = 1;
-      status6.style.opacity = 1;
-      status6.style.backgroundColor = "rgb(66, 176, 255)";
       break;
     default:
       break;

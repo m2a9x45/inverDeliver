@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@150;300;400&display=swap" rel="stylesheet">
 
-    <script src="https://use.fontawesome.com/844b628bbf.js"></script>
+    <script src="https://kit.fontawesome.com/4c9a84b417.js" crossorigin="anonymous"></script>
 
     <title>InverDeliver | Your Account</title> 
 </head>
@@ -17,13 +17,18 @@
 <body>
     <header>
         <nav class="navbar">
+            <span class="navbarToggle">
+                <i class="fa fa-bars"></i>
+            </span>
             <ul class="navbarList">
-                <li id="navbarItem"><a href="../">InverDeliver</a></li>
-                <li id="navbarItem"><a id="order" href="../orders/">Orders</a></li>
-                <li id="navbarItem"><a id="cart" href="../cart/">Cart</a></li>
-                <li id="navbarItem"><a id="cart" href="../us/">Help</a></li>
-                <li id="navbarItem"><a id="cart" href="../account/">Account</a></li>
-                <li id="navbarItem"><a id="logout" href="../signin">Login</a></li>
+                <li id="navbarItem" style="margin-right: auto;"><a href="../">Home</a></li>
+                <div class="mainNav">
+                    <li id="navbarItem"><a id="order" href="../orders/">Orders</a></li>
+                    <li id="navbarItem"><a id="cart" href="../cart/">Cart</a></li>
+                    <li id="navbarItem"><a id="cart" href="../us/">Help</a></li>
+                    <li id="navbarItem"><a id="cart" href="../account/">Account</a></li>
+                    <li id="navbarItem"><a id="logout" href="../signin">Login</a></li>
+                </div>
             </ul>
         </nav>
     </header>
@@ -108,7 +113,7 @@
                 <br>
                 <button id="submitButton" type="submit">Update Phone Number</button>
             
-            <a href="../help/">Let us know if you need any help</a>
+            <a href="../us/help/">Let us know if you need any help</a>
         </div>
     </div>
 

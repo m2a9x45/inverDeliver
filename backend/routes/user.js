@@ -1,18 +1,43 @@
 const express = require('express');
 const { OAuth2Client } = require('google-auth-library');
 const { v4: uuidv4 } = require('uuid');
+const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const stripe = require('stripe')(process.env.STRIPE_KEY);
 const axios = require('axios');
+const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+const Redis = require('ioredis');
+const phone = require('libphonenumber-js');
+const bcrypt = require('bcrypt');
 
-const dao = require('../dao/dataUser.js');
+const dao = require('../dao/dataUser');
+const metrics = require('./metric');
 
-const logger = require('../middleware/logger.js');
-const authorisation = require('../middleware/auth.js');
+const logger = require('../middleware/logger');
+const authorisation = require('../middleware/auth');
 
 require('dotenv').config();
 
 const router = express.Router();
+const redis = new Redis();
+
+const loginsMetric = new metrics.client.Counter({
+  name: 'login_attempts',
+  help: 'Total number of login attempts',
+  labelNames: ['type', 'success', 'status'],
+});
+
+const createAccountMetric = new metrics.client.Counter({
+  name: 'create_account_attempts',
+  help: 'Total number of account creation attempts',
+  labelNames: ['type', 'status'],
+});
+
+const twilioSMS = new metrics.client.Counter({
+  name: 'twilio_requests',
+  help: 'Totla number of twilio request',
+  labelNames: ['status'],
+});
 
 async function checkUsersFbToken(accessToken, userID) {
   try {
@@ -48,8 +73,10 @@ async function createAccount(userID, externalID, externalType,
       firstName,
       lastName,
       stripeID);
+    createAccountMetric.inc({ type: externalType, status: 200 });
     return acoountCreation;
   } catch (error) {
+    createAccountMetric.inc({ type: externalType, status: 500 });
     return error;
   }
 }
@@ -77,6 +104,8 @@ router.post('/googleSignIn', async (req, res, next) => {
         // Checking to see if more than 1 user account matches the googleID we've been given
         if (hasLinkedGoogleAcount.length > 1) {
           logger.warn('More than one userID to googleID match', { googleID: googleUserID, matched: hasLinkedGoogleAcount });
+          loginsMetric.inc({ type: 'google', success: false, status: 500 });
+          // return an error
         }
 
         logger.info('Account found with matching googleID', { googleID: googleUserID, userID: hasLinkedGoogleAcount[0].user_id });
@@ -86,6 +115,7 @@ router.post('/googleSignIn', async (req, res, next) => {
           if (!err) {
             logger.info('User signed in', { userID });
             res.json({ token: jwtToken });
+            loginsMetric.inc({ type: 'google', success: true, status: 200 });
           } else {
             next(err);
           }
@@ -159,6 +189,7 @@ router.post('/fbSignIn', async (req, res, next) => {
     if (hasLinkedFbAccount.length !== 0) {
       if (hasLinkedFbAccount.length > 1) {
         logger.warn('More than one userID to fbID match', { fbID: fbUserID, matched: hasLinkedFbAccount });
+        loginsMetric.inc({ type: 'facebook', success: false, status: 500 });
       }
 
       logger.info('Account found with matching fbID', { fbID: fbUserID, userID: hasLinkedFbAccount[0].user_id });
@@ -168,6 +199,7 @@ router.post('/fbSignIn', async (req, res, next) => {
         if (!error) {
           logger.info('User signed in', { userID });
           res.json({ token: jwtToken });
+          loginsMetric.inc({ type: 'facebook', success: true, status: 200 });
         } else {
           next(error);
         }
@@ -240,6 +272,145 @@ router.get('/account', authorisation.isAuthorized, async (req, res, next) => {
   }
 });
 
+router.post('/createAccount',
+  body('email').isEmail({ domain_specific_validation: true }),
+  body('password').isLength({ min: 7 }),
+  body('name').isAlphanumeric(),
+  async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      createAccountMetric.inc({ type: 'email', status: 400 });
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { email, name, password } = req.body;
+
+    try {
+    // check that this is a new user
+      const account = await dao.hasAccountByEmail(email);
+      if (account.length !== 0) {
+        logger.info('Account linked with that email', { email, userID: account[0].user_id });
+        return res.json({ emailInUse: true });
+      }
+      const userID = uuidv4();
+      const stripeCustomer = await stripe.customers.create({
+        name,
+        metadata: { userID },
+      });
+      logger.info('Stripe Customer ID creatted', { userID, StripeID: stripeCustomer.id });
+
+      // hash password and store new user in database
+      const hash = await bcrypt.hash(password.trim(), 10);
+      const createdAccount = await dao.createAccountWithEmail(userID, email,
+        name, hash, stripeCustomer.id);
+
+      logger.info('Account created', { userID, DBID: createdAccount.insertId });
+      // send JWT
+      jwt.sign({ userID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
+        if (!err) {
+          logger.info('JWT Created & Sent', { userID, jwt: jwtToken });
+          res.json({ token: jwtToken });
+          createAccountMetric.inc({ type: 'email', status: 200 });
+        }
+        next(err);
+      });
+    } catch (error) {
+      createAccountMetric.inc({ type: 'email', status: 500 });
+      next(error);
+    }
+  });
+
+router.post('/login',
+  body('email').isEmail({ domain_specific_validation: true }),
+  body('password').isLength({ min: 7 }),
+  async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { email, password } = req.body;
+    try {
+      const hash = await dao.getHash(email);
+      if (hash.length !== 1) {
+        logger.info('Account not found', { email });
+        loginsMetric.inc({ type: 'email', success: false, status: 500 });
+        return res.json({ accountFound: false });
+      }
+
+      if (hash[0].password) {
+        const result = await bcrypt.compare(password.trim(), hash[0].password);
+
+        if (result !== true) {
+          logger.info('Incorrect password', { email, userID: hash[0].user_id });
+          loginsMetric.inc({ type: 'email', success: false, status: 500 });
+          return res.json({ message: 'Sorry we couldn\'t log you in, it looks like your email address or password wasn\'t right' });
+        }
+
+        jwt.sign({ userID: hash[0].user_id }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
+          if (!err) {
+            logger.info('JWT Created & Sent', { userID: hash[0].user_id, jwt: jwtToken });
+            res.json({ token: jwtToken });
+            loginsMetric.inc({ type: 'email', success: true, status: 200 });
+          } else {
+            next(err);
+          }
+        });
+      } else {
+        logger.info('Account found for social login', { userID: hash[0].user_id, email });
+        res.json({ isSocial: true });
+        loginsMetric.inc({ type: 'email', success: false, status: 500 });
+      }
+    } catch (error) {
+      loginsMetric.inc({ type: 'email', success: false, status: 500 });
+      next(error);
+    }
+  });
+
+router.get('/hasAccount/:id', async (req, res, next) => {
+  const email = req.params.id;
+
+  try {
+    const account = await dao.hasAccountByEmail(email);
+    // checks if an account with that email has been found and if more than one has been found
+    if (account.length === 0) {
+      logger.info('No account linked with that email', { email });
+      res.json({ newAccount: true });
+      return;
+    }
+
+    if (account.length > 1) {
+      logger.error('More than one account found for email address', { email, account });
+      res.json({ message: 'Someting went wrong' });
+      return;
+    }
+
+    if (account.length === 1 && account[0].external_id !== null) {
+      // account exist with that email and is a social login
+      logger.info('Account found with that email, linked to social login', {
+        email,
+        userID: account[0].user_id,
+        loginType: account[0].external_type,
+      });
+      res.json({
+        newAccount: false,
+        isSocial: true,
+        socialType: account[0].external_type,
+      });
+      return;
+    }
+
+    if (account.length === 1 && account[0].external_id === null) {
+      // account exist with that email and isn't a social login
+      logger.info('Account found with that email', { email });
+      res.json({ newAccount: false, isSocial: false });
+    }
+    return;
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.get('/card', authorisation.isAuthorized, async (req, res, next) => {
   try {
     const stripeID = await dao.getStripeID(res.locals.user);
@@ -282,30 +453,93 @@ router.get('/addresses', authorisation.isAuthorized, async (req, res, next) => {
 
 router.get('/phoneNumber', authorisation.isAuthorized, async (req, res, next) => {
   try {
-    const phoneNumber = await dao.getPhoneNumber(res.locals.user);
-    console.log(phoneNumber);
-    res.json(phoneNumber);
+    const phoneNumberInfo = await dao.getPhoneNumber(res.locals.user);
+    res.json(phoneNumberInfo);
   } catch (error) {
     next(error);
   }
 });
 
-router.patch('/updatePhoneNumber', authorisation.isAuthorized, async (req, res, next) => {
-  const { phoneNumber } = req.body;
-  logger.info('Updated phone number request', { userID: res.locals.user, phoneNumber });
-
-  try {
-    const updated = await dao.updatePhoneNumber(res.locals.user, req.body.phoneNumber);
-    if (updated.changedRows === 1) {
-      logger.info('Updated users phone number', { userID: res.locals.user, phoneNumber });
-      res.sendStatus(204);
-    } else {
-      res.sendStatus(404);
+router.patch('/updatePhoneNumber', authorisation.isAuthorized,
+  body('SMScode').isNumeric().isLength({ min: 5, max: 5 }),
+  async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: 'Invalid SMS code' });
     }
-  } catch (error) {
-    next(error);
-  }
-});
+
+    const { SMScode } = req.body;
+    logger.info('Updated phone number request', { userID: res.locals.user, SMScode });
+
+    const result = await redis.get(res.locals.user);
+    console.log('redis result', result);
+    logger.info('redis code for the user', { userID: res.locals.user, SMScode, redis: result });
+
+    if (SMScode === result) {
+      logger.info('SMS code matches redis code for user', { userID: res.locals.user, SMScode, redisCode: result });
+      const validateNumber = await dao.validatePhoneNumber(res.locals.user);
+      if (validateNumber.affectedRows !== 1) {
+        logger.warn('Phone number not updated, either no number was updated or too many werer',
+          { userID: res.locals.user });
+        next('Something went wrong vaildating oyur phone number');
+        return;
+      }
+      // If SMScode has been validated we should remobe the SMS code from redis to stop repeat request
+      res.sendStatus(201);
+    } else {
+      logger.info('Could not validate phone number', { userID: res.locals.user, SMScode, redisCode: result });
+      res.json({ error: 'Sadly we can not validate your phone number' });
+    }
+  });
+
+router.post('/generateSMScode', authorisation.isAuthorized,
+  body('phoneNumber').isMobilePhone(['en-GB']),
+  async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: 'Invalid Phone Number' });
+    }
+
+    const { phoneNumber } = req.body;
+    logger.info('asked to generate a new SMS verfication code', { userID: res.locals.user, phoneNumber });
+    try {
+      const phoneNumberParsed = phone.parsePhoneNumber(phoneNumber, 'GB');
+      logger.info('Parseed phone number', { userID: res.locals.user, phoneNumber, parsedPhoneNumber: phoneNumberParsed.number });
+
+      const updated = await dao.updatePhoneNumber(res.locals.user, phoneNumberParsed.number);
+      if (updated.changedRows === 1) {
+        logger.info('Adding unverfied phone number to database', { userID: res.locals.user, parsedPhoneNumber: phoneNumberParsed.number });
+        const SMScode = Math.floor(Math.random() * 99999) + 10000;
+
+        // Add error checking for redis set
+        redis.set(res.locals.user, SMScode);
+        logger.info('SMS code generated and added to redis', { userID: res.locals.user, SMScode, parsedPhoneNumber: phoneNumberParsed.number });
+        // Send Verification SMS code.
+        client.messages
+          .create({
+            body: `Hey 👋 your verfication code is ${SMScode}`,
+            messagingServiceSid: 'MGad653ffd0889357ac879d70dafc51478',
+            to: phoneNumberParsed.number,
+          })
+          .then((message) => {
+            twilioSMS.inc({ status: 200 });
+            logger.info('Requested SMS code to be sent', {
+              userID: res.locals.user,
+              twilioRes: message.status,
+              twilioSID: message.sid,
+              twllioErrorCode: message.errorCode,
+            });
+          });
+        res.sendStatus(204);
+      } else {
+        logger.error('The number of rows in the DB that were updated was not 1', { userID: res.locals.user, parsedPhoneNumber: phoneNumberParsed.number });
+        res.sendStatus(404);
+      }
+    } catch (error) {
+      res.status(500);
+      next(error);
+    }
+  });
 
 router.delete('/address', authorisation.isAuthorized, async (req, res, next) => {
   const { addressID } = req.query;

@@ -1,0 +1,54 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background-color: rgb(241, 241, 241);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.navHolder {
+    display: grid;
+    grid-template-columns: 15% auto;
+}
+
+.sidebar {
+    background-color: rgb(46, 46, 46);
+    height: 100vh;
+}
+
+.content {
+    margin: 1rem;
+} 
+
+form {
+    width: 30%;
+    margin: 4rem auto;
+    padding: 1rem;
+    background-color: rgb(255, 255, 255);
+
+}
+
+form h1 {
+    text-align: center;
+    font-weight: 400;
+}
+
+input {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    margin: 0 auto;
+    background-color: rgb(66, 176, 255); /* Green */
+    border: none;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14pt;
+}

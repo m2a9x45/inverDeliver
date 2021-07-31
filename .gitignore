@@ -7,6 +7,7 @@ backend/package-lock.json
 backend/public
 
 frontend/email
+frontend/icons
 
 .vscode
 
@@ -19,3 +20,4 @@ tools/backroom-backend/.env
 
 tools/fruit.html
 tools/itemGetter.py
+tools/csv-product-importer

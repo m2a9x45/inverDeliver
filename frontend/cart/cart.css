@@ -14,6 +14,19 @@ header {
     width: 75%;
 }
 
+.navbarToggle {
+    display: none;
+}
+
+.navbarToggle:hover {
+    color: rgb(66, 176, 255);
+}
+
+.mainNav {
+    display: flex;
+    flex-direction: row;
+}
+
 .navbarList {
     margin: 0;
     padding: 0;
@@ -25,10 +38,6 @@ header {
     list-style-type: none;
     font-size: 16pt;
     padding: 0.5rem;
-}
-
-nav ul li:first-child {
-    margin-right: auto;
 }
 
 #navbarItem a, #logo a {
@@ -77,11 +86,21 @@ nav ul li:first-child {
     border-bottom: 1px solid rgb(201, 201, 201);
     padding-bottom: 0.5rem;
     margin-bottom: 0.5rem;
+    align-items: center;
 }
 
 .cartItem p {
     font-size: 12pt;
     margin: 0;
+}
+
+.orderItemImgAndName {
+    display: flex;
+    align-items: center;
+}
+
+.itemInfo {
+    padding-left: 1rem;
 }
 
 #quantity {
@@ -124,6 +143,19 @@ nav ul li:first-child {
     -moz-appearance: none;
 }
 
+#addphoneNumberForm {
+    padding: 1rem 0;
+}
+
+#verfiyphoneNumberForm {
+    display: none;
+    padding: 1rem 0;
+}
+
+#deliveryForm {
+    display: none;
+}
+
 .savedAddressSelector {
     display: flex;
     justify-content: space-evenly;
@@ -157,6 +189,16 @@ nav ul li:first-child {
     display: none;
 }
 
+#deliveryNote {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+    font-size: 12pt;
+    resize: vertical;
+}
+
 .submit {
     width: 100%;
     /* margin: 1rem; */
@@ -176,6 +218,12 @@ nav ul li:first-child {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
+#errorMessage {
+    display: none;
+    color: red;
+    text-align: center;
+}
+
 @media screen and (max-width: 900px) {
     .content {
         display: grid;
@@ -183,16 +231,32 @@ nav ul li:first-child {
     }
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 680px) {
     header {
         padding: 0.5em;
     }
     .navbar {
         width: 100%;
     }
+    .navbarList {
+        flex-direction: column;
+    }
+    .mainNav {
+        display: none;
+        flex-direction: column;
+        text-align: center;
+    }
     #navbarItem {
         font-size: 14pt;
         padding: 0.2rem;
+    }
+    .navbarToggle {
+        display: block;
+        position: absolute;
+        right: 20px;
+        cursor: pointer; 
+        color: rgba(255,255,255,0.8);
+        font-size: 24px;
     }
     .CartSection, .DeliverySection {
         width: 100%;

@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@150;300;400&display=swap" rel="stylesheet">
 
-    <script src="https://use.fontawesome.com/844b628bbf.js"></script>
+    <script src="https://kit.fontawesome.com/4c9a84b417.js" crossorigin="anonymous"></script>
 
     <title>InverDeliver | help</title>
 </head>
@@ -18,7 +18,7 @@
     <header>
         <nav class="navbar">
             <ul class="navbarList">
-                <li id="navbarItem"><a href="../">InverDeliver</a></li>
+                <li id="navbarItem"><a href="../">Home</a></li>
                 <li id="navbarItem"><a id="order" href="../orders/">Orders</a></li>
                 <li id="navbarItem"><a id="cart" href="../cart/">Cart</a></li>
                 <li id="navbarItem"><a id="cart" href=".">Help</a></li>
@@ -46,20 +46,35 @@
                     <p><a href="mailto:help@inverdeliver.com">help@inverdeliver.com</a></p>
                 </div>
                 <div>
-                    <p>Give us a call</p>
-                    <i class="fa fa-phone" id="phoneImg"></i>
-                    <p><a href="tel:+0800621939">0800 621 939</a></p>
+                    <p>Message us on Discord</p>
+                    <i class="fab fa-discord" id="phoneImg"></i>
+                    <p><a target="_blank" href="https://discord.gg/9D524KZZdm">Join our server</a></p>
                 </div>
                 <div>
                     <p>Tweet us</p>
                     <i class="fa fa-twitter" id="twitterImg"></i>
                     <p><a target="_blank" href="https://twitter.com/inverdeliver">@inverdeliver</a></p>    
                 </div>
+                <div>
+                    <p>Ask for a callback</p>
+                    <i class="fa fa-phone" id="phoneImg"></i>
+                    <p><a href="javascript:;" onclick="toggleCallForm();">Request a call</a></p>    
+                </div>
             </div>
-            
-        
-            <!-- <h3>Stuff you might find useful</h3> -->
         </div>
+
+        <form class="callbackForm">
+            <h2>Callback Request</h2>
+            <label for="">Enter your email address</label>
+            <input type="email" name="" id="" placeholder="John.Doe@email.com">
+            <p>Avoid waiting on hold and let us call you</p>
+            <label for="">Let us know how we can help?</label>
+            <textarea name="" id="" cols="30" rows="5" placeholder="Let us what you need help with the more detail the better"></textarea>
+            <p>We'll call you on the phone number linked with you account</p>
+            <label for="">If you'd like us to call you on a different phone number, enter it below</label>
+            <input type="tel" name="" id="" placeholder="Phone number you'd like us to call you on">
+            <button type="submit">Request Callback</button>
+        </form>
 
     </main>
     <footer>
@@ -91,6 +106,7 @@
         </div>
 
     </footer>
+    <script src="help.js"></script>
 </body>
 
 </html>

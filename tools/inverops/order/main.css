@@ -1,0 +1,59 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background-color: rgb(241, 241, 241);
+}
+
+.orderItem {
+    background-color: rgb(255, 255, 255);
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgb(173, 173, 173);
+}
+
+.orderImageAndName {
+    display: flex;
+    margin: 0 auto;
+    width: 70%;
+    justify-content: space-between;
+}
+
+.buttonGroup {
+    margin: 0.5rem auto;
+    display: flex;
+    justify-content: center;
+}
+
+#noItemButton {
+    margin: 0 0.1rem;
+    background-color: hsl(20, 100%, 53%); /* Green */
+    border: none;
+    padding: 0.5rem 2rem;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12pt;
+    width: 40%;
+}
+
+#yesnoItemButton {
+    margin: 0 0.1rem;
+    background-color: hsl(93, 77%, 44%); /* Green */
+    border: none;
+    padding: 0.5rem 2rem;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12pt;
+    width: 40%;
+}
+
+#completeButton {
+    background-color: hsl(93, 77%, 44%); /* Green */
+    border: none;
+    padding: 0.5rem 2rem;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14pt;
+    width: 100%;
+}
