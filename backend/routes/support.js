@@ -1,4 +1,5 @@
 const express = require('express');
+const axios = require('axios');
 
 const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 const { VoiceResponse } = require('twilio').twiml;
@@ -35,9 +36,39 @@ router.get('/queue', (req, res) => {
 });
 
 router.post('/callback', async (req, res, next) => {
-  const {
-    userID, email, issue, phoneNumber,
-  } = req.body;
+  const { email, issue, phoneNumber } = req.body;
+
+  const discordWebhook = 'https://discord.com/api/webhooks/870091265813917747/kYedk4-2mTicijK8K8Aoc1-fTe11SAH2wzKaErd96cR3q5r_F3KDPTBl876EjVX0yl65';
+  const discordData = {
+    embeds: [{
+      title: '💬 New Support Request',
+      fields: [{
+        name: 'Email Address',
+        value: email,
+        inline: true,
+      }, {
+        name: 'Phone Number',
+        value: phoneNumber || 'Use number on account',
+        inline: true,
+      }, {
+        name: 'Issue',
+        value: issue,
+      }],
+    }],
+  };
+
+  try {
+    const responce = await axios.post(discordWebhook, discordData);
+
+    if (responce.status !== 204) {
+      res.json({ error: 'Requested was not posted to discord channel' });
+      return;
+    }
+
+    res.json({ data: 'success' });
+  } catch (error) {
+    next(error);
+  }
 
   // Try to link request to an account:
   //   - If logged in / has a token via userID
