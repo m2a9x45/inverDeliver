@@ -139,6 +139,8 @@ header {
     padding: 12px 20px;
     margin: 8px 0;
     box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 }
 
 #addphoneNumberForm {
@@ -208,6 +210,8 @@ header {
     text-decoration: none;
     display: inline-block;
     font-size: 11pt;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 }
 
 .submit:hover {

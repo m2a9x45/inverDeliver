@@ -2,6 +2,7 @@ const API_URL = "http://localhost:3001";
 
 const navBarToggle = document.querySelector('.navbarToggle');
 const navtoggle = document.querySelector('.mainNav');
+
 const loader = document.querySelector('.loader');
 const ordersHolder = document.querySelector('.orders');
 const errorMessage = document.querySelector('#errorMessage');

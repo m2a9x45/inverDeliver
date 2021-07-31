@@ -2,6 +2,7 @@ const API_URL = "http://localhost:3001";
 
 const navBarToggle = document.querySelector('.navbarToggle');
 const navtoggle = document.querySelector('.mainNav');
+
 const orderContentDiv = document.querySelector(".orderContent");
 const priceTotal = document.querySelector('#priceTotal');
 
