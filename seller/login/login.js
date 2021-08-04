@@ -4,7 +4,6 @@ const signupForm = document.querySelector('#signupForm');
 signupForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    const shopName = document.querySelector('#shopName').value;
     const firstName = document.querySelector('#firstName').value;
     const lastName = document.querySelector('#lastName').value;
     const email = document.querySelector('#email').value;

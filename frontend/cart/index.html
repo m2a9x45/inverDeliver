@@ -75,13 +75,14 @@
                         <a href="http://">change phone number</a>
                     </form>
                     
+                    
+
                     <form id="deliveryForm">
                         <div>
-                            
-                            <label for="">Choose your delivery day & time:</label>
-                            <input type="datetime-local" name="delivery_time" id="delivery_time" required>
-                        </div>
-                        <div>
+                            <div>
+                                <label for="">Choose your delivery day & time:</label>
+                                <input type="datetime-local" name="delivery_time" id="delivery_time" required>
+                            </div>
                             <h4 for="">Your delivery address:</h4>
                             <div class="savedAddressSelector">
                                 <!-- <a class="address" href="" id="test">
@@ -93,9 +94,13 @@
                                 </a>      -->
                             </div>
                             <div class="addNewAddress">
-                                <input type="text" placeholder="Street Name" autocomplete="address-line1" name="street_name" id="street_name" disabled required>
-                                <input type="text" placeholder="Town/City" autocomplete="address-level2" name="city" id="city" disabled required>
-                                <input type="text" placeholder="Postcode" autocomplete="postal-code" name="post_code" id="post_code" disabled required>
+                                <input type="text" placeholder="EH1 2KL" autocomplete="postal-code" name="post_code" id="post_code" disabled required>
+                                <button id="postcodeLookupButton" class="submit">Search postcode</button>
+                            </div>
+
+                            <div class="selectNewAddress" style="display: none;">
+                                <select class="addressSelector" name="" id=""></select>
+                                <button id="addNewAddressButton" class="submit">Add Address</button>
                             </div>
 
                             <p style="text-align: center;"><a id="addNewAddressLink" href="javascript:;" onclick="showAddNewAddress()">Add a new address</a></p>
@@ -104,7 +109,7 @@
                             <textarea id="deliveryNote" name="delivery_note" placeholder="Door code, who to leave your shopping with. etc."></textarea>
                             
                         </div>
-                        <input class="submit" type="submit" value="Continue to Payment">
+                        <input id="ContinuePaymentButton" class="submit" type="submit" value="Continue to Payment">
                         <p id="errorMessage">Error message</p>
                     </form>            
                 </div>

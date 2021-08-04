@@ -110,6 +110,19 @@ function getAddress(userID, addressID) {
   }));
 }
 
+function addAddress(userID, addressID, street, city, postCode, lat, long) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'INSERT INTO addresses (user_id, address_id, street, city, post_code, lat, addresses.long) VALUES (?,?,?,?,?,?,?)';
+    db.query(sql, [userID, addressID, street, city, postCode, lat, long], (err, value) => {
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
 function deleteAddresses(userID, addressID) {
   return new Promise(((resolve, reject) => {
     const sql = 'UPDATE addresses SET deleted_at=(?) WHERE user_id=(?) AND address_id=(?) AND deleted_at IS NULL';
@@ -183,6 +196,7 @@ module.exports = {
   getStripeID,
   updatePhoneNumber,
   getAddresses,
+  addAddress,
   deleteAddresses,
   getPhoneNumber,
   validatePhoneNumber,

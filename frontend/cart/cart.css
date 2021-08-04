@@ -139,6 +139,8 @@ header {
     padding: 12px 20px;
     margin: 8px 0;
     box-sizing: border-box;
+    border: 1px solid black;
+    border-radius: 5px;
     -webkit-appearance: none;
     -moz-appearance: none;
 }
@@ -187,6 +189,17 @@ header {
 
 .addNewAddress {
     display: none;
+}
+
+#post_code {
+    text-transform: uppercase;
+}
+
+.addressSelector {
+    width: 100%;
+    margin: 8px 0;
+    font-family: 'Roboto', sans-serif;
+    font-size: 12pt;
 }
 
 #deliveryNote {

@@ -451,6 +451,100 @@ router.get('/addresses', authorisation.isAuthorized, async (req, res, next) => {
   }
 });
 
+router.post('/postcodeLookup', authorisation.isAuthorized, async (req, res, next) => {
+  const { postCode } = req.body;
+  logger.info('postcode lookup started', { userID: res.locals.user, postCode });
+  // add new address to DB
+  const postCodeParsed = postCode.replace(/\s/g, '');
+  const regixPostCode = postCodeParsed.toUpperCase().match(/^[A-Z][A-Z]{0,1}[0-9][A-Z0-9]{0,1}[0-9]/);
+
+  if (regixPostCode === null) {
+    logger.warn('regix failed to find postcode', { userID: res.locals.user, postCode: postCodeParsed });
+    return res.json({ withInOpArea: false, message: 'Sorry something went wrong, it does not look like you have entered a vaild postcode' });
+  }
+
+  // List of postcode sectors where we operater
+  const operatingArea = ['EH11', 'EH12', 'EH13', 'EH21', 'EH22', 'EH23', 'EH24', 'EH35', 'EH36', 'EH37', 'EH38', 'EH39',
+    'EH126', 'EH125', 'EH112', 'EH111', 'EH104', 'EH165', 'EH91', 'EH92', 'EH89', 'EH89', 'EH87', 'EH88', 'EH75', 'EH74', 'EH41', 'EH42', 'EH43'];
+
+  // checing to see if the postcode sector the user has entered is one that we operater in
+  if (!operatingArea.includes(regixPostCode[0])) {
+    logger.warn('Deliver address outside of operating area', { userID: res.locals.user, postCode: postCodeParsed, postCodeSector: regixPostCode[0] });
+    return res.json({ withInOpArea: false, message: 'Sorry something went wrong the selected postcode is not part of our operating area' });
+  }
+
+  // const addresses = await axios.get(`https://ws.postcoder.com/pcw/${process.env.POSTCODER_API_KEY}/address/UK/${postCode}?format=json&lines=2&addtags=latitude,longitude`);
+
+  const data = [
+    {
+      addressline1: 'Flat 7',
+      addressline2: '64 Duff Street',
+      summaryline: 'Flat 7, 64 Duff Street, Edinburgh, City of Edinburgh, EH11 2JD',
+      subbuildingname: 'Flat 7',
+      number: '64',
+      premise: 'Flat 7, 64',
+      street: 'Duff Street',
+      posttown: 'Edinburgh',
+      county: 'City of Edinburgh',
+      postcode: 'EH11 2JD',
+      latitude: '55.9420018154',
+      longitude: '-3.2266079932',
+      grideasting: '323483',
+      gridnorthing: '672786',
+    },
+    {
+      addressline1: 'Flat 8',
+      addressline2: '64 Duff Street',
+      summaryline: 'Flat 8, 64 Duff Street, Edinburgh, City of Edinburgh, EH11 2JD',
+      subbuildingname: 'Flat 8',
+      number: '64',
+      premise: 'Flat 8, 64',
+      street: 'Duff Street',
+      posttown: 'Edinburgh',
+      county: 'City of Edinburgh',
+      postcode: 'EH11 2JD',
+      latitude: '55.9420018154',
+      longitude: '-3.2266079932',
+      grideasting: '323483',
+      gridnorthing: '672786',
+    },
+  ];
+
+  res.json(data);
+});
+
+router.post('/addAddress', authorisation.isAuthorized, async (req, res, next) => {
+  const { address } = req.body;
+
+  try {
+    const addressDBInsertID = await dao.addAddress(res.locals.user, uuidv4(), `${address.premise} ${address.street}`,
+      address.posttown, address.postcode, address.latitude, address.longitude);
+
+    console.log(addressDBInsertID.insertId);
+
+    res.sendStatus(201);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.delete('/address', authorisation.isAuthorized, async (req, res, next) => {
+  const { addressID } = req.query;
+
+  try {
+    const deleted = await dao.deleteAddresses(res.locals.user, addressID);
+    if (deleted.changedRows !== 1) {
+      logger.warn('Deleting address possibly failed or was already deleted', { userID: res.locals.user, addressID });
+      res.sendStatus(500);
+      return;
+    }
+    logger.info('Address deleted', { userID: res.locals.user, addressID });
+    res.sendStatus(204);
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.get('/phoneNumber', authorisation.isAuthorized, async (req, res, next) => {
   try {
     const phoneNumberInfo = await dao.getPhoneNumber(res.locals.user);
@@ -540,22 +634,5 @@ router.post('/generateSMScode', authorisation.isAuthorized,
       next(error);
     }
   });
-
-router.delete('/address', authorisation.isAuthorized, async (req, res, next) => {
-  const { addressID } = req.query;
-
-  try {
-    const deleted = await dao.deleteAddresses(res.locals.user, addressID);
-    if (deleted.changedRows !== 1) {
-      logger.warn('Deleting address possibly failed or was already deleted', { userID: res.locals.user, addressID });
-      res.sendStatus(500);
-      return;
-    }
-    logger.info('Address deleted', { userID: res.locals.user, addressID });
-    res.sendStatus(204);
-  } catch (error) {
-    next(error);
-  }
-});
 
 module.exports = router;

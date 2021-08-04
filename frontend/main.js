@@ -1,4 +1,4 @@
-const API_URL = "https://api.inverdeliver.com"
+const API_URL = "http://localhost:3001"
 
 const gridCcontainer = document.querySelector('.grid-container');
 const productSearch = document.querySelector('#productSearch');

@@ -1,4 +1,4 @@
-const API_URL = "https://api.inverdeliver.com";
+const API_URL = "http://localhost:3001";
 
 const navBarToggle = document.querySelector('.navbarToggle');
 const navtoggle = document.querySelector('.mainNav');
@@ -19,6 +19,12 @@ const post_code = document.querySelector('#post_code');
 const savedAddressSelector = document.querySelector('.savedAddressSelector');
 const addNewAddress = document.querySelector('.addNewAddress');
 const addNewAddressLink = document.querySelector('#addNewAddressLink');
+const selectNewAddress = document.querySelector('.selectNewAddress');
+const postcodeLookupButton = document.querySelector('#postcodeLookupButton');
+const addNewAddressButton = document.querySelector('#addNewAddressButton');
+
+const ContinuePaymentButton = document.querySelector('#ContinuePaymentButton');
+
 
 const token = localStorage.getItem('token');
 
@@ -162,8 +168,6 @@ function showAddNewAddress() {
     address.style.backgroundColor = "rgb(248, 248, 248)";
   });
 
-  street_name.disabled = !street_name.disabled;
-  city.disabled = !city.disabled;
   post_code.disabled = !post_code.disabled;
 
   console.log(addNewAddress.style.display);
@@ -171,7 +175,6 @@ function showAddNewAddress() {
   if (addNewAddress.style.display === "none" || addNewAddress.style.display === "") {
     addNewAddress.style.display = "block";
     addNewAddressLink.innerText = "Select a saved address";
-    // selectedPaymentMethod = null;
   } else {
     addNewAddress.style.display = "none";
     savedAddressSelector.style.display = "flex";
@@ -274,6 +277,85 @@ verfiyphoneNumberForm.addEventListener('submit', (e) => {
   }
 })
 
+postcodeLookupButton.addEventListener('click', (e) => {
+  e.preventDefault();
+
+  errorMessage.style.display = 'none';
+  errorMessage.innerHTML = '';
+
+  const data = {
+    postCode: post_code.value
+  }
+
+  fetch(`${API_URL}/user/postcodeLookup`, {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json",
+      'authorization': `bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log(data);
+    if (data.withInOpArea === false) {
+      errorMessage.style.display = 'block';
+      errorMessage.innerHTML = data.message;
+      return;
+    }
+
+    const addressSelector = document.querySelector('.addressSelector');
+    data.forEach(address => {
+      console.log(address);
+      const option = document.createElement('option');
+      option.setAttribute('value', JSON.stringify(address));
+      option.innerHTML = address.summaryline;
+      addressSelector.appendChild(option)
+    });
+
+    addNewAddress.style.display = 'none';
+    selectNewAddress.style.display = 'block';
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+  });
+});
+
+addNewAddressButton.addEventListener('click', (e) => {
+  e.preventDefault();
+  const addressSelector = document.querySelector('.addressSelector');
+  console.log(addressSelector.options[addressSelector.selectedIndex].value);
+
+  const data = {
+    address: JSON.parse(addressSelector.options[addressSelector.selectedIndex].value)
+  }
+
+  // send data to backend
+  fetch(`${API_URL}/user/addAddress`, {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json",
+      'authorization': `bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  })
+  .then(response => {
+    if (response.status === 201) {
+      selectNewAddress.style.display = 'none';
+      savedAddressSelector.style.display = 'flex';
+      getAddresses();
+      return;
+    }
+  })
+  .then(data => {
+    console.log(data);
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+  });
+})
+
+
 fetch(`${API_URL}/user/phoneNumber`, {
   headers: {
     'authorization': `bearer ${token}`,
@@ -299,21 +381,32 @@ fetch(`${API_URL}/user/phoneNumber`, {
   console.error('Error:', error);
 });
 
-fetch(`${API_URL}/user/addresses`, {
-  headers: {
-    'authorization': `bearer ${token}`,
-  },
-})
-.then(response => response.json())
-.then(data => {
-  console.log(data);
-  showSavedAddresses(data);
-})
-.catch((error) => {
-  console.error('Error:', error);
-});
+getAddresses();
 
-deliveryForm.addEventListener("submit", (e) => {
+function getAddresses() {
+  fetch(`${API_URL}/user/addresses`, {
+    headers: {
+      'authorization': `bearer ${token}`,
+    },
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log(data);
+    if (data.length <= 0 ) {
+      showAddNewAddress();
+    } else {
+      showSavedAddresses(data);
+    }
+    
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+  });
+  
+}
+
+
+ContinuePaymentButton.addEventListener("click", (e) => {
   errorMessage.style.display = 'none';
   e.preventDefault();
 
@@ -378,3 +471,4 @@ deliveryForm.addEventListener("submit", (e) => {
     console.log("Delivery time is not at least 2 hours from the current time");
   }
 });
+

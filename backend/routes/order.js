@@ -1,6 +1,6 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
-// const Redis = require('ioredis');
+const Redis = require('ioredis');
 
 const logger = require('../middleware/logger');
 
@@ -19,7 +19,6 @@ router.post('/create', async (req, res, next) => {
   const orderID = uuidv4();
   const deliveryID = uuidv4();
   const addressID = data.address ? data.address : uuidv4();
-  // https://postcoder.com/
 
   try {
     const phoneNumberVerfied = await daoUser.getPhoneNumber(res.locals.user);
@@ -32,21 +31,9 @@ router.post('/create', async (req, res, next) => {
     next(error);
   }
 
-  logger.info('Create new order request', {
-    orderID,
-    userID: res.locals.user,
-    addressID,
-  });
-
-  data.products.forEach((product) => {
-    productsArray.push([orderID, product[0], product[1]]);
-  });
-
-  logger.info('Product array created', {
-    orderID,
-    userID: res.locals.user,
-    productsArray,
-  });
+  logger.info('Create new order request', { orderID, userID: res.locals.user, addressID });
+  data.products.forEach((product) => { productsArray.push([orderID, product[0], product[1]]); });
+  logger.info('Product array created', { orderID, userID: res.locals.user, productsArray });
 
   try {
     let orderInfo;
@@ -61,6 +48,14 @@ router.post('/create', async (req, res, next) => {
       orderInfo = await dao.createOrder(res.locals.user, orderID, deliveryID, addressID, data);
       logger.info('create order with exsiting address', { orderID, userID: res.locals.user, addressID });
     } else {
+      // unused code as all orders should come with an addressID as the've gone theough the postcode lookup.
+      // Not deleting at the moment as we may still want to support manual address adding.
+      // Although that should live in the /user routes
+
+      // This part is hit if their is no addressID given
+      logger.error('No addressID given', { orderID, userID: res.locals.user });
+      return res.status(501);
+
       // add new address to DB
       data.post_code = data.post_code.replace(/\s/g, '');
       const regixPostCode = data.post_code.toUpperCase().match(/^[A-Z][A-Z]{0,1}[0-9][A-Z0-9]{0,1}[0-9]/);
@@ -75,8 +70,7 @@ router.post('/create', async (req, res, next) => {
         return res.json({ withInOpArea: false, message: 'Sorry something went wrong the selected postcode is not part of our operating area' });
       }
 
-      orderInfo = await dao.createOrderWithNewAddress(res.locals.user,
-        orderID, deliveryID, addressID, data);
+      orderInfo = await dao.createOrderWithNewAddress(res.locals.user, orderID, deliveryID, addressID, data);
       logger.info('create order with a new address', { orderID, userID: res.locals.user, addressID });
       // This is where we'd want to emit an address added event.
       // redis.publish('new_address_added', addressID);
