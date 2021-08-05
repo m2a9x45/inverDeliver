@@ -38,7 +38,7 @@ router.get('/queue', (req, res) => {
 router.post('/callback', async (req, res, next) => {
   const { email, issue, phoneNumber } = req.body;
 
-  const discordWebhook = 'https://discord.com/api/webhooks/870091265813917747/kYedk4-2mTicijK8K8Aoc1-fTe11SAH2wzKaErd96cR3q5r_F3KDPTBl876EjVX0yl65';
+  const discordWebhook = process.env.DISCORD_WEBHOOK;
   const discordData = {
     embeds: [{
       title: '💬 New Support Request',
