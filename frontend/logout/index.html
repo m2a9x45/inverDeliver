@@ -18,21 +18,21 @@
 <body>
     <main>
         <p>You've been logged out</p>
-        <div class="g-signin2" data-onsuccess="onSignIn" style="display: none;"></div>
     </main>
 
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script src="https://apis.google.com/js/platform.js"></script>
 
-    <a href="#" onclick="signOut();">Sign out</a>
     <script>
-        function signOut() {
-            localStorage.removeItem('token');
+        localStorage.removeItem('token');
 
+        if (gapi.auth2.getAuthInstance()) {
             var auth2 = gapi.auth2.getAuthInstance();
             auth2.signOut().then(function () {
                 console.log('User signed out.');
             });
         }
+
+        window.location.replace("../");
     </script>
 
 </body>

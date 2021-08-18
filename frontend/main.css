@@ -274,6 +274,13 @@ footer {
     .productSearchDiv {
         width: 80%;
     }
+    #snackbar {
+        width: 250px;
+        margin-right: -150px;
+        left: 1rem; 
+        bottom: 30px;
+        top: auto;
+    }
 }
 
 @media only screen and (max-width: 680px) {
@@ -305,7 +312,7 @@ footer {
         font-size: 24px;
     }
     .grid-container {
-        grid-template-columns: auto;
+        grid-template-columns: auto auto;
     }
     #learnMoreButton {
         width: 75%;
@@ -329,5 +336,7 @@ footer {
     }
     .grid-item {
         padding: 1rem 0.1rem 1rem 0.1rem;
+        margin: 0.1rem;
+        width: auto;
     }
 }

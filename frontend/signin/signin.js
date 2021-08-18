@@ -126,7 +126,7 @@ function onSignIn(googleUser) {
         .then(data => {
             if (data.token) {
                 localStorage.setItem('token', data.token);
-                // window.location.replace('../');
+                window.location.replace('../');
             }
         })
         .catch((error) => {
@@ -158,7 +158,7 @@ function statusChangeCallback(res) {
             console.log(data);
             if (data.token) {
                 localStorage.setItem('token', data.token);
-                // window.location.replace('../');
+                window.location.replace('../');
             }
         })
         .catch((error) => {
