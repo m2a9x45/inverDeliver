@@ -1,3 +1,5 @@
+const API_URL = 'http://localhost:3001'
+const callbackForm = document.querySelector('.callbackForm');
 const navBarToggle = document.querySelector('.navbarToggle');
 const navtoggle = document.querySelector('.mainNav');
 

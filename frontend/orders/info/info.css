@@ -199,3 +199,16 @@ h2 {
         color: rgba(255,255,255,0.8);
         font-size: 24px;
     }
+    .grid-container {
+        grid-template-columns: auto;
+    }
+    .deliveryContent {
+        width: 100%;
+    }
+    .orderContent {
+        width: 100%;
+    }
+    .orderTotal {
+        width: 100%;
+    }
+}
