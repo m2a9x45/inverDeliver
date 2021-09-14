@@ -118,14 +118,27 @@ async function handlePaymentIntentSucceeded(id) {
   }
 }
 
-router.post('/webhook', async (req, res, next) => {
-  logger.info('Stripe webhook event recived', { request: req.body });
+router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res, next) => {
+  // Remove ::1 localhost as a vaild Ip: https://stripe.com/docs/ips
+  const vaildStripeWebhookIps = ['3.18.12.63', '3.130.192.231', '13.235.14.237', '13.235.122.149', '18.211.135.69', '35.154.171.200',
+    '52.15.183.38', '54.88.130.119', '54.88.130.237', '54.187.174.169', '54.187.205.235', '54.187.216.72', '::1'];
+
+  // Check that the request has come from Stripes vaild IPs
+  const reqIP = req.ip;
+  const sig = req.headers['stripe-signature'];
+
+  if (!vaildStripeWebhookIps.includes(reqIP)) {
+    logger.warn('Webhook event recived, noty from stripe', { sig, ip: req.ip });
+    return res.status(400).send('Webhook Error: IP out of range');
+  }
+
+  logger.info('Stripe webhook event recived', { ip: req.ip, sig });
   let event;
   try {
-    event = req.body;
+    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
     logger.error('Stripe webhook error while parsing request.', { error: err.message });
-    return res.send();
+    return res.status(400).send(`Webhook Error: ${err.message}`);
   }
   // Handle the event
   switch (event.type) {
@@ -137,12 +150,14 @@ router.post('/webhook', async (req, res, next) => {
       if (response !== true) {
         next(response);
       }
+      res.json({ received: true });
       // send conformation email
       // get email address from order ID
       break;
     default:
       // Unexpected event type
-      logger.info('Stripe webhook warning', { event: `${event.type}`, eventID: event.id });
+      logger.info('Non supported stripe webhook event', { event: `${event.type}`, eventID: event.id });
+      res.json({ received: true });
   }
   return res.send();
 });

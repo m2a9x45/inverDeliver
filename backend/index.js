@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 const morgan = require('morgan');
 
 const app = express();
@@ -13,8 +14,8 @@ const support = require('./routes/support');
 const authorisation = require('./middleware/auth');
 const logger = require('./middleware/logger');
 const metric = require('./routes/metric');
-const seller = require('./routes/seller');
-const bussiness = require('./routes/bussiness');
+// const seller = require('./routes/seller');
+// const bussiness = require('./routes/bussiness');
 
 const corsOptions = {
   origin: ['http://localhost:8080', 'http://127.0.0.1:5500', 'http://localhost:3002'],
@@ -24,7 +25,8 @@ const corsOptions = {
 app.set('trust proxy', true);
 app.use(morgan('combined', { stream: logger.stream }));
 app.use(cors(corsOptions));
-app.use(express.json());
+app.use(helmet());
+app.use((req, res, next) => (req.originalUrl === '/payment/webhook' ? next() : express.json()(req, res, next)));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
@@ -36,8 +38,8 @@ app.use('/order', authorisation.isAuthorized, orders);
 app.use('/payment', payments);
 app.use('/user', users);
 app.use('/support', support);
-app.use('/seller', seller);
-app.use('/bussiness', authorisation.isAuthorizedSeller);
+// app.use('/seller', seller);
+// app.use('/bussiness', authorisation.isAuthorizedSeller);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
