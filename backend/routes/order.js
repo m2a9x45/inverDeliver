@@ -1,11 +1,9 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
-const Redis = require('ioredis');
 
 const logger = require('../middleware/logger');
 
 const router = express.Router();
-const redis = new Redis();
 const dao = require('../dao/dataOrder');
 
 const daoUser = require('../dao/dataUser');

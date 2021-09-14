@@ -191,6 +191,10 @@ header {
     display: none;
 }
 
+.selectNewAddress {
+    display: none;
+}
+
 #post_code {
     text-transform: uppercase;
 }

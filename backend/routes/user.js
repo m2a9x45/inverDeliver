@@ -175,7 +175,6 @@ router.post('/googleSignIn', async (req, res, next) => {
 });
 
 router.post('/fbSignIn', async (req, res, next) => {
-  console.log(req.body);
   const { accessToken } = req.body;
   const fbUserID = req.body.userID;
 
@@ -274,7 +273,7 @@ router.get('/account', authorisation.isAuthorized, async (req, res, next) => {
 });
 
 router.post('/createAccount',
-  body('email').isEmail({ domain_specific_validation: true }),
+  body('email').isEmail().normalizeEmail(),
   body('password').isLength({ min: 7 }),
   body('name').isAlphanumeric(),
   async (req, res, next) => {
@@ -322,7 +321,7 @@ router.post('/createAccount',
   });
 
 router.post('/login',
-  body('email').isEmail({ domain_specific_validation: true }),
+  body('email').isEmail(),
   body('password').isLength({ min: 7 }),
   async (req, res, next) => {
     const errors = validationResult(req);
@@ -452,7 +451,7 @@ router.get('/addresses', authorisation.isAuthorized, async (req, res, next) => {
   }
 });
 
-router.post('/postcodeLookup', authorisation.isAuthorized, async (req, res, next) => {
+router.post('/postcodeLookup', authorisation.isAuthorized, body('postCode').isPostalCode('GB'), async (req, res, next) => {
   const { postCode } = req.body;
   logger.info('postcode lookup started', { userID: res.locals.user, postCode });
   // add new address to DB

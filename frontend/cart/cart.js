@@ -170,9 +170,15 @@ function showAddNewAddress() {
 
   post_code.disabled = !post_code.disabled;
 
-  console.log(addNewAddress.style.display);
+  // console.log(addNewAddress.style.display);
+  // console.log(selectNewAddress.style.display);
 
-  if (addNewAddress.style.display === "none" || addNewAddress.style.display === "") {
+  if (addNewAddress.style.display === "none" && selectNewAddress.style.display === "block" || addNewAddress.style.display === "" && selectNewAddress.style.display === "block") {
+    addNewAddress.style.display = "none";
+    selectNewAddress.style.display = 'none';
+    savedAddressSelector.style.display = "flex";
+    addNewAddressLink.innerText = "Add a new address";
+  } else if (addNewAddress.style.display === "none" || addNewAddress.style.display === "") {
     addNewAddress.style.display = "block";
     addNewAddressLink.innerText = "Select a saved address";
   } else {
