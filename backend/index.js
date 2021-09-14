@@ -25,6 +25,7 @@ app.set('trust proxy', true);
 app.use(morgan('combined', { stream: logger.stream }));
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 app.use(metric.logMetric);
