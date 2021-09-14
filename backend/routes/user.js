@@ -83,7 +83,6 @@ async function createAccount(userID, externalID, externalType,
 
 router.post('/googleSignIn', async (req, res, next) => {
   const { credential } = req.body;
-  console.log(credential);
   const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
   try {
@@ -115,8 +114,7 @@ router.post('/googleSignIn', async (req, res, next) => {
         jwt.sign({ userID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
           if (!err) {
             logger.info('User signed in', { userID });
-            res.redirect(`http://localhost:8080/frontend/?token=${jwtToken}`);
-            // res.json({ token: jwtToken });
+            res.redirect(`${process.env.GOOGLE_REDIRECT_URL}/?token=${jwtToken}`);
             loginsMetric.inc({ type: 'google', success: true, status: 200 });
           } else {
             next(err);

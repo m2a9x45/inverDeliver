@@ -9,6 +9,15 @@ const continueButton = document.querySelector('#continueButton');
 const createAccountButton = document.querySelector('#createAccountButton');
 const loginButton = document.querySelector('#loginButton');
 
+const urlString = window.location.href;
+const url = new URL(urlString);
+const loginToken = url.searchParams.get("token");
+
+if (loginToken) {
+    localStorage.setItem("token", loginToken);
+    window.location = "../";
+}
+
 if (token) {
     window.location.replace("../");
 }
