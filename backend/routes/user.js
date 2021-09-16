@@ -81,6 +81,21 @@ async function createAccount(userID, externalID, externalType,
   }
 }
 
+async function sendSMScode(SMScode, phoneNumber, userID) {
+  try {
+    const message = await client.messages.create({ body: `Hey 👋 your verfication code is ${SMScode}`, messagingServiceSid: 'MGad653ffd0889357ac879d70dafc51478', to: phoneNumber });
+    twilioSMS.inc();
+    logger.info('SMS code sent', {
+      userID,
+      twilioRes: message.status,
+      twilioSID: message.sid,
+      twllioErrorCode: message.errorCode,
+    });
+  } catch (error) {
+    logger.error('Problem sending sms code', userID);
+  }
+}
+
 router.post('/googleSignIn', async (req, res, next) => {
   const { credential } = req.body;
   const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -603,27 +618,15 @@ router.post('/generateSMScode', authorisation.isAuthorized,
       const updated = await dao.updatePhoneNumber(res.locals.user, phoneNumberParsed.number);
       if (updated.changedRows === 1) {
         logger.info('Adding unverfied phone number to database', { userID: res.locals.user, parsedPhoneNumber: phoneNumberParsed.number });
-        const SMScode = Math.floor(Math.random() * 99999) + 10000;
 
+        const SMScode = Math.floor(Math.random() * 99999) + 10000;
         // Add error checking for redis set
-        redis.set(res.locals.user, SMScode);
+        // SMS code will expiry in 4 hours
+        redis.set(res.locals.user, SMScode, 'ex', 14400);
         logger.info('SMS code generated and added to redis', { userID: res.locals.user, SMScode, parsedPhoneNumber: phoneNumberParsed.number });
         // Send Verification SMS code.
-        client.messages
-          .create({
-            body: `Hey 👋 your verfication code is ${SMScode}`,
-            messagingServiceSid: 'MGad653ffd0889357ac879d70dafc51478',
-            to: phoneNumberParsed.number,
-          })
-          .then((message) => {
-            twilioSMS.inc({ status: 200 });
-            logger.info('Requested SMS code to be sent', {
-              userID: res.locals.user,
-              twilioRes: message.status,
-              twilioSID: message.sid,
-              twllioErrorCode: message.errorCode,
-            });
-          });
+        await sendSMScode(SMScode, phoneNumberParsed.number, res.locals.user);
+
         res.sendStatus(204);
       } else {
         logger.error('The number of rows in the DB that were updated was not 1', { userID: res.locals.user, parsedPhoneNumber: phoneNumberParsed.number });
@@ -634,5 +637,31 @@ router.post('/generateSMScode', authorisation.isAuthorized,
       next(error);
     }
   });
+
+router.patch('/resendSMS', authorisation.isAuthorized, async (req, res, next) => {
+  const SMScode = await redis.get(res.locals.user);
+
+  try {
+    const phoneData = await dao.getPhoneNumber(res.locals.user);
+
+    if (phoneData.phone_number === null) {
+      logger.warn('No phone number found, when trying to resend SMS code', { userID: res.locals.user });
+      return res.sendStatus(500);
+    }
+
+    if (SMScode === null) {
+      const newSMScode = Math.floor(Math.random() * 99999) + 10000;
+      redis.set(res.locals.user, newSMScode, 'ex', 14400);
+      logger.info('New SMS code set', { newSMScode, userID: res.locals.user, phoneNumber: phoneData.phone_number });
+      // await sendSMScode(newSMScode, phoneData.phone_number, res.locals.user);
+      return res.sendStatus(204);
+    }
+    logger.info('SMS code resent', { SMScode, userID: res.locals.user, phoneNumber: phoneData.phone_number });
+    // await sendSMScode(SMScode, phoneData.phone_number, res.locals.user);
+    return res.sendStatus(204);
+  } catch (error) {
+    return next(error);
+  }
+});
 
 module.exports = router;

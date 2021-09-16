@@ -283,6 +283,35 @@ verfiyphoneNumberForm.addEventListener('submit', (e) => {
   }
 })
 
+function resendSMS() {
+  fetch(`${API_URL}/user/resendSMS`, {
+    method: 'PATCH',
+    headers: {
+      "Content-Type": "application/json",
+      'authorization': `bearer ${token}`,
+    }
+  })
+  .then(response => {
+    const SMSmessage = document.querySelector('#SMSmessage');
+    SMSmessage.innerHTML = '';
+    if (response.status === 204) {
+      SMSmessage.innerHTML = "We've gone ahead and sent out a new SMS message with your verfication code.";
+      SMSmessage.style.color = '#4bd66b';
+      setTimeout(() => SMSmessage.style.color = 'black', 2000);
+    } else {
+      SMSmessage.innerHTML = "Something went wrong when we tried to send out your verfication code. Please try again and if this continues get touch."
+      SMSmessage.style.color = '#eb3434';
+      setTimeout(() => SMSmessage.style.color = 'black', 2000);
+    }
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+    SMSmessage.innerHTML = error.message;
+    SMSmessage.style.color = '#eb3434';
+    setTimeout(() => SMSmessage.style.color = 'black', 2000);
+  });
+}
+
 postcodeLookupButton.addEventListener('click', (e) => {
   e.preventDefault();
 
