@@ -39,6 +39,12 @@ const twilioSMS = new metrics.client.Counter({
   labelNames: ['status'],
 });
 
+const postcodeMetric = new metrics.client.Counter({
+  name: 'postcode_lookup',
+  help: 'Total number of postcode lookups',
+  labelNames: ['type'],
+});
+
 async function checkUsersFbToken(accessToken, userID) {
   try {
     const fbDataRes = await axios.get(`https://graph.facebook.com/debug_token?input_token=${accessToken}&access_token=${process.env.FB_APP_ACCESS_TOKEN}`);
@@ -475,6 +481,7 @@ router.post('/postcodeLookup', authorisation.isAuthorized, body('postCode').isPo
 
   if (regixPostCode === null) {
     logger.warn('regix failed to find postcode', { userID: res.locals.user, postCode: postCodeParsed });
+    postcodeMetric.inc({ type: 'not_postcode' });
     return res.json({ withInOpArea: false, message: 'Sorry something went wrong, it does not look like you have entered a vaild postcode' });
   }
 
@@ -485,10 +492,13 @@ router.post('/postcodeLookup', authorisation.isAuthorized, body('postCode').isPo
   // checing to see if the postcode sector the user has entered is one that we operater in
   if (!operatingArea.includes(regixPostCode[0])) {
     logger.warn('Deliver address outside of operating area', { userID: res.locals.user, postCode: postCodeParsed, postCodeSector: regixPostCode[0] });
+    postcodeMetric.inc({ type: 'outside_operating_are' });
     return res.json({ withInOpArea: false, message: 'Sorry something went wrong the selected postcode is not part of our operating area' });
   }
 
   // const addresses = await axios.get(`https://ws.postcoder.com/pcw/${process.env.POSTCODER_API_KEY}/address/UK/${postCode}?format=json&lines=2&addtags=latitude,longitude`);
+
+  postcodeMetric.inc({ type: 'postcode_lookup' });
 
   const data = [
     {

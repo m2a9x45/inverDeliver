@@ -10,10 +10,24 @@ const dao = require('../dao/dataOrder.js');
 const daoUser = require('../dao/dataUser.js');
 const authorisation = require('../middleware/auth.js');
 const logger = require('../middleware/logger.js');
+const metrics = require('./metric');
+
+const paymentIntetentCreatedMetric = new metrics.client.Counter({
+  name: 'payment_intenet_created',
+  help: 'Total number of payment intents created',
+  labelNames: ['status'],
+});
+
+const stripeWebookMetric = new metrics.client.Counter({
+  name: 'stripe_webhook_recived',
+  help: 'Total number of stripe webhooks recived',
+  labelNames: ['type', 'status'],
+});
 
 router.post('/create-payment-intent', authorisation.isAuthorized, body('orderID'), async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    paymentIntetentCreatedMetric.inc({ status: 400 });
     return res.status(400).json({ errors: errors.array() });
   }
 
@@ -24,6 +38,7 @@ router.post('/create-payment-intent', authorisation.isAuthorized, body('orderID'
     const products = await dao.caculateOrderPrice(orderID);
     if (products.length === 0) {
       logger.warn('No order found for that ID', { userID: res.locals.user, orderID });
+      paymentIntetentCreatedMetric.inc({ status: 500 });
       return res.status(500).json({ error: 'Mo order found with that ID' });
     }
 
@@ -57,6 +72,7 @@ router.post('/create-payment-intent', authorisation.isAuthorized, body('orderID'
       orderFee: fee,
       orderTotal: total + fee,
     });
+    paymentIntetentCreatedMetric.inc({ status: 200 });
 
     // updating price for order in DB
     const addPricetoOrder = await dao.updateOrderPrice(
@@ -88,7 +104,6 @@ router.get('/intent', authorisation.isAuthorized, async (req, res, next) => {
 
   try {
     const paymentIntentID = await dao.getPaymentID(orderID, res.locals.user);
-    console.log(paymentIntentID[0].payment_id);
     if (paymentIntentID[0].payment_id) {
       try {
         const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentID[0].payment_id);
@@ -128,7 +143,8 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
   const sig = req.headers['stripe-signature'];
 
   if (!vaildStripeWebhookIps.includes(reqIP)) {
-    logger.warn('Webhook event recived, noty from stripe', { sig, ip: req.ip });
+    stripeWebookMetric.inc({ type: 'invaild_ip', status: 400 });
+    logger.warn('Webhook event recived, not from stripe', { sig, ip: req.ip });
     return res.status(400).send('Webhook Error: IP out of range');
   }
 
@@ -137,18 +153,20 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
+    stripeWebookMetric.inc({ type: 'invaild_body', status: 400 });
     logger.error('Stripe webhook error while parsing request.', { error: err.message });
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
   // Handle the event
   switch (event.type) {
     case 'payment_intent.succeeded':
+      stripeWebookMetric.inc({ type: 'payment_intent.succeeded', status: 200 });
       const intent = event.data.object;
       logger.info('Stripe webhook event parsed', { event: 'payment_intent.succeeded', paymentIntentID: intent.id });
       const response = await handlePaymentIntentSucceeded(intent.id);
       logger.info('Order status updated', { event: 'payment_intent.succeeded', paymentIntentID: intent.id });
       if (response !== true) {
-        next(response);
+        return next(response);
       }
       res.json({ received: true });
       // send conformation email
@@ -156,6 +174,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
       break;
     default:
       // Unexpected event type
+      stripeWebookMetric.inc({ type: `${event.type}`, status: 404 });
       logger.info('Non supported stripe webhook event', { event: `${event.type}`, eventID: event.id });
       res.json({ received: true });
   }

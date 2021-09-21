@@ -9,6 +9,13 @@ const dao = require('../dao/dataOrder');
 const daoUser = require('../dao/dataUser');
 
 const email = require('../helper/email');
+const metrics = require('./metric');
+
+const orderCreatedMetric = new metrics.client.Counter({
+  name: 'order_created',
+  help: 'Total number of orders created',
+  labelNames: ['status', 'type'],
+});
 
 router.post('/create', async (req, res, next) => {
   const data = req.body;
@@ -22,6 +29,7 @@ router.post('/create', async (req, res, next) => {
     const phoneNumberVerfied = await daoUser.getPhoneNumber(res.locals.user);
     if (phoneNumberVerfied.phone_verified === 0) {
       logger.warn('phone number not verfied', { userID: res.locals.user, phoneNumber: phoneNumberVerfied.phone_number });
+      orderCreatedMetric.inc({ type: 'phone_number_not_verfied', status: 400 });
       res.json({ error: 'You have not verfied your phone number' });
       return null;
     }
@@ -40,11 +48,13 @@ router.post('/create', async (req, res, next) => {
       const vaildAddressID = await daoUser.getAddress(res.locals.user, addressID);
       if (vaildAddressID === undefined) {
         logger.warn('No address found for the addressID given', { orderID, userID: res.locals.user, addressID });
+        orderCreatedMetric.inc({ type: 'address_id_not_found', status: 400 });
         return res.json("Something went wrong we couldn't find the address you've selected");
       }
       // link address to order
       orderInfo = await dao.createOrder(res.locals.user, orderID, deliveryID, addressID, data);
       logger.info('create order with exsiting address', { orderID, userID: res.locals.user, addressID });
+      orderCreatedMetric.inc({ type: 'order_created', status: 200 });
     } else {
       // unused code as all orders should come with an addressID as the've gone theough the postcode lookup.
       // Not deleting at the moment as we may still want to support manual address adding.
@@ -52,6 +62,7 @@ router.post('/create', async (req, res, next) => {
 
       // This part is hit if their is no addressID given
       logger.error('No addressID given', { orderID, userID: res.locals.user });
+      orderCreatedMetric.inc({ type: 'address_id_not_given', status: 400 });
       return res.status(501);
 
       // add new address to DB
