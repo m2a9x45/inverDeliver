@@ -1,12 +1,19 @@
 const express = require('express');
 const axios = require('axios');
+const metrics = require('./metric');
 
-const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-const { VoiceResponse } = require('twilio').twiml;
+// const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+// const { VoiceResponse } = require('twilio').twiml;
 
 require('dotenv').config();
 
 const router = express.Router();
+
+const callbackMetric = new metrics.client.Counter({
+  name: 'callback_requests',
+  help: 'Total number of callback requests',
+  labelNames: ['status'],
+});
 
 // router.post('/voice', (req, res) => {
 //   const twiml = new VoiceResponse();
@@ -61,10 +68,11 @@ router.post('/callback', async (req, res, next) => {
     const responce = await axios.post(discordWebhook, discordData);
 
     if (responce.status !== 204) {
+      callbackMetric.inc({ status: responce.status });
       res.json({ error: 'Requested was not posted to discord channel' });
       return;
     }
-
+    callbackMetric.inc({ status: 204 });
     res.json({ data: 'success' });
   } catch (error) {
     next(error);

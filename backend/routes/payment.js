@@ -11,6 +11,7 @@ const daoUser = require('../dao/dataUser.js');
 const authorisation = require('../middleware/auth.js');
 const logger = require('../middleware/logger.js');
 const metrics = require('./metric');
+const mailgun = require('../helper/email');
 
 const paymentIntetentCreatedMetric = new metrics.client.Counter({
   name: 'payment_intenet_created',
@@ -125,6 +126,10 @@ async function handlePaymentIntentSucceeded(id) {
   try {
     const updated = await dao.updateOrderStatus(id, 1);
     if (updated.changedRows === 1) {
+      // Order conformation email
+      const { email, first_name: name, order_id: orderID } = await dao.getOrderConfirmEmailInfo(id);
+      logger.info('Order conformation email attempted to be sent', { orderID });
+      mailgun.sendOrderConformationEmail(email, name, orderID);
       return true;
     }
     return `Issue with updating order status: ${id}`;

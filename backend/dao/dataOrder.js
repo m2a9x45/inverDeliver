@@ -228,6 +228,22 @@ function getOrderPrice(orderID, userID) {
   }));
 }
 
+function getOrderConfirmEmailInfo(id) {
+  return new Promise(((resolve, reject) => {
+    const sql = `SELECT first_name, email, order_id from food.order o
+    INNER JOIN users u ON u.user_id=o.user_id
+    Where payment_id=(?)`;
+    db.query(sql, [id], (err, value) => {
+      console.log(err, value);
+      if (err === null) {
+        resolve(value[0]);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
 module.exports = {
   createOrder,
   addOrderDetails,
@@ -240,4 +256,5 @@ module.exports = {
   updateOrderStatus,
   getOrderPrice,
   createOrderWithNewAddress,
+  getOrderConfirmEmailInfo,
 };

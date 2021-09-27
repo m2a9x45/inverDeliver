@@ -112,6 +112,7 @@ function displayCart(item, id) {
     quantityInput.setAttribute("type", "number");
     quantityInput.setAttribute("id", "quantity");
     quantityInput.setAttribute("value", item.number);
+    quantityInput.setAttribute("max", 20);
     quantityInput.addEventListener("change", (e) => {
       console.log(quantityInput.value, id);
 

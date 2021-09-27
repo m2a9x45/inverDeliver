@@ -15,6 +15,7 @@ const metrics = require('./metric');
 
 const logger = require('../middleware/logger');
 const authorisation = require('../middleware/auth');
+const mailgun = require('../helper/email');
 
 require('dotenv').config();
 
@@ -80,6 +81,7 @@ async function createAccount(userID, externalID, externalType,
       lastName,
       stripeID);
     createAccountMetric.inc({ type: externalType, status: 200 });
+    mailgun.sendWelcomEmail(email, firstName);
     return acoountCreation;
   } catch (error) {
     createAccountMetric.inc({ type: externalType, status: 500 });

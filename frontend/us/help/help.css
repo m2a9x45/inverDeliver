@@ -140,9 +140,9 @@ header {
 
 .callbackForm button {
     width: 100%;
-    background-color: #4CAF50; /* Green */
+    background-color: rgb(66, 176, 255);; /* Green */
     border: none;
-    color: white;
+    color: black;
     padding: 15px 32px;
     text-align: center;
     text-decoration: none;
