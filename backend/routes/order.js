@@ -168,15 +168,6 @@ router.get('/status', async (req, res, next) => {
   }
 });
 
-router.get('/emailTest', async (req, res, next) => {
-  try {
-    const emailThin = await email.sendOrderConformationEmail();
-    res.json(emailThin);
-  } catch (error) {
-    next(error);
-  }
-});
-
 router.get('/price', async (req, res, next) => {
   const {
     orderID,

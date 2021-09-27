@@ -23,6 +23,22 @@ router.get('/upcoming/:id', async (req, res, next) => {
   }
 });
 
+router.patch('/outForDelivery/:id', async (req, res, next) => {
+  const deliveryID = req.params.id;
+  try {
+    const updatedOrder = await dao.outForDelivery(deliveryID);
+    if (updatedOrder !== 1) {
+      res.status(500);
+      res.json('Something went wrong');
+      // error
+      return;
+    }
+    res.sendStatus(200);
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.patch('/complete/:id', async (req, res, next) => {
   const deliveryID = req.params.id;
   try {

@@ -124,7 +124,7 @@ router.get('/intent', authorisation.isAuthorized, async (req, res, next) => {
 
 async function handlePaymentIntentSucceeded(id) {
   try {
-    const updated = await dao.updateOrderStatus(id, 1);
+    const updated = await dao.updateOrderStatus(id, 'order_received');
     if (updated.changedRows === 1) {
       // Order conformation email
       const { email, first_name: name, order_id: orderID } = await dao.getOrderConfirmEmailInfo(id);

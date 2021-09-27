@@ -10,11 +10,11 @@ const orderID = url.searchParams.get("orderID");
 console.log(orderID);
 
 completeButton.addEventListener("click", () => {
-    updateStatus(orderID, 3);
+    updateStatus(orderID, 'pending_delivery');
 })
 
 shoppingNowButton.addEventListener("click", () => {
-    updateStatus(orderID, 2);
+    updateStatus(orderID, 'shopping');
 })
 
 async function updateStatus(orderID, status) {

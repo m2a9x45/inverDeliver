@@ -201,40 +201,27 @@ function showOrderStatus(status) {
   const status6 = document.querySelector("#status6");
 
   switch (status) {
-    case 1:
-      
+    case 'order_received':
       status1.style.opacity = 1;
       status1.style.backgroundColor = "rgb(66, 176, 255)";
       break;
-    case 2:
-      
+    case 'pending_delivery' || 'shopping':
       status1.style.opacity = 1;
       status2.style.opacity = 1;
       status2.style.backgroundColor = "rgb(66, 176, 255)";
       break;
-    case 3:
-      
+    case 'out_for_delivery':
       status1.style.opacity = 1;
       status2.style.opacity = 1;
       status3.style.opacity = 1;
       status3.style.backgroundColor = "rgb(66, 176, 255)";
       break;
-    case 4:
-      
+    case 'delivered':
       status1.style.opacity = 1;
       status2.style.opacity = 1;
       status3.style.opacity = 1;
       status4.style.opacity = 1;
       status4.style.backgroundColor = "rgb(66, 176, 255)";
-      break;
-    case 5:
-      
-      status1.style.opacity = 1;
-      status2.style.opacity = 1;
-      status3.style.opacity = 1;
-      status4.style.opacity = 1;
-      status5.style.opacity = 1;
-      status5.style.backgroundColor = "rgb(66, 176, 255)";
       break;
     default:
       break;

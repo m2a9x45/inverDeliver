@@ -81,7 +81,7 @@ fetch(`${API_URL}/order/status?orderID=${orderID}`, {
   })
   .then(data => {
     console.log(data);
-    if (data.status === 0) {
+    if (data.status === 'payment_required') {
       getOrderContent();
       displayDeliveryInfo(data);
       getOrCreatePaymentIntent();

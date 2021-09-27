@@ -7,7 +7,7 @@ async function getDeliveries() {
       .join('delivery AS d', 'o.delivery_id', 'd.delivery_id')
       .join('addresses AS a', 'd.address_id', ' a.address_id')
       .join('users AS u', 'o.user_id', 'u.user_id')
-      .where('o.status', 3);
+      .where('o.status', 'pending_delivery');
     return selectedRows;
   } catch (error) {
     return error;
@@ -30,7 +30,16 @@ async function getDelivery(deliveryID) {
 
 async function completeDelivery(deliveryID) {
   try {
-    const updatedRow = await db.knex('order').where({ delivery_id: deliveryID }).update({ status: 5 });
+    const updatedRow = await db.knex('order').where({ delivery_id: deliveryID }).update({ status: 'delivered' });
+    return updatedRow;
+  } catch (error) {
+    return error;
+  }
+}
+
+async function outForDelivery(deliveryID) {
+  try {
+    const updatedRow = await db.knex('order').where({ delivery_id: deliveryID }).update({ status: 'out_for_delivery' });
     return updatedRow;
   } catch (error) {
     return error;
@@ -40,5 +49,6 @@ async function completeDelivery(deliveryID) {
 module.exports = {
   getDeliveries,
   getDelivery,
+  outForDelivery,
   completeDelivery,
 };

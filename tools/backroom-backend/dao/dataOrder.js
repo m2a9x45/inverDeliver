@@ -6,7 +6,8 @@ async function getOrders() {
       'd.address_id', 'd.time', 'a.street', 'a.city', 'a.post_code').from('order AS o')
       .join('delivery AS d', 'o.delivery_id', 'd.delivery_id')
       .join('addresses AS a', 'd.address_id', ' a.address_id')
-      .whereBetween('o.status', [1, 2]);
+      .where('o.status', 'order_received')
+      .orWhere('o.status', 'shopping');
 
     return selectedRows;
   } catch (error) {

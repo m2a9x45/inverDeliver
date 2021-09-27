@@ -93,7 +93,7 @@ function displayOrders(order) {
     let OrderID;
 
     switch (order.status) {
-        case 0:
+        case 'payment_required':
             orderID = document.createElement("a");
             orderID.innerText = order.order_id;
             orderID.setAttribute("href", `../payment/?orderID=${order.order_id}`);
@@ -177,32 +177,24 @@ function displayOrders(order) {
     deliveryStatus.setAttribute("id", "deliveryStatus");
 
     switch (order.status) {
-        case 0:
+        case 'payment_required':
             deliveryStatus.innerText = "Awaiting Payment";
             deliveryStatus.style.backgroundColor = "#8f6eff"; // purple
             break;
-        case 1:
+        case 'order_received':
             deliveryStatus.innerText = "Order recived";
             deliveryStatus.style.backgroundColor = "#ff80fb"; // pink
             break;
-        case 2:
-            deliveryStatus.innerText = "Awaiting shopping";
+        case 'pending_delivery' || 'shopping':
+            deliveryStatus.innerText = "Shopping";
             deliveryStatus.style.backgroundColor = "#9efffc"; // blue
             break;
-        case 3:
-            deliveryStatus.innerText = "shopping";
+        case 'out_for_delivery':
+            deliveryStatus.innerText = "Out for Delivery";
             deliveryStatus.style.backgroundColor = "#ff7c4d"; // orange
             break;
-        case 4:
-            deliveryStatus.innerText = "shopping complete";
-            deliveryStatus.style.backgroundColor = "#32a852"; // green
-            break;
-        case 5:
-            deliveryStatus.innerText = "Out for Delivery";
-            deliveryStatus.style.backgroundColor = "#32a852"; // green
-            break;
-        case 6:
-            deliveryStatus.innerText = "Delivered";
+        case 'delivered':
+            deliveryStatus.innerText = "delivered";
             deliveryStatus.style.backgroundColor = "#32a852"; // green
             break;
         default:
@@ -213,8 +205,8 @@ function displayOrders(order) {
 
     const helpButton = document.createElement("a");
     helpButton.setAttribute("id", "helpButton");
-    helpButton.setAttribute("href", `../help/order?id=${order.order_id}`);
-    helpButton.innerText = "Order help";
+    helpButton.setAttribute("href", `../us/help`);
+    helpButton.innerText = "Get Help";
     contextInfo.appendChild(helpButton);
 
     orderbody.appendChild(contextInfo); // Adding contextInfo to the orderbody
