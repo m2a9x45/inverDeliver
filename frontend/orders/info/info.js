@@ -52,19 +52,15 @@ fetch(`${API_URL}/order/status?orderID=${orderID}`, {
       'authorization': `bearer ${token}`,
     }
   })
-  .then(response => {
-    if (response.status == 404) {
-      console.log("No order with that ID that you've started has been found");
-      // window.location.replace(`../`); 
-    }
-    if (response.ok) {
-      return response.json()
-    }
-  })
+  .then(response => response.json())
   .then(data => {
     console.log(data);
-    displayDeliveryInfo(data);
-    showOrderStatus(data.status);
+    if (data.status === 'not_found') {
+      window.location.replace(`../`); 
+    } else {
+      displayDeliveryInfo(data);
+      showOrderStatus(data.status);
+    }
   });
 
 fetch(`${API_URL}/order/content?orderID=${orderID}`, {
@@ -72,20 +68,16 @@ fetch(`${API_URL}/order/content?orderID=${orderID}`, {
       'authorization': `bearer ${token}`,
     }
   })
-  .then(response => {
-    if (response.status == 404) {
-      console.log("No order with that ID that you've started has been found");
-      // window.location.replace(`../`); 
-    }
-    if (response.ok) {
-      return response.json()
-    }
-  })
+  .then(response => response.json())
   .then(data => {
     console.log(data);
-    data.forEach(item => {
-      displayOrderContent(item);
-    });
+    if (data.status === 'not_found') {
+      window.location.replace(`../`); 
+    } else {
+      data.forEach(item => {
+        displayOrderContent(item);
+      });
+    }
   });
 
 fetch(`${API_URL}/order/price?orderID=${orderID}`, {

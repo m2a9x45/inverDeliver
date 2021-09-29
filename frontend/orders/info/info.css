@@ -172,6 +172,18 @@ h2 {
     text-align: right;
 }
 
+@media only screen and (max-width: 1200px) {
+    .deliveryContent {
+        width: 100%;
+    }
+    .orderContent {
+        width: 100%;
+    }
+    .orderTotal {
+        width: 100%;
+    }
+}
+
 @media only screen and (max-width: 680px) {
     header {
         padding: 0.5em;
@@ -201,12 +213,16 @@ h2 {
     }
     .grid-container {
         grid-template-columns: auto;
+        padding: 0px;
     }
     .deliveryContent {
         width: 100%;
     }
     .orderContent {
         width: 100%;
+    }
+    .orderItemImgAndName {
+        align-items: center;
     }
     .orderTotal {
         width: 100%;

@@ -127,41 +127,36 @@ router.get('/content', async (req, res, next) => {
   const {
     orderID,
   } = req.query;
-  // console.log(orderID);
+
   try {
     const orderContent = await dao.getOrderContent(orderID, res.locals.user);
-    logger.info('Order content returned', {
-      orderID,
-      userID: res.locals.user,
-    });
-    res.json(orderContent);
+
+    if (orderContent.length === 0) {
+      logger.info('No order content found', { orderID, userID: res.locals.user });
+      res.json({ status: 'not_found' });
+    }
+
+    logger.info('Order content returned', { orderID, userID: res.locals.user });
+    return res.json(orderContent);
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 // order/status?orderID=6c2651f4-4ed6-43ac-a1aa-cafe4b27fd83
 router.get('/status', async (req, res, next) => {
-  const {
-    orderID,
-  } = req.query;
+  const { orderID } = req.query;
 
   try {
     const status = await dao.getOrderStatus(orderID, res.locals.user);
-    logger.info('get order status', {
-      orderID,
-      userID: res.locals.user,
-      path: '/order/status',
-      status: status[0].status,
-    });
+
     if (status.length !== 0) {
+      logger.info('get order status', {
+        orderID, userID: res.locals.user, path: '/order/status', status: status[0].status,
+      });
       res.json(status[0]);
     } else {
-      logger.warn('Status of order not found', {
-        orderID,
-        userID: res.locals.user,
-        path: '/order/status',
-      });
-      res.status(404).send();
+      logger.warn('Status of order not found', { orderID, userID: res.locals.user, path: '/order/status' });
+      res.json({ status: 'not_found' });
     }
   } catch (error) {
     next(error);
@@ -190,7 +185,7 @@ router.get('/price', async (req, res, next) => {
         userID: res.locals.user,
         path: `/price/${orderID}`,
       });
-      res.status(404).send();
+      res.json({ status: 'not_found' });
     }
   } catch (error) {
     next(error);

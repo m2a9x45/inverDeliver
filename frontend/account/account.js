@@ -256,65 +256,6 @@ function deleteAdress(addressID) {
   });
 }
 
-submitButton.addEventListener("click", () => {
-  const newPhoneNumber = document.querySelector('#newPhoneNumber');
-  const phoneNumber = newPhoneNumber.value;
-
-  let re = /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|\+)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|\#)\d{3,4})?$/;
-
-  console.log(re.test(phoneNumber));
-
-  if (re.test(phoneNumber) === false) {
-    modal.style.display = "none";
-    showMessage("❌ Please enter a vaild UK number, if you are please contact customer support");
-    return;
-  }
-
-  fetch(`${API_URL}/user/updatePhoneNumber`, {
-    method: "PATCH",
-    headers: {
-      'Content-Type': 'application/json',
-      'authorization': `bearer ${token}`,
-    },
-    body: JSON.stringify({
-      "phoneNumber": phoneNumber,
-    })
-  })
-  .then(response => {
-    modal.style.display = "none";
-    message.style.display = "block";
-    if (response.ok) {
-      showMessage("Phone Number Updated 📞");
-      getCustomerAccount();
-    } else {
-      showMessage("❌ Sorry we couldn't update your phone number if this continues, please let us know");
-    }
-
-    
-
-  })
-  .catch((error) => {
-    console.error('Error:', error);
-  });
-
-});
-
-// Get the modal
-var modal = document.getElementById("myModal");
-
-// When the user clicks on the button, open the modal
-
-function showUpdatePhoneNumber() {
-  modal.style.display = "block";
-}
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-  if (event.target == modal) {
-    modal.style.display = "none";
-  }
-}
-
 function showMessage(text) {
   message.style.display = "block";
   message.innerText = text;
