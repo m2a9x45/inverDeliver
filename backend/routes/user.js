@@ -493,51 +493,27 @@ router.post('/postcodeLookup', authorisation.isAuthorized, body('postCode').isPo
 
   // checing to see if the postcode sector the user has entered is one that we operater in
   if (!operatingArea.includes(regixPostCode[0])) {
-    logger.warn('Deliver address outside of operating area', { userID: res.locals.user, postCode: postCodeParsed, postCodeSector: regixPostCode[0] });
+    logger.warn('Delivery address outside of operating area', { userID: res.locals.user, postCode: postCodeParsed, postCodeSector: regixPostCode[0] });
     postcodeMetric.inc({ type: 'outside_operating_are' });
     return res.json({ withInOpArea: false, message: 'Sorry something went wrong the selected postcode is not part of our operating area' });
   }
 
-  // const addresses = await axios.get(`https://ws.postcoder.com/pcw/${process.env.POSTCODER_API_KEY}/address/UK/${postCode}?format=json&lines=2&addtags=latitude,longitude`);
+  try {
+    const response = await axios.get(`https://ws.postcoder.com/pcw/${process.env.POSTCODER_API_KEY}/address/UK/${postCode}?format=json&lines=2&addtags=latitude,longitude`);
+    postcodeMetric.inc({ type: 'postcode_lookup' });
 
-  postcodeMetric.inc({ type: 'postcode_lookup' });
+    if (response.status !== 200) {
+      logger.error('Postcoder lookup error', { status: response.status, errorMessage: response.statusText });
+      return res.json({
+        lookupSuccess: false,
+        message: 'Something went wrong whilst looking up your address, please let us know if this continues',
+      });
+    }
 
-  const data = [
-    {
-      addressline1: 'Flat 7',
-      addressline2: '64 Duff Street',
-      summaryline: 'Flat 7, 64 Duff Street, Edinburgh, City of Edinburgh, EH11 2JD',
-      subbuildingname: 'Flat 7',
-      number: '64',
-      premise: 'Flat 7, 64',
-      street: 'Duff Street',
-      posttown: 'Edinburgh',
-      county: 'City of Edinburgh',
-      postcode: 'EH11 2JD',
-      latitude: '55.9420018154',
-      longitude: '-3.2266079932',
-      grideasting: '323483',
-      gridnorthing: '672786',
-    },
-    {
-      addressline1: 'Flat 8',
-      addressline2: '64 Duff Street',
-      summaryline: 'Flat 8, 64 Duff Street, Edinburgh, City of Edinburgh, EH11 2JD',
-      subbuildingname: 'Flat 8',
-      number: '64',
-      premise: 'Flat 8, 64',
-      street: 'Duff Street',
-      posttown: 'Edinburgh',
-      county: 'City of Edinburgh',
-      postcode: 'EH11 2JD',
-      latitude: '55.9420018154',
-      longitude: '-3.2266079932',
-      grideasting: '323483',
-      gridnorthing: '672786',
-    },
-  ];
-
-  res.json(data);
+    res.json(response.data);
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.post('/addAddress', authorisation.isAuthorized, async (req, res, next) => {

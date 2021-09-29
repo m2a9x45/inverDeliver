@@ -334,7 +334,7 @@ postcodeLookupButton.addEventListener('click', (e) => {
   .then(response => response.json())
   .then(data => {
     console.log(data);
-    if (data.withInOpArea === false) {
+    if (data.withInOpArea === false || data.lookupSuccess === false) {
       errorMessage.style.display = 'block';
       errorMessage.innerHTML = data.message;
       return;

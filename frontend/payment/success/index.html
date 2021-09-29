@@ -22,14 +22,14 @@
                 <i class="fa fa-bars"></i>
             </span>
             <ul class="navbarList">
-                <li id="navbarItem" style="margin-right: auto;"><a href="../../">InverDeliver</a></li>
+                <li id="navbarItem" style="margin-right: auto;"><a href="../">Home</a></li>
                 <div class="mainNav">
-                    <li id="navbarItem"><a id="order" href="../../orders/">Orders</a></li>
-                    <li id="navbarItem"><a id="cart" href="../../cart/">Cart</a></li>
-                    <li id="navbarItem"><a id="cart" href="../../us/">Help</a></li>
-                    <li id="navbarItem"><a id="cart" href="../../account/">Account</a></li>
-                    <li id="navbarItem"><a id="logout" href="../../signin">Login</a></li>
-                </div>  
+                    <li id="navbarItem"><a id="order" href="../orders/">Orders</a></li>
+                    <li id="navbarItem"><a id="cart" href="../cart/">Cart</a></li>
+                    <li id="navbarItem"><a id="cart" href="../us/">Help</a></li>
+                    <li id="navbarItem"><a id="cart" href="../account/">Account</a></li>
+                    <li id="navbarItem"><a id="logout" href="../signin">Login</a></li>
+                </div>
             </ul>
         </nav>
     </header>
@@ -48,31 +48,6 @@
         <p id="signoff">
             Lewis, InverDeliver 🚀
         </p>
-
-        <script>
-            const url_string = window.location.href;
-            const url = new URL(url_string);
-            const token = localStorage.getItem('token');
-
-            const orderID = url.searchParams.get("orderID");
-            const paymentID = url.searchParams.get("id");
-
-            if (!token || !orderID || !paymentID) {
-                window.location.replace("../signin");
-            } else {
-                const jwtExp = JSON.parse(atob(token.split('.')[1]));
-            
-                if (Date.now() < jwtExp.exp * 1000) {
-                    // we think token is vaild
-                    const logout = document.querySelector('#logout');
-                    logout.innerText = "Logout";
-                    logout.setAttribute("href", "../../logout");
-                }
-            }
-
-            const orderTrackingLink = document.querySelector('#orderTrackingLink');
-            orderTrackingLink.setAttribute("href", `../../orders/info/?orderID=${orderID}`);
-        </script>
         <script src="success.js"></script>
     </main>
 </body>
