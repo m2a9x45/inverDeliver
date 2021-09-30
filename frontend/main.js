@@ -93,7 +93,8 @@ function addProducts(productArray) {
     }).format(product.price / 100);
 
     const price = document.createElement("p");
-    price.innerText = formatedPrice // more logic needed to handle zero
+
+    product.price_variable === 1 ? price.innerText = `${formatedPrice} (typically)` : price.innerText = formatedPrice;
 
     const button = document.createElement("button");
     button.innerText = "Add to Cart";

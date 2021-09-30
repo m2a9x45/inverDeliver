@@ -2,7 +2,7 @@ const db = require('./conn');
 
 function products() {
   return new Promise(((resolve, reject) => {
-    const sql = 'SELECT id, product_id, category, brand, name, image_url, price, size FROM product LIMIT 50';
+    const sql = 'SELECT id, product_id, category, brand, name, image_url, price, price_variable, size FROM product LIMIT 50';
     db.query(sql, (err, value) => {
       if (err === null) {
         resolve(value);
@@ -15,7 +15,7 @@ function products() {
 
 function product(searchTerm) {
   return new Promise(((resolve, reject) => {
-    const sql = 'SELECT id, product_id, category, brand, name, image_url, price, size FROM product WHERE name LIKE (?)';
+    const sql = 'SELECT id, product_id, category, brand, name, image_url, price, price_variable, size FROM product WHERE name LIKE (?)';
     db.query(sql, [`%${searchTerm}%`], (err, value) => {
       // console.log(err, value);
       if (err === null) {
@@ -42,7 +42,7 @@ function productById(productID) {
 
 function productByCategory(category) {
   return new Promise(((resolve, reject) => {
-    const sql = 'SELECT id, product_id, category, brand, name, image_url, price, size FROM product WHERE category LIKE (?)';
+    const sql = 'SELECT id, product_id, category, brand, name, image_url, price, price_variable, size FROM product WHERE category LIKE (?)';
     db.query(sql, [category], (err, value) => {
       if (err === null) {
         resolve(value);
@@ -55,7 +55,7 @@ function productByCategory(category) {
 
 function productByCategoryAndSearch(category, search) {
   return new Promise(((resolve, reject) => {
-    const sql = 'SELECT id, product_id, category, brand, name, image_url, price, size FROM product WHERE category LIKE (?) AND product.name LIKE (?)';
+    const sql = 'SELECT id, product_id, category, brand, name, image_url, price, price_variable, size FROM product WHERE category LIKE (?) AND product.name LIKE (?)';
     db.query(sql, [category, `%${search}%`], (err, value) => {
       if (err === null) {
         resolve(value);
