@@ -71,7 +71,7 @@ async function checkUsersFbToken(accessToken, userID) {
 }
 
 async function createAccount(userID, externalID, externalType,
-  email, firstName, lastName, stripeID) {
+  email, firstName, lastName, stripeID, ip) {
   try {
     const acoountCreation = await dao.CreateAccountWithExternalID(userID,
       externalID,
@@ -79,7 +79,8 @@ async function createAccount(userID, externalID, externalType,
       email,
       firstName,
       lastName,
-      stripeID);
+      stripeID,
+      ip);
     createAccountMetric.inc({ type: externalType, status: 200 });
     mailgun.sendWelcomEmail(email, firstName);
     return acoountCreation;
@@ -116,7 +117,7 @@ router.post('/googleSignIn', async (req, res, next) => {
     const payload = ticket.getPayload();
     const googleUserID = payload.sub;
 
-    logger.info('Google sign in or signup', { googleID: googleUserID });
+    logger.info('Google sign in or signup', { googleID: googleUserID, ip: req.ip });
 
     // check to see if this person already has an account using the google user_id
     // if they do issue a jwt and log them in
@@ -163,7 +164,8 @@ router.post('/googleSignIn', async (req, res, next) => {
           payload.email,
           payload.given_name,
           payload.family_name,
-          stripeCustomer.id);
+          stripeCustomer.id,
+          req.ip);
 
         logger.info('Customers Account Created', {
           userID,
@@ -325,7 +327,7 @@ router.post('/createAccount',
       // hash password and store new user in database
       const hash = await bcrypt.hash(password.trim(), 10);
       const createdAccount = await dao.createAccountWithEmail(userID, email,
-        name, hash, stripeCustomer.id);
+        name, hash, stripeCustomer.id, req.ip);
 
       logger.info('Account created', { userID, DBID: createdAccount.insertId });
       // send JWT
