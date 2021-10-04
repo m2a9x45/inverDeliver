@@ -89,6 +89,9 @@ fetch(`${API_URL}/user/card`, {
   .then(response => response.json())
   .then(data => {
     console.log(data);
+    if (data.error) {
+      return;
+    }
     displayCards(data.data);
   })
   .catch((error) => {
@@ -124,23 +127,7 @@ function displayUserInfo(customerInfo) {
   userJoinDate.innerText = `Since ${displayDate}`;
   userName.innerText = customerInfo.last_name ? `${customerInfo.first_name} ${customerInfo.last_name}` : `${customerInfo.first_name}`; 
   userEmail.innerText = customerInfo.email;
-
-  switch (customerInfo.phone_number != null) {
-    case true:
-      userPhone.innerText = customerInfo.phone_number;
-      break;
-    
-    default:
-      // create a tag to add phone number
-      const addPhoneNumber = document.createElement("a");
-      addPhoneNumber.innerText = "Add Number"
-      addPhoneNumber.setAttribute("href", "javascript:;");
-      addPhoneNumber.setAttribute("onClick", "showUpdatePhoneNumber()");
-
-      userPhone.appendChild(addPhoneNumber);
-    
-      break;
-  }
+  userPhone.innerText = customerInfo.phone_number ? customerInfo.phone_number : 'N/A';
 }
 
 function displayCards(cardData) {

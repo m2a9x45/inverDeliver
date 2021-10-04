@@ -299,8 +299,8 @@ router.get('/account', authorisation.isAuthorized, async (req, res, next) => {
 
 router.post('/createAccount',
   body('email').isEmail().normalizeEmail(),
-  body('password').isLength({ min: 7 }),
-  body('name').isAlphanumeric(),
+  body('password').isString(),
+  body('name').isAlpha(),
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -346,8 +346,8 @@ router.post('/createAccount',
   });
 
 router.post('/login',
-  body('email').isEmail(),
-  body('password').isLength({ min: 7 }),
+  body('email').isEmail().normalizeEmail(),
+  body('password').isString(),
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -438,26 +438,25 @@ router.get('/hasAccount/:id', async (req, res, next) => {
 
 router.get('/card', authorisation.isAuthorized, async (req, res, next) => {
   try {
-    const stripeID = await dao.getStripeID(res.locals.user);
+    const { stripe_id: stripeID } = await dao.getStripeID(res.locals.user);
 
-    if (stripeID === undefined) {
+    if (stripeID === undefined || stripeID === '') {
       logger.error('No stripeID found for customer', { userID: res.locals.user });
-      next('No stripeID found for customer');
-      return;
+      return res.status(500);
     }
 
-    logger.info('Got StripeID to retrive cards', { userID: res.locals.user, stripeID: stripeID.stripe_id });
+    logger.info('Got StripeID to retrive cards', { userID: res.locals.user, stripeID });
 
     const paymentMethods = await stripe.paymentMethods.list({
-      customer: stripeID.stripe_id,
+      customer: stripeID,
       type: 'card',
     });
 
-    logger.info('Got payment methods for customer from stripe', { userID: res.locals.user, stripeID: stripeID.stripe_id });
+    logger.info('Got payment methods for customer from stripe', { userID: res.locals.user, stripeID });
 
-    res.json(paymentMethods);
+    return res.json(paymentMethods);
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 

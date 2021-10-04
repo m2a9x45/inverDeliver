@@ -8,6 +8,15 @@ const catogoryItems = document.querySelectorAll('.categoryItem');
 const loader = document.querySelector('.loader');
 const errorMessage = document.querySelector('#errorMessage');
 
+const url_string = window.location.href;
+const url = new URL(url_string);
+const loginToken = url.searchParams.get("token");
+
+if (loginToken) {
+  localStorage.setItem('token', loginToken);
+  window.location = 'http://localhost:8080/frontend/';
+}
+
 let selectedCategory; 
 
 // Navbar toggle code
