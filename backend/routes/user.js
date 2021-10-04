@@ -614,7 +614,7 @@ router.post('/generateSMScode', authorisation.isAuthorized,
         redis.set(res.locals.user, SMScode, 'ex', 14400);
         logger.info('SMS code generated and added to redis', { userID: res.locals.user, SMScode, parsedPhoneNumber: phoneNumberParsed.number });
         // Send Verification SMS code.
-        await sendSMScode(SMScode, phoneNumberParsed.number, res.locals.user);
+        // await sendSMScode(SMScode, phoneNumberParsed.number, res.locals.user);
 
         res.sendStatus(204);
       } else {
