@@ -7,7 +7,8 @@ async function getDeliveries() {
       .join('delivery AS d', 'o.delivery_id', 'd.delivery_id')
       .join('addresses AS a', 'd.address_id', ' a.address_id')
       .join('users AS u', 'o.user_id', 'u.user_id')
-      .where('o.status', 'pending_delivery');
+      .where('o.status', 'pending_delivery')
+      .orWhere('o.status', 'out_for_delivery');
     return selectedRows;
   } catch (error) {
     return error;

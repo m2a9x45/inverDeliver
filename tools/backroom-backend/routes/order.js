@@ -4,7 +4,16 @@ const router = express.Router();
 
 const dao = require('../dao/dataOrder.js');
 
-router.get('/all', async (req, res, next) => {
+router.get('/latest', async (req, res, next) => {
+  try {
+    const users = await dao.getLatestOrders();
+    res.json(users);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/recived-shopping', async (req, res, next) => {
   try {
     const users = await dao.getOrders();
     res.json(users);
