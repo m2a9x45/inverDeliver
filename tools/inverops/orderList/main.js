@@ -6,7 +6,7 @@ getOrders();
 
 async function getOrders() {
     try {
-        const response = await fetch(`${API_URL}/order/all`);
+        const response = await fetch(`${API_URL}/order/recived-shopping`);
         const orders = await response.json();
         console.log(orders);
         orders.forEach(order => {

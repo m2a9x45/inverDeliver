@@ -1,67 +1,68 @@
 const express = require('express');
-
-const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-const { VoiceResponse } = require('twilio').twiml;
+const axios = require('axios');
+const { body, validationResult } = require('express-validator');
+const metrics = require('./metric');
+const logger = require('../middleware/logger.js');
 
 require('dotenv').config();
 
 const router = express.Router();
 
-router.post('/voice', (req, res) => {
-  const twiml = new VoiceResponse();
-
-  twiml.play('https://api.inverdeliver.com/sound/call.wav');
-  twiml.enqueue({ waitUrl: ' http://14d2d8421055.ngrok.io/support/hold' }, 'support_queue');
-
-  res.writeHead(200, { 'Content-Type': 'text/xml' });
-  res.end(twiml.toString());
+const callbackMetric = new metrics.client.Counter({
+  name: 'callback_requests',
+  help: 'Total number of callback requests',
+  labelNames: ['status'],
 });
 
-router.post('/hold', (req, res) => {
-  const twiml = new VoiceResponse();
-  twiml.play('https://api.inverdeliver.com/sound/TakeaChanceOnMe.mp3');
-  res.writeHead(200, { 'Content-Type': 'text/xml' });
-  res.end(twiml.toString());
-});
+// https://discord.com/developers/docs/resources/channel#embed-limits
+// Embed values are limited to 1024 characters
+router.post('/callback',
+  body('email').isEmail().normalizeEmail(),
+  body('phoneNumber').isMobilePhone(['en-GB']),
+  body('issue').isAlphanumeric().isLength({ max: 1024 }),
+  async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: 'Invalid Phone Number' });
+    }
 
-router.get('/queue', (req, res) => {
-  client.queues.list({ limit: 20 })
-    .then((queues) => queues.forEach((q) => console.log(q.sid)));
+    const { email, issue, phoneNumber } = req.body;
 
-  client.queues('QU1be15279610de02195081fbdd4d88405')
-    .members('Front')
-    .fetch()
-    .then((member) => console.log(member.callSid));
-});
+    logger.info('Callback request made', { ip: req.ip, email, phoneNumber });
 
-router.post('/callback', async (req, res, next) => {
-  const {
-    userID, email, issue, phoneNumber,
-  } = req.body;
+    const discordData = {
+      embeds: [{
+        title: '💬 New Support Request',
+        fields: [{
+          name: 'Email Address',
+          value: email,
+          inline: true,
+        }, {
+          name: 'Phone Number',
+          value: phoneNumber || 'Use number on account',
+          inline: true,
+        }, {
+          name: 'Issue',
+          value: issue,
+        }],
+      }],
+    };
 
-  // Try to link request to an account:
-  //   - If logged in / has a token via userID
-  //   - Then via email
-  //   - Finally via phone number
-  //   - If none of the above work then log it without an account
+    try {
+      const responce = await axios.post(process.env.DISCORD_WEBHOOK, discordData);
 
-  // Add userID, customer issue and phoneNumber to DB along with status
-  // Send discord webhook to notify me of support request
-  // https://discord.com/api/webhooks/870091265813917747/kYedk4-2mTicijK8K8Aoc1-fTe11SAH2wzKaErd96cR3q5r_F3KDPTBl876EjVX0yl65
-});
+      if (responce.status !== 204) {
+        callbackMetric.inc({ status: responce.status });
+        logger.error('Failed to send to Discord', {
+          ip: req.ip, email, phoneNumber, issue,
+        });
+        return res.status(500).send();
+      }
+      callbackMetric.inc({ status: 204 });
+      return res.status(204).send();
+    } catch (error) {
+      return next(error);
+    }
+  });
 
 module.exports = router;
-
-// QU1be15279610de02195081fbdd4d88405
-
-// {
-//     "dateUpdated": "2021-07-01T16:23:19.000Z",
-//     "currentSize": 0,
-//     "friendlyName": "support_queue",
-//     "uri": "/2010-04-01/Accounts/AC71e6c44e209bac0e5690d838333e6591/Queues/QU1be15279610de02195081fbdd4d88405.json",
-//     "accountSid": "AC71e6c44e209bac0e5690d838333e6591",
-//     "averageWaitTime": 0,
-//     "sid": "QU1be15279610de02195081fbdd4d88405",
-//     "dateCreated": "2021-07-01T16:23:19.000Z",
-//     "maxSize": 100
-//   }

@@ -13,9 +13,26 @@ header {
     
 }
 
+main {
+    font-size: 20px;
+}
+
 .navbar {
     margin: 0 auto;
     width: 75%;
+}
+
+.navbarToggle {
+    display: none;
+}
+
+.navbarToggle:hover {
+    color: rgb(66, 176, 255);
+}
+
+.mainNav {
+    display: flex;
+    flex-direction: row;
 }
 
 .navbarList {
@@ -29,10 +46,6 @@ header {
     list-style-type: none;
     font-size: 16pt;
     padding: 0.5rem;
-}
-
-nav ul li:first-child {
-    margin-right: auto;
 }
 
 #navbarItem a, #logo a {
@@ -71,6 +84,11 @@ nav ul li:first-child {
     margin: 4rem auto;
 }
 
+.content a {
+    text-decoration: none;
+    color: rgb(66, 176, 255);
+}
+
 footer {
     background-color:rgba(66, 176, 255, 0.151);
     margin-top:auto; 
@@ -97,3 +115,54 @@ footer {
     list-style-type: none;
 }
 
+@media only screen and (max-width: 800px) {
+    .callOut {
+        width: 100%;
+    }
+    .callOut h4 {
+        font-size: 28pt;
+    }
+    .content {
+        width: 90%;
+        margin: 2rem auto;
+    }
+    .footerContainer {
+        width: 90%;
+        justify-content: space-evenly;
+        padding: 1rem 0.5rem 1rem 0.5rem;
+    }
+}
+
+
+@media only screen and (max-width: 680px) {
+    header {
+        padding: 0.5em;
+    }
+    .navbar {
+        width: 100%;
+    }
+    .navbarList {
+        flex-direction: column;
+    }
+    .mainNav {
+        display: none;
+        flex-direction: column;
+        text-align: center;
+    }
+    #navbarItem {
+        font-size: 14pt;
+        padding: 0.2rem;
+        text-align: center;
+    }
+    .navbarToggle {
+        display: block;
+        position: absolute;
+        right: 20px;
+        cursor: pointer; 
+        color: rgba(255,255,255,0.8);
+        font-size: 24px;
+    }
+    .footerSection {
+        margin: 0 0.5rem;
+    }
+}

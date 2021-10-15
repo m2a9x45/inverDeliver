@@ -30,7 +30,7 @@ header {
     border-radius: 15px;
 }
 
-#completeButton {
+#completeButton, #outForDeliveryButton {
     background-color: hsl(93, 77%, 44%); /* Green */
     border: none;
     padding: 0.5rem 2rem;

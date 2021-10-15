@@ -172,6 +172,18 @@ h2 {
     text-align: right;
 }
 
+@media only screen and (max-width: 1200px) {
+    .deliveryContent {
+        width: 100%;
+    }
+    .orderContent {
+        width: 100%;
+    }
+    .orderTotal {
+        width: 100%;
+    }
+}
+
 @media only screen and (max-width: 680px) {
     header {
         padding: 0.5em;
@@ -190,6 +202,30 @@ h2 {
     #navbarItem {
         font-size: 14pt;
         padding: 0.2rem;
+    }
+    .navbarToggle {
+        display: block;
+        position: absolute;
+        right: 20px;
+        cursor: pointer; 
+        color: rgba(255,255,255,0.8);
+        font-size: 24px;
+    }
+    .grid-container {
+        grid-template-columns: auto;
+        padding: 0px;
+    }
+    .deliveryContent {
+        width: 100%;
+    }
+    .orderContent {
+        width: 100%;
+    }
+    .orderItemImgAndName {
+        align-items: center;
+    }
+    .orderTotal {
+        width: 100%;
     }
     .navbarToggle {
         display: block;

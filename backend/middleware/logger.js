@@ -17,7 +17,7 @@ const logger = createLogger({
   ],
   exceptionHandlers: [
     new transports.Console(),
-    new transports.File({ filename: 'combined.log', level: 'error' }),
+    new transports.File({ filename: 'error.log', level: 'error' }),
   ],
 });
 

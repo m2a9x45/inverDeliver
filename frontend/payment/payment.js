@@ -1,13 +1,15 @@
-const API_URL = "https://api.inverdeliver.com";
+const API_URL = "http://localhost:3001";
 
 const navBarToggle = document.querySelector('.navbarToggle');
 const navtoggle = document.querySelector('.mainNav');
 
 const stripe = Stripe("pk_test_51H7AsMK7XxBFOf2KD3wGhUSnQRncvlSgpaez5NPRCilzrFxxJPsKgUNU0li9EHwtSigGZV1Y1Y6gtYu7kmbjs9KC00LtASdb7Q");
 const cartContent = document.querySelector(".cartContent");
+
 const url_string = window.location.href;
 const url = new URL(url_string);
 const orderID = url.searchParams.get("orderID");
+
 const token = localStorage.getItem('token');
 const form = document.getElementById("payment-form");
 const cardDetails = document.querySelector('.cardDetails');
@@ -81,7 +83,7 @@ fetch(`${API_URL}/order/status?orderID=${orderID}`, {
   })
   .then(data => {
     console.log(data);
-    if (data.status === 0) {
+    if (data.status === 'payment_required') {
       getOrderContent();
       displayDeliveryInfo(data);
       getOrCreatePaymentIntent();

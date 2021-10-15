@@ -40,6 +40,17 @@ async function completeOrder(deliveryID) {
     }
 }
 
+async function outForDelivery(deliveryID) {
+    try {
+        const response = await fetch(`${API_URL}/delivery/outForDelivery/${deliveryID}`, {
+            method: 'PATCH',
+        });
+        console.log(response);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 getDeliveryies()
 
 
@@ -54,6 +65,7 @@ function showDelivery(delivery) {
     const customerName = document.querySelector('#customerName');
     const customerNumber = document.querySelector('#customerNumber');
     const completeButton = document.querySelector('#completeButton');
+    const outForDeliveryButton = document.querySelector('#outForDeliveryButton');
 
     const deliveryDate = new Date(delivery.time);
     const options = {
@@ -84,6 +96,10 @@ function showDelivery(delivery) {
         .addTo(map);
     map.flyTo({
         center: [delivery.long, delivery.lat]
+    })
+
+    outForDeliveryButton.addEventListener('click', (e) => {
+        outForDelivery(delivery.delivery_id);
     })
 
     completeButton.addEventListener('click', (e) => {

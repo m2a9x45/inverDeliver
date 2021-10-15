@@ -23,17 +23,17 @@ body {
 }
 
 .passwordSignInHolder {
-    width: 350px;
+    width: 300px;
     margin: 0 auto;
 }
 
 .googleSignInHolder {
-    width: 350px;
+    width: 300px;
     margin: 1rem auto;
 }
 
 .FbSignInHolder {
-    width: 350px;
+    width: 300px;
     margin: 1rem auto;
 }
 
@@ -88,4 +88,35 @@ body {
 
 #forgotPassword {
     text-align: center;
+}
+
+@media only screen and (max-width: 935px) {
+    .signInSelect {
+        width: 80%;
+    }
+}
+
+@media only screen and (max-width: 465px) {
+    .signInSelect {
+        width: 100%;
+        margin: 0;
+        padding: 0.5rem 0 0.5rem 0;
+    }
+}
+
+@media only screen and (max-width: 360px) {
+    .signInSelect {
+        width: 100%;
+        margin: 0;
+        padding: 0.5rem 0 0.5rem 0;
+    }
+    .googleSignInHolder {
+        width: 300px;
+        margin: 1rem auto;
+    }
+    
+    .FbSignInHolder {
+        width: 300px;
+        margin: 1rem auto;
+    }
 }

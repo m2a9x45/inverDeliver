@@ -1,4 +1,4 @@
-const API_URL = "https://api.inverdeliver.com"
+const API_URL = "http://localhost:3001"
 
 const gridCcontainer = document.querySelector('.grid-container');
 const productSearch = document.querySelector('#productSearch');
@@ -7,6 +7,15 @@ const navtoggle = document.querySelector('.mainNav');
 const catogoryItems = document.querySelectorAll('.categoryItem');
 const loader = document.querySelector('.loader');
 const errorMessage = document.querySelector('#errorMessage');
+
+const url_string = window.location.href;
+const url = new URL(url_string);
+const loginToken = url.searchParams.get("token");
+
+if (loginToken) {
+  localStorage.setItem('token', loginToken);
+  window.location = 'http://localhost:8080/frontend/';
+}
 
 let selectedCategory; 
 
@@ -75,7 +84,7 @@ function addProducts(productArray) {
     gridDiv.setAttribute("class", "grid-item");
 
     const img = document.createElement("img");
-    img.setAttribute("src", product.image_url ? `https://api.inverdeliver.com/productImage/${product.image_url}` : "");
+    img.setAttribute("src", product.image_url ? `http://localhost:3001/productImage/${product.image_url}` : "");
     img.setAttribute("loading", "lazy");
     img.setAttribute("width", "150px");
     img.setAttribute("height", "150px");
@@ -93,7 +102,8 @@ function addProducts(productArray) {
     }).format(product.price / 100);
 
     const price = document.createElement("p");
-    price.innerText = formatedPrice // more logic needed to handle zero
+
+    product.price_variable === 1 ? price.innerText = `${formatedPrice} (typically)` : price.innerText = formatedPrice;
 
     const button = document.createElement("button");
     button.innerText = "Add to Cart";

@@ -37,7 +37,7 @@
                 <div class="cartContent">
                     <!-- <div class="cartItem">
                             <div class="orderItemImgAndName">
-                                <img src="https://inverdeliver.com/productImage/d45b890b-4107-42fb-bcd0-bbea680f0724.jpeg" alt="" width="70px">
+                                <img src="http://localhost:3001/productImage/d45b890b-4107-42fb-bcd0-bbea680f0724.jpeg" alt="" width="70px">
                                 <div class="itemInfo">
                                     <p>Milk</p>
                                     <p>product description</p>
@@ -65,23 +65,24 @@
                     </form>
 
                     <form id="verfiyphoneNumberForm">
-                        <p>
+                        <p id="SMSmessage">
                             We've just sent you a verfication code to your phone number.
                             Please enter it below to verify your number. Thanks 👍
                         </p>
                         <input id="verificationCode" type="tel" inputmode="numeric" placeholder="6 digit - Vefication Code" maxlength="6" pattern="[0-9]*"
                         autocomplete="one-time-code">
                         <button class="submit">Verfiy Phone Number</button>
-                        <a href="http://">change phone number</a>
+                        <p style="text-align: center;"><a href="javascript:;" onclick="resendSMS()">Resend SMS code</a></p>
                     </form>
                     
+                    
+
                     <form id="deliveryForm">
                         <div>
-                            
-                            <label for="">Choose your delivery day & time:</label>
-                            <input type="datetime-local" name="delivery_time" id="delivery_time" required>
-                        </div>
-                        <div>
+                            <div>
+                                <label for="">Choose your delivery day & time:</label>
+                                <input type="datetime-local" name="delivery_time" id="delivery_time" required>
+                            </div>
                             <h4 for="">Your delivery address:</h4>
                             <div class="savedAddressSelector">
                                 <!-- <a class="address" href="" id="test">
@@ -93,9 +94,13 @@
                                 </a>      -->
                             </div>
                             <div class="addNewAddress">
-                                <input type="text" placeholder="Street Name" autocomplete="address-line1" name="street_name" id="street_name" disabled required>
-                                <input type="text" placeholder="Town/City" autocomplete="address-level2" name="city" id="city" disabled required>
-                                <input type="text" placeholder="Postcode" autocomplete="postal-code" name="post_code" id="post_code" disabled required>
+                                <input type="text" placeholder="EH1 2KL" autocomplete="postal-code" name="post_code" id="post_code" disabled required>
+                                <button id="postcodeLookupButton" class="submit">Search postcode</button>
+                            </div>
+
+                            <div class="selectNewAddress">
+                                <select class="addressSelector" name="" id=""></select>
+                                <button id="addNewAddressButton" class="submit">Add Address</button>
                             </div>
 
                             <p style="text-align: center;"><a id="addNewAddressLink" href="javascript:;" onclick="showAddNewAddress()">Add a new address</a></p>
@@ -104,7 +109,7 @@
                             <textarea id="deliveryNote" name="delivery_note" placeholder="Door code, who to leave your shopping with. etc."></textarea>
                             
                         </div>
-                        <input class="submit" type="submit" value="Continue to Payment">
+                        <input id="ContinuePaymentButton" class="submit" type="submit" value="Continue to Payment">
                         <p id="errorMessage">Error message</p>
                     </form>            
                 </div>

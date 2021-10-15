@@ -1,4 +1,4 @@
-const API_URL = "https://api.inverdeliver.com";
+const API_URL = "http://localhost:3001";
 
 const navBarToggle = document.querySelector('.navbarToggle');
 const navtoggle = document.querySelector('.mainNav');
@@ -93,7 +93,7 @@ function displayOrders(order) {
     let OrderID;
 
     switch (order.status) {
-        case 0:
+        case 'payment_required':
             orderID = document.createElement("a");
             orderID.innerText = order.order_id;
             orderID.setAttribute("href", `../payment/?orderID=${order.order_id}`);
@@ -177,33 +177,25 @@ function displayOrders(order) {
     deliveryStatus.setAttribute("id", "deliveryStatus");
 
     switch (order.status) {
-        case 0:
+        case 'payment_required':
             deliveryStatus.innerText = "Awaiting Payment";
-            deliveryStatus.style.backgroundColor = "#8f6eff"; // purple
+            deliveryStatus.style.backgroundColor = "rgb(66, 176, 255)"; // blue
             break;
-        case 1:
+        case 'order_received':
             deliveryStatus.innerText = "Order recived";
-            deliveryStatus.style.backgroundColor = "#ff80fb"; // pink
+            deliveryStatus.style.backgroundColor = "rgb(66, 176, 255)"; // blue
             break;
-        case 2:
-            deliveryStatus.innerText = "Awaiting shopping";
-            deliveryStatus.style.backgroundColor = "#9efffc"; // blue
+        case 'pending_delivery' || 'shopping':
+            deliveryStatus.innerText = "Shopping";
+            deliveryStatus.style.backgroundColor = "#ff8f2e"; // orange
             break;
-        case 3:
-            deliveryStatus.innerText = "shopping";
-            deliveryStatus.style.backgroundColor = "#ff7c4d"; // orange
-            break;
-        case 4:
-            deliveryStatus.innerText = "shopping complete";
-            deliveryStatus.style.backgroundColor = "#32a852"; // green
-            break;
-        case 5:
+        case 'out_for_delivery':
             deliveryStatus.innerText = "Out for Delivery";
-            deliveryStatus.style.backgroundColor = "#32a852"; // green
+            deliveryStatus.style.backgroundColor = "#5cff59"; // green
             break;
-        case 6:
-            deliveryStatus.innerText = "Delivered";
-            deliveryStatus.style.backgroundColor = "#32a852"; // green
+        case 'delivered':
+            deliveryStatus.innerText = "delivered";
+            deliveryStatus.style.backgroundColor = "#5cff59"; // green
             break;
         default:
             deliveryStatus.innerText = "Please get In touch";
@@ -211,11 +203,11 @@ function displayOrders(order) {
 
     contextInfo.appendChild(deliveryStatus);
 
-    const helpButton = document.createElement("a");
-    helpButton.setAttribute("id", "helpButton");
-    helpButton.setAttribute("href", `../help/order?id=${order.order_id}`);
-    helpButton.innerText = "Order help";
-    contextInfo.appendChild(helpButton);
+    // const helpButton = document.createElement("a");
+    // helpButton.setAttribute("id", "helpButton");
+    // helpButton.setAttribute("href", `../us/help`);
+    // helpButton.innerText = "Get Help";
+    // contextInfo.appendChild(helpButton);
 
     orderbody.appendChild(contextInfo); // Adding contextInfo to the orderbody
 

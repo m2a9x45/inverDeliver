@@ -10,11 +10,11 @@ const orderID = url.searchParams.get("orderID");
 console.log(orderID);
 
 completeButton.addEventListener("click", () => {
-    updateStatus(orderID, 3);
+    updateStatus(orderID, 'pending_delivery');
 })
 
 shoppingNowButton.addEventListener("click", () => {
-    updateStatus(orderID, 2);
+    updateStatus(orderID, 'shopping');
 })
 
 async function updateStatus(orderID, status) {
@@ -49,7 +49,7 @@ function displayOrder(product) {
     imageAndNameDiv.setAttribute("class", "orderImageAndName");
 
     const img = document.createElement("img");
-    img.setAttribute("src", `https://inverdeliver.com/productImage/${product.image_url}`);
+    img.setAttribute("src", `http://localhost:3001/productImage/${product.image_url}`);
     img.setAttribute("width", "75px");;
 
     const productName = document.createElement("p");

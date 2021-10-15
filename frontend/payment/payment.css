@@ -374,10 +374,6 @@ button:disabled {
       font-size: 24px;
   }
 
-  #order {
-    display: none;
-  }
-
   main {
     width: 100%;
     margin: 0;

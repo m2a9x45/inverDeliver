@@ -1,4 +1,4 @@
-const API_URL = "https://api.inverdeliver.com";
+const API_URL = "http://localhost:3001";
 
 const navBarToggle = document.querySelector('.navbarToggle');
 const navtoggle = document.querySelector('.mainNav');
@@ -52,19 +52,15 @@ fetch(`${API_URL}/order/status?orderID=${orderID}`, {
       'authorization': `bearer ${token}`,
     }
   })
-  .then(response => {
-    if (response.status == 404) {
-      console.log("No order with that ID that you've started has been found");
-      // window.location.replace(`../`); 
-    }
-    if (response.ok) {
-      return response.json()
-    }
-  })
+  .then(response => response.json())
   .then(data => {
     console.log(data);
-    displayDeliveryInfo(data);
-    showOrderStatus(data.status);
+    if (data.status === 'not_found') {
+      window.location.replace(`../`); 
+    } else {
+      displayDeliveryInfo(data);
+      showOrderStatus(data.status);
+    }
   });
 
 fetch(`${API_URL}/order/content?orderID=${orderID}`, {
@@ -72,20 +68,16 @@ fetch(`${API_URL}/order/content?orderID=${orderID}`, {
       'authorization': `bearer ${token}`,
     }
   })
-  .then(response => {
-    if (response.status == 404) {
-      console.log("No order with that ID that you've started has been found");
-      // window.location.replace(`../`); 
-    }
-    if (response.ok) {
-      return response.json()
-    }
-  })
+  .then(response => response.json())
   .then(data => {
     console.log(data);
-    data.forEach(item => {
-      displayOrderContent(item);
-    });
+    if (data.status === 'not_found') {
+      window.location.replace(`../`); 
+    } else {
+      data.forEach(item => {
+        displayOrderContent(item);
+      });
+    }
   });
 
 fetch(`${API_URL}/order/price?orderID=${orderID}`, {
@@ -201,40 +193,27 @@ function showOrderStatus(status) {
   const status6 = document.querySelector("#status6");
 
   switch (status) {
-    case 1:
-      
+    case 'order_received':
       status1.style.opacity = 1;
       status1.style.backgroundColor = "rgb(66, 176, 255)";
       break;
-    case 2:
-      
+    case 'pending_delivery' || 'shopping':
       status1.style.opacity = 1;
       status2.style.opacity = 1;
       status2.style.backgroundColor = "rgb(66, 176, 255)";
       break;
-    case 3:
-      
+    case 'out_for_delivery':
       status1.style.opacity = 1;
       status2.style.opacity = 1;
       status3.style.opacity = 1;
       status3.style.backgroundColor = "rgb(66, 176, 255)";
       break;
-    case 4:
-      
+    case 'delivered':
       status1.style.opacity = 1;
       status2.style.opacity = 1;
       status3.style.opacity = 1;
       status4.style.opacity = 1;
       status4.style.backgroundColor = "rgb(66, 176, 255)";
-      break;
-    case 5:
-      
-      status1.style.opacity = 1;
-      status2.style.opacity = 1;
-      status3.style.opacity = 1;
-      status4.style.opacity = 1;
-      status5.style.opacity = 1;
-      status5.style.backgroundColor = "rgb(66, 176, 255)";
       break;
     default:
       break;

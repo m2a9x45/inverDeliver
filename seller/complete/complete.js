@@ -1,4 +1,4 @@
-const API_URL = 'https://inverdeliver.com';
+const API_URL = 'http://localhost:3001';
 
 console.log(localStorage.getItem("sellerToken")); 
 

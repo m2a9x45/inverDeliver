@@ -1,4 +1,4 @@
-const API_URL = "https://api.inverdeliver.com";
+const API_URL = "http://localhost:3001";
 
 const navBarToggle = document.querySelector('.navbarToggle');
 const navtoggle = document.querySelector('.mainNav');
@@ -89,6 +89,9 @@ fetch(`${API_URL}/user/card`, {
   .then(response => response.json())
   .then(data => {
     console.log(data);
+    if (data.error) {
+      return;
+    }
     displayCards(data.data);
   })
   .catch((error) => {
@@ -124,23 +127,7 @@ function displayUserInfo(customerInfo) {
   userJoinDate.innerText = `Since ${displayDate}`;
   userName.innerText = customerInfo.last_name ? `${customerInfo.first_name} ${customerInfo.last_name}` : `${customerInfo.first_name}`; 
   userEmail.innerText = customerInfo.email;
-
-  switch (customerInfo.phone_number != null) {
-    case true:
-      userPhone.innerText = customerInfo.phone_number;
-      break;
-    
-    default:
-      // create a tag to add phone number
-      const addPhoneNumber = document.createElement("a");
-      addPhoneNumber.innerText = "Add Number"
-      addPhoneNumber.setAttribute("href", "javascript:;");
-      addPhoneNumber.setAttribute("onClick", "showUpdatePhoneNumber()");
-
-      userPhone.appendChild(addPhoneNumber);
-    
-      break;
-  }
+  userPhone.innerText = customerInfo.phone_number ? customerInfo.phone_number : 'N/A';
 }
 
 function displayCards(cardData) {
@@ -254,65 +241,6 @@ function deleteAdress(addressID) {
   .catch((error) => {
     console.error('Error:', error);
   });
-}
-
-submitButton.addEventListener("click", () => {
-  const newPhoneNumber = document.querySelector('#newPhoneNumber');
-  const phoneNumber = newPhoneNumber.value;
-
-  let re = /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|\+)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|\#)\d{3,4})?$/;
-
-  console.log(re.test(phoneNumber));
-
-  if (re.test(phoneNumber) === false) {
-    modal.style.display = "none";
-    showMessage("❌ Please enter a vaild UK number, if you are please contact customer support");
-    return;
-  }
-
-  fetch(`${API_URL}/user/updatePhoneNumber`, {
-    method: "PATCH",
-    headers: {
-      'Content-Type': 'application/json',
-      'authorization': `bearer ${token}`,
-    },
-    body: JSON.stringify({
-      "phoneNumber": phoneNumber,
-    })
-  })
-  .then(response => {
-    modal.style.display = "none";
-    message.style.display = "block";
-    if (response.ok) {
-      showMessage("Phone Number Updated 📞");
-      getCustomerAccount();
-    } else {
-      showMessage("❌ Sorry we couldn't update your phone number if this continues, please let us know");
-    }
-
-    
-
-  })
-  .catch((error) => {
-    console.error('Error:', error);
-  });
-
-});
-
-// Get the modal
-var modal = document.getElementById("myModal");
-
-// When the user clicks on the button, open the modal
-
-function showUpdatePhoneNumber() {
-  modal.style.display = "block";
-}
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-  if (event.target == modal) {
-    modal.style.display = "none";
-  }
 }
 
 function showMessage(text) {

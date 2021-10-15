@@ -14,11 +14,11 @@ function userByExternalID(externalID, externalType) {
 }
 
 function CreateAccountWithExternalID(userID, externalID, externalType,
-  email, firstName, lastName, stripeID) {
+  email, firstName, lastName, stripeID, ip) {
   return new Promise(((resolve, reject) => {
-    const sql = 'INSERT INTO users (user_id, external_id, external_type, email, first_name, last_name, stripe_id) VALUES (?,?,?,?,?,?,?)';
+    const sql = 'INSERT INTO users (user_id, external_id, external_type, email, first_name, last_name, stripe_id, ip) VALUES (?,?,?,?,?,?,?,?)';
     db.query(sql, [userID, externalID, externalType, email,
-      firstName, lastName, stripeID,
+      firstName, lastName, stripeID, ip,
     ], (err, value) => {
       if (err === null) {
         resolve(value);
@@ -29,12 +29,12 @@ function CreateAccountWithExternalID(userID, externalID, externalType,
   }));
 }
 
-function createAccountWithEmail(userID, email, firstName, password, stripeID) {
+function createAccountWithEmail(userID, email, firstName, password, stripeID, ip) {
   return new Promise(((resolve, reject) => {
     const sql = `INSERT INTO users (user_id, email, 
-      password, first_name, stripe_id) VALUES (?,?,?,?,?)`;
+      password, first_name, stripe_id) VALUES (?,?,?,?,?,?)`;
     db.query(sql, [userID, email, password,
-      firstName, stripeID,
+      firstName, stripeID, ip,
     ], (err, value) => {
       if (err === null) {
         resolve(value);
@@ -103,6 +103,19 @@ function getAddress(userID, addressID) {
     db.query(sql, [userID, addressID], (err, value) => {
       if (err === null) {
         resolve(value[0]);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
+function addAddress(userID, addressID, street, city, postCode, lat, long) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'INSERT INTO addresses (user_id, address_id, street, city, post_code, lat, addresses.long) VALUES (?,?,?,?,?,?,?)';
+    db.query(sql, [userID, addressID, street, city, postCode, lat, long], (err, value) => {
+      if (err === null) {
+        resolve(value);
       } else {
         reject(err);
       }
@@ -183,6 +196,7 @@ module.exports = {
   getStripeID,
   updatePhoneNumber,
   getAddresses,
+  addAddress,
   deleteAddresses,
   getPhoneNumber,
   validatePhoneNumber,

@@ -17,12 +17,18 @@
 <body>
     <header>
         <nav class="navbar">
+            <span class="navbarToggle">
+                <i class="fa fa-bars"></i>
+            </span>
             <ul class="navbarList">
-                <li id="navbarItem"><a href="../">Home</a></li>
-                <li id="navbarItem"><a id="order" href="../orders/">Orders</a></li>
-                <li id="navbarItem"><a id="cart" href="../cart/">Cart</a></li>
-                <li id="navbarItem"><a id="cart" href=".">Help</a></li>
-                <li id="navbarItem"><a id="cart" href="../account/">Account</a></li>
+                <li id="navbarItem" style="margin-right: auto;"><a href="../../">Home</a></li>
+                <div class="mainNav">
+                    <li id="navbarItem"><a id="order" href="../../orders/">Orders</a></li>
+                    <li id="navbarItem"><a id="cart" href="../../cart/">Cart</a></li>
+                    <li id="navbarItem"><a id="cart" href="../">Help</a></li>
+                    <li id="navbarItem"><a id="cart" href="../../account/">Account</a></li>
+                    <li id="navbarItem"><a id="logout" href="../../signin">Login</a></li>
+                </div>
             </ul>
         </nav>
     </header>
@@ -61,6 +67,23 @@
                     <p><a href="javascript:;" onclick="toggleCallForm();">Request a call</a></p>    
                 </div>
             </div>
+        </div>
+
+        <form class="callbackForm">
+            <h2>Callback Request</h2>
+            <label for="">Enter your email address</label>
+            <input type="email" name="" id="email" placeholder="John.Doe@email.com">
+            <p>Avoid waiting on hold and let us call you</p>
+            <label for="">Let us know how we can help?</label>
+            <textarea name="" id="issue" cols="30" rows="5" maxlength="1024" placeholder="Let us what you need help with the more detail the better"></textarea>
+            <p>We'll call you on the phone number linked with you account</p>
+            <label for="">If you'd like us to call you on a different phone number, enter it below</label>
+            <input type="tel" name="" id="phoneNumber" placeholder="Phone number you'd like us to call you on">
+            <button type="submit">Request Callback</button>
+        </form>
+
+        <div id="callbackFormMessage" style="display: none;">
+            <p>Thanks for submitting a callback request, we'll reply to you as soon as possible</p>
         </div>
 
         <form class="callbackForm">

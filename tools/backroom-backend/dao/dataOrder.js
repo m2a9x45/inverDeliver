@@ -6,7 +6,22 @@ async function getOrders() {
       'd.address_id', 'd.time', 'a.street', 'a.city', 'a.post_code').from('order AS o')
       .join('delivery AS d', 'o.delivery_id', 'd.delivery_id')
       .join('addresses AS a', 'd.address_id', ' a.address_id')
-      .whereBetween('o.status', [1, 2]);
+      .where('o.status', 'order_received')
+      .orWhere('o.status', 'shopping');
+
+    return selectedRows;
+  } catch (error) {
+    return error;
+  }
+}
+
+async function getLatestOrders() {
+  try {
+    const selectedRows = await db.knex.select('o.order_id', 'o.status', 'o.created_at',
+      'd.time', 'a.street', 'a.post_code', 'a.lat', 'a.long', 'u.first_name', 'u.last_name', 'u.email', 'u.phone_number').from('order AS o')
+      .join('delivery AS d', 'o.delivery_id', 'd.delivery_id')
+      .join('addresses AS a', 'd.address_id', ' a.address_id')
+      .join('users AS u', 'u.user_id', ' o.user_id');
 
     return selectedRows;
   } catch (error) {
@@ -37,6 +52,7 @@ async function updateOrderStatus(orderID, status) {
 
 module.exports = {
   getOrders,
+  getLatestOrders,
   getOrderContent,
   updateOrderStatus,
 };

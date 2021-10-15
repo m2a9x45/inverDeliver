@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     
-    <meta name="google-signin-client_id" content="367206505484-duqc704rjojig4ogbkb5k372v0pk4gnd.apps.googleusercontent.com">
-
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link  href="https://fonts.googleapis.com/css2?family=Roboto:wght@150;300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="signin.css">
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <title>Document</title>
 </head>
@@ -27,25 +26,38 @@
                 <button id="continueButton" type="submit">Continue</button>
                 <button id="createAccountButton" type="submit">Create Account</button>
                 <button id="loginButton" type="submit">Login</button>
-                <p id="forgotPassword"><a href="./forgot/">Forgot password</a></p>
+                <!-- <p id="forgotPassword"><a href="./forgot/">Forgot password</a></p> -->
                 <p id="errorMessage" style="color: red;"></p>
                 <p id="otherSignInOptions">Other Login Options</p>
             </div>
             
             <div class="FbSignInHolder">
-                <div class="fb-login-button" onlogin="checkLoginState();" data-width="350" data-size="large" data-button-type="continue_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="false"></div>
+                <div class="fb-login-button" onlogin="checkLoginState();" data-width="300" data-size="large" data-button-type="continue_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="false"></div>
             </div>
             <div class="googleSignInHolder">
-                <div class="g-signin2" data-width="350" data-height="40" data-longtitle="true" data-onsuccess="onSignIn"></div>
+                <div 
+                    id="g_id_onload"
+                    data-client_id="367206505484-duqc704rjojig4ogbkb5k372v0pk4gnd.apps.googleusercontent.com"
+                    data-context="signin"
+                    data-ux_mode="redirect"
+                    data-login_uri="http://localhost:3001/user/googleSignIn"
+                    data-auto_prompt="false">
+                </div>
+           
+                <div 
+                    class="g_id_signin"
+                    data-type="standard"
+                    data-shape="rectangular"
+                    data-theme="outline"
+                    data-text="continue_with"
+                    data-size="large"
+                    data-logo_alignment="left"
+                    data-width="300"
+                ></div>
             </div>
-            
-            
-            
         </div>
-        
     </main>
 
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
     <script src="signin.js"></script>
 </body>
 </html>

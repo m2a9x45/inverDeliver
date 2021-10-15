@@ -1,4 +1,4 @@
-const API_URL = "https://api.inverdeliver.com";
+const API_URL = "http://localhost:3001";
 const errorMessage = document.querySelector('#errorMessage');
 const token = localStorage.getItem('token');
 
@@ -8,6 +8,15 @@ const passwordInput = document.querySelector('#password');
 const continueButton = document.querySelector('#continueButton');
 const createAccountButton = document.querySelector('#createAccountButton');
 const loginButton = document.querySelector('#loginButton');
+
+const urlString = window.location.href;
+const url = new URL(urlString);
+const loginToken = url.searchParams.get("token");
+
+if (loginToken) {
+    localStorage.setItem("token", loginToken);
+    window.location = "../";
+}
 
 if (token) {
     window.location.replace("../");
@@ -126,7 +135,7 @@ function onSignIn(googleUser) {
         .then(data => {
             if (data.token) {
                 localStorage.setItem('token', data.token);
-                // window.location.replace('../');
+                window.location.replace('../');
             }
         })
         .catch((error) => {
@@ -158,7 +167,7 @@ function statusChangeCallback(res) {
             console.log(data);
             if (data.token) {
                 localStorage.setItem('token', data.token);
-                // window.location.replace('../');
+                window.location.replace('../');
             }
         })
         .catch((error) => {
