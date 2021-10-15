@@ -490,7 +490,7 @@ router.post('/postcodeLookup', authorisation.isAuthorized, body('postCode').isPo
 
   // List of postcode sectors where we operater
   const operatingArea = ['EH11', 'EH12', 'EH13', 'EH21', 'EH22', 'EH23', 'EH24', 'EH35', 'EH36', 'EH37', 'EH38', 'EH39',
-    'EH126', 'EH125', 'EH112', 'EH111', 'EH104', 'EH165', 'EH91', 'EH92', 'EH89', 'EH89', 'EH87', 'EH88', 'EH75', 'EH74', 'EH41', 'EH42', 'EH43'];
+    'EH126', 'EH125', 'EH112', 'EH111', 'EH104', 'EH165', 'EH91', 'EH92', 'EH89', 'EH87', 'EH88', 'EH75', 'EH74', 'EH41', 'EH42', 'EH43'];
 
   // checing to see if the postcode sector the user has entered is one that we operater in
   if (!operatingArea.includes(regixPostCode[0])) {

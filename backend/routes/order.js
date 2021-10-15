@@ -28,7 +28,7 @@ router.post('/create', async (req, res, next) => {
   try {
     const phoneNumberVerfied = await daoUser.getPhoneNumber(res.locals.user);
     if (phoneNumberVerfied.phone_verified === 0) {
-      logger.warn('phone number not verfied', { userID: res.locals.user, phoneNumber: phoneNumberVerfied.phone_number });
+      logger.warn('phone number not verfied', { ip: req.ip, userID: res.locals.user, phoneNumber: phoneNumberVerfied.phone_number });
       orderCreatedMetric.inc({ type: 'phone_number_not_verfied', status: 400 });
       res.json({ error: 'You have not verfied your phone number' });
       return null;
@@ -37,23 +37,33 @@ router.post('/create', async (req, res, next) => {
     next(error);
   }
 
-  logger.info('Create new order request', { orderID, userID: res.locals.user, addressID });
+  logger.info('Create new order request', {
+    ip: req.ip, orderID, userID: res.locals.user, addressID,
+  });
   data.products.forEach((product) => { productsArray.push([orderID, product[0], product[1]]); });
-  logger.info('Product array created', { orderID, userID: res.locals.user, productsArray });
+  logger.info('Product array created', {
+    ip: req.ip, orderID, userID: res.locals.user, productsArray,
+  });
 
   try {
     let orderInfo;
-    logger.info('Checking if an existing address has been used', { orderID, userID: res.locals.user, addressID });
+    logger.info('Checking if an existing address has been used', {
+      ip: req.ip, orderID, userID: res.locals.user, addressID,
+    });
     if (data.address) {
       const vaildAddressID = await daoUser.getAddress(res.locals.user, addressID);
       if (vaildAddressID === undefined) {
-        logger.warn('No address found for the addressID given', { orderID, userID: res.locals.user, addressID });
+        logger.warn('No address found for the addressID given', {
+          ip: req.ip, orderID, userID: res.locals.user, addressID,
+        });
         orderCreatedMetric.inc({ type: 'address_id_not_found', status: 400 });
         return res.json("Something went wrong we couldn't find the address you've selected");
       }
       // link address to order
       orderInfo = await dao.createOrder(res.locals.user, orderID, deliveryID, addressID, data);
-      logger.info('create order with exsiting address', { orderID, userID: res.locals.user, addressID });
+      logger.info('create order with exsiting address', {
+        ip: req.ip, orderID, userID: res.locals.user, addressID,
+      });
       orderCreatedMetric.inc({ type: 'order_created', status: 200 });
     } else {
       // unused code as all orders should come with an addressID as the've gone theough the postcode lookup.
@@ -61,7 +71,7 @@ router.post('/create', async (req, res, next) => {
       // Although that should live in the /user routes
 
       // This part is hit if their is no addressID given
-      logger.error('No addressID given', { orderID, userID: res.locals.user });
+      logger.error('No addressID given', { ip: req.ip, orderID, userID: res.locals.user });
       orderCreatedMetric.inc({ type: 'address_id_not_given', status: 400 });
       return res.status(501);
 
@@ -88,6 +98,7 @@ router.post('/create', async (req, res, next) => {
     const addProductToOrder = await dao.addOrderDetails(productsArray);
 
     logger.debug('Reply from DB when creating order', {
+      ip: req.ip,
       orderID,
       userID: res.locals.user,
       orderInfo,
@@ -100,6 +111,7 @@ router.post('/create', async (req, res, next) => {
 
     if (orderdbID === 'number' && deliverydbID === 'number' && productListdbID === 'number') {
       logger.info('Order Created', {
+        ip: req.ip,
         orderID,
         userID: res.locals.user,
         addressID,
@@ -109,6 +121,7 @@ router.post('/create', async (req, res, next) => {
       });
     } else {
       logger.error('Something went wrong with creating the order', {
+        ip: req.ip,
         orderID,
         userID: res.locals.user,
         orderdbID,
@@ -132,11 +145,11 @@ router.get('/content', async (req, res, next) => {
     const orderContent = await dao.getOrderContent(orderID, res.locals.user);
 
     if (orderContent.length === 0) {
-      logger.info('No order content found', { orderID, userID: res.locals.user });
+      logger.info('No order content found', { ip: req.ip, orderID, userID: res.locals.user });
       res.json({ status: 'not_found' });
     }
 
-    logger.info('Order content returned', { orderID, userID: res.locals.user });
+    logger.info('Order content returned', { ip: req.ip, orderID, userID: res.locals.user });
     return res.json(orderContent);
   } catch (error) {
     return next(error);
@@ -151,11 +164,13 @@ router.get('/status', async (req, res, next) => {
 
     if (status.length !== 0) {
       logger.info('get order status', {
-        orderID, userID: res.locals.user, path: '/order/status', status: status[0].status,
+        ip: req.ip, orderID, userID: res.locals.user, path: '/order/status', status: status[0].status,
       });
       res.json(status[0]);
     } else {
-      logger.warn('Status of order not found', { orderID, userID: res.locals.user, path: '/order/status' });
+      logger.warn('Status of order not found', {
+        ip: req.ip, orderID, userID: res.locals.user, path: '/order/status',
+      });
       res.json({ status: 'not_found' });
     }
   } catch (error) {
@@ -173,6 +188,7 @@ router.get('/price', async (req, res, next) => {
 
     if (orderPrice.length !== 0) {
       logger.info('Got order price with fee ', {
+        ip: req.ip,
         orderID,
         userID: res.locals.user,
         path: `/price/${orderID}`,
@@ -181,6 +197,7 @@ router.get('/price', async (req, res, next) => {
       res.json(orderPrice[0]);
     } else {
       logger.error('No order price or more than one price for an order', {
+        ip: req.ip,
         orderID,
         userID: res.locals.user,
         path: `/price/${orderID}`,
@@ -196,6 +213,7 @@ router.get('/all', async (req, res, next) => {
   try {
     const orders = await dao.getUserOrders(res.locals.user);
     logger.info('All orders for customer', {
+      ip: req.ip,
       userID: res.locals.user,
     });
     res.json(orders);

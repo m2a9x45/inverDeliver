@@ -5,12 +5,17 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
+    /* font-size: 21px; */
 }
 
 header {
     background-color: rgb(41, 41, 41);
     padding: 1em;
     
+}
+
+h2 {
+    text-align: center;
 }
 
 main {

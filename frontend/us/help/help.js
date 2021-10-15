@@ -36,7 +36,7 @@ navBarToggle.addEventListener("click", () => {
 
 callbackForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    console.log('hi');
+
     const email = document.querySelector('#email').value;
     const issue = document.querySelector('#issue').value;
     const phoneNumber = document.querySelector('#phoneNumber').value;
@@ -56,14 +56,15 @@ callbackForm.addEventListener('submit', (e) => {
         },
         body: JSON.stringify(data)
     })
-    .then(response => response.json())
-    .then((data) => {
-        console.log(data);
-        if (data.data === 'success') {
-            toggleCallForm();
-            const callbackFormMessage = document.querySelector('#callbackFormMessage');
-            callbackFormMessage.style.display = 'block';
-        }
+    .then(response => {
+      const callbackFormMessage = document.querySelector('#callbackFormMessage');
+      callbackFormMessage.style.display = 'block';
+      toggleCallForm();
+      if (response.ok) {
+        callbackFormMessage.innerHTML = "<p>Thanks for submitting a callback request, we'll reply to you as soon as possible</p>";
+      } else {
+        callbackFormMessage.innerHTML = "<p>Sorry there was a problem, if this continues. Please let us know</p>";
+      }
     })
     .catch((error) => console.error(error))
 
