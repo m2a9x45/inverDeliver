@@ -84,7 +84,7 @@ function addProducts(productArray) {
     gridDiv.setAttribute("class", "grid-item");
 
     const img = document.createElement("img");
-    img.setAttribute("src", product.image_url ? `https://inverdeliver.com/productImage/${product.image_url}` : "");
+    img.setAttribute("src", product.image_url ? `https://api.inverdeliver.com/productImage/${product.image_url}` : "");
     img.setAttribute("loading", "lazy");
     img.setAttribute("width", "150px");
     img.setAttribute("height", "150px");
