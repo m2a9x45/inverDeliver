@@ -312,7 +312,7 @@ footer {
         font-size: 24px;
     }
     .grid-container {
-        grid-template-columns: auto auto;
+        grid-template-columns: auto;
     }
     #learnMoreButton {
         width: 75%;
