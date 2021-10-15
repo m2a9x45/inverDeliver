@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3001"
+const API_URL = "https://api.inverdeliver.com";
 
 const gridCcontainer = document.querySelector('.grid-container');
 const productSearch = document.querySelector('#productSearch');
@@ -14,7 +14,7 @@ const loginToken = url.searchParams.get("token");
 
 if (loginToken) {
   localStorage.setItem('token', loginToken);
-  window.location = 'http://localhost:8080/frontend/';
+  window.location = 'https://inverdeliver.com';
 }
 
 let selectedCategory; 
@@ -84,7 +84,7 @@ function addProducts(productArray) {
     gridDiv.setAttribute("class", "grid-item");
 
     const img = document.createElement("img");
-    img.setAttribute("src", product.image_url ? `http://localhost:3001/productImage/${product.image_url}` : "");
+    img.setAttribute("src", product.image_url ? `https://inverdeliver.com/productImage/${product.image_url}` : "");
     img.setAttribute("loading", "lazy");
     img.setAttribute("width", "150px");
     img.setAttribute("height", "150px");
