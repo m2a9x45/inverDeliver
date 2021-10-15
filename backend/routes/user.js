@@ -138,7 +138,7 @@ router.post('/googleSignIn', async (req, res, next) => {
         jwt.sign({ userID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
           if (!err) {
             logger.info('User signed in', { userID });
-            res.redirect(`${process.env.GOOGLE_REDIRECT_URL}/?token=${jwtToken}`);
+            res.redirect(`${process.env.GOOGLE_REDIRECT_URL}?token=${jwtToken}`);
             loginsMetric.inc({ type: 'google', success: true, status: 200 });
           } else {
             next(err);
@@ -184,7 +184,7 @@ router.post('/googleSignIn', async (req, res, next) => {
               lastName: payload.family_name,
               jwt: jwtToken,
             });
-            res.redirect(`http://localhost:8080/frontend/?token=${jwtToken}`);
+            res.redirect(`${process.env.GOOGLE_REDIRECT_URL}?token=${jwtToken}`);
             // res.json({ token: jwtToken });
           } else {
             next(err);
