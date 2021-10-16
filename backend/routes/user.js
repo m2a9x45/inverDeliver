@@ -184,7 +184,7 @@ router.post('/googleSignIn', async (req, res, next) => {
               lastName: payload.family_name,
               jwt: jwtToken,
             });
-            res.redirect(`http://localhost:8080/frontend/?token=${jwtToken}`);
+            res.redirect(`${process.env.GOOGLE_REDIRECT_URL}/?token=${jwtToken}`);
             // res.json({ token: jwtToken });
           } else {
             next(err);
