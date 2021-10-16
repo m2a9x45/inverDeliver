@@ -227,4 +227,11 @@ h2 {
     .orderTotal {
         width: 100%;
     }
-}
+    .navbarToggle {
+        display: block;
+        position: absolute;
+        right: 20px;
+        cursor: pointer; 
+        color: rgba(255,255,255,0.8);
+        font-size: 24px;
+    }

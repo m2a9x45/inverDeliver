@@ -46,7 +46,7 @@ app.get('/', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`food app listening at http://localhost:${port}`);
+  logger.info('App Starting');
 });
 
 const errorCount = new metric.client.Counter({
@@ -55,7 +55,7 @@ const errorCount = new metric.client.Counter({
   labelNames: ['path', 'code'],
 });
 
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   errorCount.inc({ path: req.path, code: res.statusCode || 500 });
   logger.error(err.message || err.internalMessage || 'Somthing went wrong', {
     errorCode: res.statusCode, userID: res.locals.users, url: req.originalUrl, errorInfo: err,

@@ -24,6 +24,18 @@ router.post('/create', async (req, res, next) => {
   const orderID = uuidv4();
   const deliveryID = uuidv4();
   const addressID = data.address ? data.address : uuidv4();
+  // https://postcoder.com/
+
+  try {
+    const phoneNumberVerfied = await daoUser.getPhoneNumber(res.locals.user);
+    if (phoneNumberVerfied.phone_verified === 0) {
+      logger.warn('phone number not verfied', { userID: res.locals.user, phoneNumber: phoneNumberVerfied.phone_number });
+      res.json({ error: 'You have not verfied your phone number' });
+      return null;
+    }
+  } catch (error) {
+    next(error);
+  }
 
   try {
     const phoneNumberVerfied = await daoUser.getPhoneNumber(res.locals.user);
