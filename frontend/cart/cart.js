@@ -260,8 +260,8 @@ addphoneNumberForm.addEventListener('submit', (e) => {
 
 verfiyphoneNumberForm.addEventListener('submit', (e) => {
   e.preventDefault();
+  const SMSerrorMessage = document.querySelector('#SMSerrorMessage');
   if (verificationCodeInput.value !== '') {
-    console.log(verificationCodeInput.value);
 
     fetch(`${API_URL}/user/updatePhoneNumber`, {
       method: "PATCH",
@@ -278,6 +278,10 @@ verfiyphoneNumberForm.addEventListener('submit', (e) => {
       if (response.ok) {
         verfiyphoneNumberForm.style.display = 'none';
         deliveryForm.style.display = 'block';
+      } else {
+        SMSerrorMessage.innerHTML = "Sorry we couldn't verfiy your phone number";
+        SMSerrorMessage.style.color = '#eb3434';
+        setTimeout(() => SMSerrorMessage.style.color = 'black', 2000);
       }
     })
     .catch((error) => { console.error('Error:', error) });
@@ -391,7 +395,6 @@ addNewAddressButton.addEventListener('click', (e) => {
   });
 })
 
-
 fetch(`${API_URL}/user/phoneNumber`, {
   headers: {
     'authorization': `bearer ${token}`,
@@ -440,7 +443,6 @@ function getAddresses() {
   });
   
 }
-
 
 ContinuePaymentButton.addEventListener("click", (e) => {
   errorMessage.style.display = 'none';

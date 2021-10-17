@@ -20,7 +20,11 @@ const mailgun = require('../helper/email');
 require('dotenv').config();
 
 const router = express.Router();
-const redis = new Redis();
+const redis = new Redis({
+  port: 6379, // Redis port
+  host: '127.0.0.1', // Redis host
+  password: process.env.REDIS_PASSWORD,
+});
 
 const loginsMetric = new metrics.client.Counter({
   name: 'login_attempts',
@@ -570,23 +574,20 @@ router.patch('/updatePhoneNumber', authorisation.isAuthorized,
     logger.info('Updated phone number request', { userID: res.locals.user, SMScode });
 
     const result = await redis.get(res.locals.user);
-    console.log('redis result', result);
-    logger.info('redis code for the user', { userID: res.locals.user, SMScode, redis: result });
+    logger.info('redis code for the user', { userID: res.locals.user, SMScode, redisCode: result });
 
     if (SMScode === result) {
       logger.info('SMS code matches redis code for user', { userID: res.locals.user, SMScode, redisCode: result });
       const validateNumber = await dao.validatePhoneNumber(res.locals.user);
       if (validateNumber.affectedRows !== 1) {
-        logger.warn('Phone number not updated, either no number was updated or too many werer',
+        logger.warn('Phone number not updated, either no number was updated or too many were',
           { userID: res.locals.user });
-        next('Something went wrong vaildating oyur phone number');
-        return;
+        return res.status(500).json({ error: 'Something went wrong when trying to verify your number' });
       }
-      // If SMScode has been validated we should remobe the SMS code from redis to stop repeat request
       res.sendStatus(201);
     } else {
       logger.info('Could not validate phone number', { userID: res.locals.user, SMScode, redisCode: result });
-      res.json({ error: 'Sadly we can not validate your phone number' });
+      res.status(400).json({ error: 'Sadly we can not validate your phone number' });
     }
   });
 

@@ -32,10 +32,9 @@ function CreateAccountWithExternalID(userID, externalID, externalType,
 function createAccountWithEmail(userID, email, firstName, password, stripeID, ip) {
   return new Promise(((resolve, reject) => {
     const sql = `INSERT INTO users (user_id, email, 
-      password, first_name, stripe_id) VALUES (?,?,?,?,?,?)`;
+      password, first_name, stripe_id, ip) VALUES (?,?,?,?,?,?)`;
     db.query(sql, [userID, email, password,
-      firstName, stripeID, ip,
-    ], (err, value) => {
+      firstName, stripeID, ip], (err, value) => {
       if (err === null) {
         resolve(value);
       } else {

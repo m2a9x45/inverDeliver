@@ -10,7 +10,7 @@
 
     <script src="https://kit.fontawesome.com/4c9a84b417.js" crossorigin="anonymous"></script>
 
-    <title>food - cart</title>
+    <title>InverDeliver | Cart</title>
 </head>
 <body>
     <header>
@@ -53,7 +53,7 @@
                     </div> -->
                 </div>
                 <div class="total">
-                    <p id="priceTotal">Your total: £15.00</p>
+                    <p id="priceTotal"></p>
                 </div>
             </div>
             <div class="DeliverySection">
@@ -69,10 +69,11 @@
                             We've just sent you a verfication code to your phone number.
                             Please enter it below to verify your number. Thanks 👍
                         </p>
-                        <input id="verificationCode" type="tel" inputmode="numeric" placeholder="6 digit - Vefication Code" maxlength="6" pattern="[0-9]*"
+                        <input id="verificationCode" type="tel" inputmode="numeric" placeholder="5 digit - Vefication Code" minlength="5" maxlength="5" pattern="[0-9]*"
                         autocomplete="one-time-code">
                         <button class="submit">Verfiy Phone Number</button>
                         <p style="text-align: center;"><a href="javascript:;" onclick="resendSMS()">Resend SMS code</a></p>
+                        <p style="text-align: center;" id="SMSerrorMessage"></p>
                     </form>
                     
                     
