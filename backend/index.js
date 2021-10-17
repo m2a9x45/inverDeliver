@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const port = 3001;
@@ -29,8 +30,14 @@ app.use(helmet());
 app.use((req, res, next) => (req.originalUrl === '/payment/webhook' ? next() : express.json()(req, res, next)));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
-
 app.use(metric.logMetric);
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+});
+
+app.use(limiter);
 
 app.use('/metrics', metric.router);
 app.use('/product', products);
