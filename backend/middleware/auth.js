@@ -17,7 +17,11 @@ function isAuthorized(req, res, next) {
       }
     } catch (err) {
       res.statusCode = 401;
-      next(err);
+      if (err.name === 'TokenExpiredError') {
+        res.json({ error: 'Token Expired' });
+      } else {
+        next(err);
+      }
     }
   } else {
     res.statusCode = 401;

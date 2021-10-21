@@ -465,10 +465,21 @@ ContinuePaymentButton.addEventListener("click", (e) => {
   };
 
   if (selectedAddress !== null) {
-    orderData["address"] = selectedAddress;
+    orderData["address_id"] = selectedAddress;
   }
 
   console.log(orderData);
+
+  // convert delivery time into epoch time
+  const deliverTimeWeekendCheck = new Date(orderData.delivery_time)
+
+  // 6 = Saturday, 0 = Sunday
+  if (deliverTimeWeekendCheck.getDay() === 6 || deliverTimeWeekendCheck.getDay() === 0) {
+    console.log("Can't deliver as it's a weekend");
+    errorMessage.style.display = 'block';
+    errorMessage.innerHTML = "sorry we don't offer deliver on weekends";
+    return;
+  }
 
   // convert delivery time into epoch time
   const deliverTime = new Date(orderData.delivery_time)

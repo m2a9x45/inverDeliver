@@ -9,9 +9,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@150;300;400&display=swap" rel="stylesheet">
 
-    <meta name="google-signin-client_id"
-        content="374078565233-290tpi6d6ujom9kd0l742qvvuhdppcod.apps.googleusercontent.com">
-
     <title>InverDeliver</title>
 </head>
 
@@ -20,18 +17,8 @@
         <p>You've been logged out</p>
     </main>
 
-    <script src="https://apis.google.com/js/platform.js"></script>
-
     <script>
         localStorage.removeItem('token');
-
-        if (gapi.auth2.getAuthInstance()) {
-            var auth2 = gapi.auth2.getAuthInstance();
-            auth2.signOut().then(function () {
-                console.log('User signed out.');
-            });
-        }
-
         window.location.replace("../");
     </script>
 
