@@ -164,9 +164,9 @@ img {
     margin-bottom: 1rem;
     padding: 1rem;
     margin: 0.3rem;
-    font-size: 11pt;
+    font-size: 18px;
     text-align: center;
-    height: 22rem;
+    height: 24rem;
     width: 170px;
 }
 
@@ -214,6 +214,10 @@ img {
     padding: 12px 20px;
     margin: 8px 0;
     box-sizing: border-box;
+    border: 1px solid black;
+    font-size: 18px;
+    text-align: center;
+    border-radius: 25px;
 }
 
 footer {

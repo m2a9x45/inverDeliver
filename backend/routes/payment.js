@@ -25,7 +25,7 @@ const stripeWebookMetric = new metrics.client.Counter({
   labelNames: ['type', 'status'],
 });
 
-router.post('/create-payment-intent', authorisation.isAuthorized, body('orderID'), async (req, res, next) => {
+router.post('/create-payment-intent', authorisation.isAuthorized, body('orderID').escape(), async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     paymentIntetentCreatedMetric.inc({ status: 400 });

@@ -366,9 +366,8 @@ addNewAddressButton.addEventListener('click', (e) => {
   const addressSelector = document.querySelector('.addressSelector');
   console.log(addressSelector.options[addressSelector.selectedIndex].value);
 
-  const data = {
-    address: JSON.parse(addressSelector.options[addressSelector.selectedIndex].value)
-  }
+  const data = JSON.parse(addressSelector.options[addressSelector.selectedIndex].value)
+  
 
   // send data to backend
   fetch(`${API_URL}/user/addAddress`, {

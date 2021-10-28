@@ -302,9 +302,9 @@ router.get('/account', authorisation.isAuthorized, async (req, res, next) => {
 });
 
 router.post('/createAccount',
-  body('email').isEmail().normalizeEmail(),
-  body('password').isString(),
-  body('name').isAlpha(),
+  body('email').isEmail().normalizeEmail().escape(),
+  body('password').isString().escape(),
+  body('name').isAlpha().escape(),
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -350,8 +350,8 @@ router.post('/createAccount',
   });
 
 router.post('/login',
-  body('email').isEmail().normalizeEmail(),
-  body('password').isString(),
+  body('email').isEmail().normalizeEmail().escape(),
+  body('password').isString().escape(),
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -479,7 +479,7 @@ router.get('/addresses', authorisation.isAuthorized, async (req, res, next) => {
   }
 });
 
-router.post('/postcodeLookup', authorisation.isAuthorized, body('postCode').isPostalCode('GB'), async (req, res, next) => {
+router.post('/postcodeLookup', authorisation.isAuthorized, body('postCode').isPostalCode('GB').escape(), async (req, res, next) => {
   const { postCode } = req.body;
   logger.info('postcode lookup started', { userID: res.locals.user, postCode });
   // add new address to DB
@@ -521,20 +521,40 @@ router.post('/postcodeLookup', authorisation.isAuthorized, body('postCode').isPo
   }
 });
 
-router.post('/addAddress', authorisation.isAuthorized, async (req, res, next) => {
-  const { address } = req.body;
+router.post('/addAddress', authorisation.isAuthorized,
+  body('addressline1').isAlphanumeric().escape(),
+  body('addressline2').isAlphanumeric().escape(),
+  body('county').isAlpha().escape(),
+  body('grideasting').isNumeric().escape(),
+  body('gridnorthing').isNumeric().escape(),
+  body('latitude').isNumeric().escape(),
+  body('longitude').isNumeric().escape(),
+  body('number').isNumeric().escape(),
+  body('postcode').isAlphanumeric().escape(),
+  body('posttown').isAlpha().escape(),
+  body('premise').isAlphanumeric().escape(),
+  body('street').isAlpha().escape(),
+  body('subbuildingname').isAlphanumeric().escape(),
+  body('summaryline').isAlphanumeric().escape(),
+  async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: 'Invalid Phone Number' });
+    }
 
-  try {
-    const addressDBInsertID = await dao.addAddress(res.locals.user, uuidv4(), `${address.premise} ${address.street}`,
-      address.posttown, address.postcode, address.latitude, address.longitude);
+    const address = req.body;
 
-    console.log(addressDBInsertID.insertId);
+    try {
+      const addressDBInsertID = await dao.addAddress(res.locals.user, uuidv4(), `${address.premise} ${address.street}`,
+        address.posttown, address.postcode, address.latitude, address.longitude);
 
-    res.sendStatus(201);
-  } catch (error) {
-    console.log(error);
-  }
-});
+      console.log(addressDBInsertID.insertId);
+
+      res.sendStatus(201);
+    } catch (error) {
+      console.log(error);
+    }
+  });
 
 router.delete('/address', authorisation.isAuthorized, async (req, res, next) => {
   const { addressID } = req.query;
