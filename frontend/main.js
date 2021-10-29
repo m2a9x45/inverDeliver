@@ -90,8 +90,13 @@ function addProducts(productArray) {
     img.setAttribute("height", "150px");
     img.setAttribute("alt", product.name)
 
+    const size = document.createElement("p");
+    size.setAttribute("class", "size");
+    size.innerHTML = product.size;
+
     const title = document.createElement("p");
-    title.innerText = `${product.name} - ${product.size}`;
+    title.setAttribute("class", "title");
+    title.innerText = product.name;
 
     const productLinksDiv = document.createElement("div");
     productLinksDiv.setAttribute("class", "productLinks");
@@ -129,6 +134,7 @@ function addProducts(productArray) {
     productLinksDiv.appendChild(div);
 
     gridDiv.appendChild(img);
+    gridDiv.appendChild(size);
     gridDiv.appendChild(title);
     gridDiv.appendChild(productLinksDiv);
 

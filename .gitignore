@@ -8,6 +8,7 @@ backend/public
 
 frontend/email
 frontend/icons
+frontend/us/why-join/*.jpg
 
 .vscode
 
@@ -20,9 +21,6 @@ tools/backroom-backend/.env
 
 tools/fruit.html
 tools/itemGetter.py
-<<<<<<< HEAD
 tools/csv-product-importer
 tools/sku-image.py
-=======
 tools/csv-product-importer
->>>>>>> dev-live
