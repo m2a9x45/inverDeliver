@@ -1,14 +1,13 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
+const { body, validationResult } = require('express-validator');
 
 const logger = require('../middleware/logger');
 
 const router = express.Router();
+
 const dao = require('../dao/dataOrder');
-
 const daoUser = require('../dao/dataUser');
-
-const email = require('../helper/email');
 const metrics = require('./metric');
 
 const orderCreatedMetric = new metrics.client.Counter({
@@ -17,53 +16,57 @@ const orderCreatedMetric = new metrics.client.Counter({
   labelNames: ['status', 'type'],
 });
 
-router.post('/create', async (req, res, next) => {
-  const data = req.body;
-  const productsArray = [];
-
-  const orderID = uuidv4();
-  const deliveryID = uuidv4();
-  const addressID = data.address ? data.address : uuidv4();
-  // https://postcoder.com/
-
-  try {
-    const phoneNumberVerfied = await daoUser.getPhoneNumber(res.locals.user);
-    if (phoneNumberVerfied.phone_verified === 0) {
-      logger.warn('phone number not verfied', { userID: res.locals.user, phoneNumber: phoneNumberVerfied.phone_number });
-      res.json({ error: 'You have not verfied your phone number' });
-      return null;
+router.post('/create',
+  body('products').isArray(),
+  body('delivery_time').isString().escape(),
+  body('address_id').isString().escape(),
+  async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: errors });
     }
-  } catch (error) {
-    next(error);
-  }
 
-  try {
-    const phoneNumberVerfied = await daoUser.getPhoneNumber(res.locals.user);
-    if (phoneNumberVerfied.phone_verified === 0) {
-      logger.warn('phone number not verfied', { ip: req.ip, userID: res.locals.user, phoneNumber: phoneNumberVerfied.phone_number });
-      orderCreatedMetric.inc({ type: 'phone_number_not_verfied', status: 400 });
-      res.json({ error: 'You have not verfied your phone number' });
-      return null;
+    const data = req.body;
+    const productsArray = [];
+
+    const orderID = uuidv4();
+    const deliveryID = uuidv4();
+    const addressID = data.address_id;
+
+    const deliverTime = new Date(data.delivery_time);
+    // 6 = Saturday, 0 = Sunday
+    if (deliverTime.getDay() === 6 || deliverTime.getDay() === 0) {
+      logger.warn('Delivery date is weekend', { userID: res.locals.user });
+      return res.json({ error: "We don't deliver on weekends" });
     }
-  } catch (error) {
-    next(error);
-  }
 
-  logger.info('Create new order request', {
-    ip: req.ip, orderID, userID: res.locals.user, addressID,
-  });
-  data.products.forEach((product) => { productsArray.push([orderID, product[0], product[1]]); });
-  logger.info('Product array created', {
-    ip: req.ip, orderID, userID: res.locals.user, productsArray,
-  });
+    try {
+      const phoneNumberVerfied = await daoUser.getPhoneNumber(res.locals.user);
+      if (phoneNumberVerfied.phone_verified === 0) {
+        logger.warn('phone number not verfied', { ip: req.ip, userID: res.locals.user, phoneNumber: phoneNumberVerfied.phone_number });
+        orderCreatedMetric.inc({ type: 'phone_number_not_verfied', status: 400 });
+        res.json({ error: 'You have not verfied your phone number' });
+        return null;
+      }
+    } catch (error) {
+      next(error);
+    }
 
-  try {
-    let orderInfo;
-    logger.info('Checking if an existing address has been used', {
+    logger.info('Create new order request', {
       ip: req.ip, orderID, userID: res.locals.user, addressID,
     });
-    if (data.address) {
+    data.products.forEach((product) => { productsArray.push([orderID, product[0], product[1]]); });
+    logger.info('Product array created', {
+      ip: req.ip, orderID, userID: res.locals.user, productsArray,
+    });
+
+    try {
+      logger.info('Checking if an existing address has been used', {
+        ip: req.ip, orderID, userID: res.locals.user, addressID,
+      });
+
       const vaildAddressID = await daoUser.getAddress(res.locals.user, addressID);
+
       if (vaildAddressID === undefined) {
         logger.warn('No address found for the addressID given', {
           ip: req.ip, orderID, userID: res.locals.user, addressID,
@@ -72,81 +75,53 @@ router.post('/create', async (req, res, next) => {
         return res.json("Something went wrong we couldn't find the address you've selected");
       }
       // link address to order
-      orderInfo = await dao.createOrder(res.locals.user, orderID, deliveryID, addressID, data);
+      const orderInfo = await dao.createOrder(res.locals.user, orderID, deliveryID,
+        addressID, data);
       logger.info('create order with exsiting address', {
         ip: req.ip, orderID, userID: res.locals.user, addressID,
       });
       orderCreatedMetric.inc({ type: 'order_created', status: 200 });
-    } else {
-      // unused code as all orders should come with an addressID as the've gone theough the postcode lookup.
-      // Not deleting at the moment as we may still want to support manual address adding.
-      // Although that should live in the /user routes
 
-      // This part is hit if their is no addressID given
-      logger.error('No addressID given', { ip: req.ip, orderID, userID: res.locals.user });
-      orderCreatedMetric.inc({ type: 'address_id_not_given', status: 400 });
-      return res.status(501);
+      const addProductToOrder = await dao.addOrderDetails(productsArray);
 
-      // add new address to DB
-      data.post_code = data.post_code.replace(/\s/g, '');
-      const regixPostCode = data.post_code.toUpperCase().match(/^[A-Z][A-Z]{0,1}[0-9][A-Z0-9]{0,1}[0-9]/);
+      logger.debug('Reply from DB when creating order', {
+        ip: req.ip,
+        orderID,
+        userID: res.locals.user,
+        orderInfo,
+        addProductToOrder,
+      });
 
-      // List of postcode sectors where we operater
-      const operatingArea = ['EH11', 'EH12', 'EH13', 'EH21', 'EH22', 'EH23', 'EH24', 'EH35', 'EH36', 'EH37', 'EH38', 'EH39',
-        'EH126', 'EH125', 'EH112', 'EH111', 'EH104', 'EH91', 'EH92', 'EH89', 'EH89', 'EH165', 'EH87', 'EH88', 'EH75', 'EH74', 'EH41', 'EH42', 'EH43'];
+      const orderdbID = typeof orderInfo.orderdbID;
+      const deliverydbID = typeof orderInfo.deliverydbID;
+      const productListdbID = typeof addProductToOrder.insertId;
 
-      // checing to see if the postcode sector the user has entered is one that we operater in
-      if (!operatingArea.includes(regixPostCode[0])) {
-        logger.warn('Deliver address outside of operating area', { userID: res.locals.userID, postCode: data.post_code });
-        return res.json({ withInOpArea: false, message: 'Sorry something went wrong the selected postcode is not part of our operating area' });
+      if (orderdbID === 'number' && deliverydbID === 'number' && productListdbID === 'number') {
+        logger.info('Order Created', {
+          ip: req.ip,
+          orderID,
+          userID: res.locals.user,
+          addressID,
+        });
+        res.json({
+          order_id: orderID,
+        });
+      } else {
+        logger.error('Something went wrong with creating the order', {
+          ip: req.ip,
+          orderID,
+          userID: res.locals.user,
+          orderdbID,
+          deliverydbID,
+          productListdbID,
+          ProductsdbRownum: addProductToOrder.affectedRows,
+        });
+        res.statusCode(500);
       }
-
-      orderInfo = await dao.createOrderWithNewAddress(res.locals.user, orderID, deliveryID, addressID, data);
-      logger.info('create order with a new address', { orderID, userID: res.locals.user, addressID });
-      // This is where we'd want to emit an address added event.
-      // redis.publish('new_address_added', addressID);
+    } catch (error) {
+      next(error);
     }
-
-    const addProductToOrder = await dao.addOrderDetails(productsArray);
-
-    logger.debug('Reply from DB when creating order', {
-      ip: req.ip,
-      orderID,
-      userID: res.locals.user,
-      orderInfo,
-      addProductToOrder,
-    });
-
-    const orderdbID = typeof orderInfo.orderdbID;
-    const deliverydbID = typeof orderInfo.deliverydbID;
-    const productListdbID = typeof addProductToOrder.insertId;
-
-    if (orderdbID === 'number' && deliverydbID === 'number' && productListdbID === 'number') {
-      logger.info('Order Created', {
-        ip: req.ip,
-        orderID,
-        userID: res.locals.user,
-        addressID,
-      });
-      res.json({
-        order_id: orderID,
-      });
-    } else {
-      logger.error('Something went wrong with creating the order', {
-        ip: req.ip,
-        orderID,
-        userID: res.locals.user,
-        orderdbID,
-        deliverydbID,
-        productListdbID,
-        ProductsdbRownum: addProductToOrder.affectedRows,
-      });
-      res.statusCode(500);
-    }
-  } catch (error) {
-    next(error);
-  }
-});
+  });
 
 router.get('/content', async (req, res, next) => {
   const {

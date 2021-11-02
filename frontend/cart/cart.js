@@ -1,4 +1,4 @@
-const API_URL = "https://api.inverdeliver.com";
+const API_URL = "http://localhost:3001";
 
 const navBarToggle = document.querySelector('.navbarToggle');
 const navtoggle = document.querySelector('.mainNav');
@@ -260,8 +260,8 @@ addphoneNumberForm.addEventListener('submit', (e) => {
 
 verfiyphoneNumberForm.addEventListener('submit', (e) => {
   e.preventDefault();
+  const SMSerrorMessage = document.querySelector('#SMSerrorMessage');
   if (verificationCodeInput.value !== '') {
-    console.log(verificationCodeInput.value);
 
     fetch(`${API_URL}/user/updatePhoneNumber`, {
       method: "PATCH",
@@ -278,6 +278,10 @@ verfiyphoneNumberForm.addEventListener('submit', (e) => {
       if (response.ok) {
         verfiyphoneNumberForm.style.display = 'none';
         deliveryForm.style.display = 'block';
+      } else {
+        SMSerrorMessage.innerHTML = "Sorry we couldn't verfiy your phone number";
+        SMSerrorMessage.style.color = '#eb3434';
+        setTimeout(() => SMSerrorMessage.style.color = 'black', 2000);
       }
     })
     .catch((error) => { console.error('Error:', error) });
@@ -362,9 +366,8 @@ addNewAddressButton.addEventListener('click', (e) => {
   const addressSelector = document.querySelector('.addressSelector');
   console.log(addressSelector.options[addressSelector.selectedIndex].value);
 
-  const data = {
-    address: JSON.parse(addressSelector.options[addressSelector.selectedIndex].value)
-  }
+  const data = JSON.parse(addressSelector.options[addressSelector.selectedIndex].value)
+  
 
   // send data to backend
   fetch(`${API_URL}/user/addAddress`, {
@@ -390,7 +393,6 @@ addNewAddressButton.addEventListener('click', (e) => {
     console.error('Error:', error);
   });
 })
-
 
 fetch(`${API_URL}/user/phoneNumber`, {
   headers: {
@@ -441,7 +443,6 @@ function getAddresses() {
   
 }
 
-
 ContinuePaymentButton.addEventListener("click", (e) => {
   errorMessage.style.display = 'none';
   e.preventDefault();
@@ -463,10 +464,21 @@ ContinuePaymentButton.addEventListener("click", (e) => {
   };
 
   if (selectedAddress !== null) {
-    orderData["address"] = selectedAddress;
+    orderData["address_id"] = selectedAddress;
   }
 
   console.log(orderData);
+
+  // convert delivery time into epoch time
+  const deliverTimeWeekendCheck = new Date(orderData.delivery_time)
+
+  // 6 = Saturday, 0 = Sunday
+  if (deliverTimeWeekendCheck.getDay() === 6 || deliverTimeWeekendCheck.getDay() === 0) {
+    console.log("Can't deliver as it's a weekend");
+    errorMessage.style.display = 'block';
+    errorMessage.innerHTML = "sorry we don't offer deliver on weekends";
+    return;
+  }
 
   // convert delivery time into epoch time
   const deliverTime = new Date(orderData.delivery_time)

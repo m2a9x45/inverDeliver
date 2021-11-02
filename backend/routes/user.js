@@ -20,7 +20,11 @@ const mailgun = require('../helper/email');
 require('dotenv').config();
 
 const router = express.Router();
-const redis = new Redis();
+const redis = new Redis({
+  port: 6379, // Redis port
+  host: '127.0.0.1', // Redis host
+  password: process.env.REDIS_PASSWORD,
+});
 
 const loginsMetric = new metrics.client.Counter({
   name: 'login_attempts',
@@ -138,7 +142,7 @@ router.post('/googleSignIn', async (req, res, next) => {
         jwt.sign({ userID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
           if (!err) {
             logger.info('User signed in', { userID });
-            res.redirect(`${process.env.GOOGLE_REDIRECT_URL}?token=${jwtToken}`);
+            res.redirect(`${process.env.GOOGLE_REDIRECT_URL}/?token=${jwtToken}`);
             loginsMetric.inc({ type: 'google', success: true, status: 200 });
           } else {
             next(err);
@@ -184,7 +188,7 @@ router.post('/googleSignIn', async (req, res, next) => {
               lastName: payload.family_name,
               jwt: jwtToken,
             });
-            res.redirect(`${process.env.GOOGLE_REDIRECT_URL}?token=${jwtToken}`);
+            res.redirect(`${process.env.GOOGLE_REDIRECT_URL}/?token=${jwtToken}`);
             // res.json({ token: jwtToken });
           } else {
             next(err);
@@ -298,9 +302,9 @@ router.get('/account', authorisation.isAuthorized, async (req, res, next) => {
 });
 
 router.post('/createAccount',
-  body('email').isEmail().normalizeEmail(),
-  body('password').isString(),
-  body('name').isAlpha(),
+  body('email').isEmail().normalizeEmail().escape(),
+  body('password').isString().escape(),
+  body('name').isAlpha().escape(),
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -346,8 +350,8 @@ router.post('/createAccount',
   });
 
 router.post('/login',
-  body('email').isEmail().normalizeEmail(),
-  body('password').isString(),
+  body('email').isEmail().normalizeEmail().escape(),
+  body('password').isString().escape(),
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -475,7 +479,7 @@ router.get('/addresses', authorisation.isAuthorized, async (req, res, next) => {
   }
 });
 
-router.post('/postcodeLookup', authorisation.isAuthorized, body('postCode').isPostalCode('GB'), async (req, res, next) => {
+router.post('/postcodeLookup', authorisation.isAuthorized, body('postCode').isPostalCode('GB').escape(), async (req, res, next) => {
   const { postCode } = req.body;
   logger.info('postcode lookup started', { userID: res.locals.user, postCode });
   // add new address to DB
@@ -517,20 +521,40 @@ router.post('/postcodeLookup', authorisation.isAuthorized, body('postCode').isPo
   }
 });
 
-router.post('/addAddress', authorisation.isAuthorized, async (req, res, next) => {
-  const { address } = req.body;
+router.post('/addAddress', authorisation.isAuthorized,
+  body('addressline1').isAlphanumeric().escape(),
+  body('addressline2').isAlphanumeric().escape(),
+  body('county').isAlpha().escape(),
+  body('grideasting').isNumeric().escape(),
+  body('gridnorthing').isNumeric().escape(),
+  body('latitude').isNumeric().escape(),
+  body('longitude').isNumeric().escape(),
+  body('number').isNumeric().escape(),
+  body('postcode').isAlphanumeric().escape(),
+  body('posttown').isAlpha().escape(),
+  body('premise').isAlphanumeric().escape(),
+  body('street').isAlpha().escape(),
+  body('subbuildingname').isAlphanumeric().escape(),
+  body('summaryline').isAlphanumeric().escape(),
+  async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: 'Invalid Phone Number' });
+    }
 
-  try {
-    const addressDBInsertID = await dao.addAddress(res.locals.user, uuidv4(), `${address.premise} ${address.street}`,
-      address.posttown, address.postcode, address.latitude, address.longitude);
+    const address = req.body;
 
-    console.log(addressDBInsertID.insertId);
+    try {
+      const addressDBInsertID = await dao.addAddress(res.locals.user, uuidv4(), `${address.premise} ${address.street}`,
+        address.posttown, address.postcode, address.latitude, address.longitude);
 
-    res.sendStatus(201);
-  } catch (error) {
-    console.log(error);
-  }
-});
+      console.log(addressDBInsertID.insertId);
+
+      res.sendStatus(201);
+    } catch (error) {
+      console.log(error);
+    }
+  });
 
 router.delete('/address', authorisation.isAuthorized, async (req, res, next) => {
   const { addressID } = req.query;
@@ -570,23 +594,20 @@ router.patch('/updatePhoneNumber', authorisation.isAuthorized,
     logger.info('Updated phone number request', { userID: res.locals.user, SMScode });
 
     const result = await redis.get(res.locals.user);
-    console.log('redis result', result);
-    logger.info('redis code for the user', { userID: res.locals.user, SMScode, redis: result });
+    logger.info('redis code for the user', { userID: res.locals.user, SMScode, redisCode: result });
 
     if (SMScode === result) {
       logger.info('SMS code matches redis code for user', { userID: res.locals.user, SMScode, redisCode: result });
       const validateNumber = await dao.validatePhoneNumber(res.locals.user);
       if (validateNumber.affectedRows !== 1) {
-        logger.warn('Phone number not updated, either no number was updated or too many werer',
+        logger.warn('Phone number not updated, either no number was updated or too many were',
           { userID: res.locals.user });
-        next('Something went wrong vaildating oyur phone number');
-        return;
+        return res.status(500).json({ error: 'Something went wrong when trying to verify your number' });
       }
-      // If SMScode has been validated we should remobe the SMS code from redis to stop repeat request
       res.sendStatus(201);
     } else {
       logger.info('Could not validate phone number', { userID: res.locals.user, SMScode, redisCode: result });
-      res.json({ error: 'Sadly we can not validate your phone number' });
+      res.status(400).json({ error: 'Sadly we can not validate your phone number' });
     }
   });
 

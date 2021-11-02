@@ -1,4 +1,4 @@
-const API_URL = "https://api.inverdeliver.com";
+const API_URL = "http://localhost:3001";
 const errorMessage = document.querySelector('#errorMessage');
 const token = localStorage.getItem('token');
 

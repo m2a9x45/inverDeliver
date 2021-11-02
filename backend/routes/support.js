@@ -17,9 +17,9 @@ const callbackMetric = new metrics.client.Counter({
 // https://discord.com/developers/docs/resources/channel#embed-limits
 // Embed values are limited to 1024 characters
 router.post('/callback',
-  body('email').isEmail().normalizeEmail(),
-  body('phoneNumber').isMobilePhone(['en-GB']),
-  body('issue').isAlphanumeric().isLength({ max: 1024 }),
+  body('email').isEmail().normalizeEmail().escape(),
+  body('phoneNumber').isMobilePhone(['en-GB']).escape(),
+  body('issue').isAlphanumeric().isLength({ max: 1024 }).escape(),
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

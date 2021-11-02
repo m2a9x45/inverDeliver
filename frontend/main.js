@@ -1,4 +1,4 @@
-const API_URL = "https://api.inverdeliver.com";
+const API_URL = "http://localhost:3001"
 
 const gridCcontainer = document.querySelector('.grid-container');
 const productSearch = document.querySelector('#productSearch');
@@ -14,7 +14,7 @@ const loginToken = url.searchParams.get("token");
 
 if (loginToken) {
   localStorage.setItem('token', loginToken);
-  window.location = 'https://inverdeliver.com';
+  window.location = 'http://localhost:8080/frontend/';
 }
 
 let selectedCategory; 
@@ -84,14 +84,19 @@ function addProducts(productArray) {
     gridDiv.setAttribute("class", "grid-item");
 
     const img = document.createElement("img");
-    img.setAttribute("src", product.image_url ? `https://api.inverdeliver.com/productImage/${product.image_url}` : "");
+    img.setAttribute("src", product.image_url ? `http://localhost:3001/productImage/${product.image_url}` : "");
     img.setAttribute("loading", "lazy");
     img.setAttribute("width", "150px");
     img.setAttribute("height", "150px");
     img.setAttribute("alt", product.name)
 
+    const size = document.createElement("p");
+    size.setAttribute("class", "size");
+    size.innerHTML = product.size;
+
     const title = document.createElement("p");
-    title.innerText = `${product.name} - ${product.size}`;
+    title.setAttribute("class", "title");
+    title.innerText = product.name;
 
     const productLinksDiv = document.createElement("div");
     productLinksDiv.setAttribute("class", "productLinks");
@@ -129,6 +134,7 @@ function addProducts(productArray) {
     productLinksDiv.appendChild(div);
 
     gridDiv.appendChild(img);
+    gridDiv.appendChild(size);
     gridDiv.appendChild(title);
     gridDiv.appendChild(productLinksDiv);
 
