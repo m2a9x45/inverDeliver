@@ -118,32 +118,6 @@ loginButton.addEventListener('click', (e) => {
 
 })
 
-function onSignIn(googleUser) {
-    var id_token = googleUser.getAuthResponse().id_token;
-    console.log(id_token);
-
-    fetch(`${API_URL}/user/googleSignIn`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                token: id_token
-            }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.token) {
-                localStorage.setItem('token', data.token);
-                window.location.replace('../');
-            }
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-            errorMessage.innerText = "Something when wrong, let us know if it continues";
-        });
-}
-
 function statusChangeCallback(res) {
     console.log(res);
 
@@ -155,25 +129,25 @@ function statusChangeCallback(res) {
 
         console.log("HERE", data);
 
-        fetch(`${API_URL}/user/fbSignIn`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-            if (data.token) {
-                localStorage.setItem('token', data.token);
-                window.location.replace('../');
-            }
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-            errorMessage.innerText = "Something when wrong, let us know if it continues";
-        });  
+        // fetch(`${API_URL}/user/fbSignIn`, {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify(data)
+        // })
+        // .then(response => response.json())
+        // .then(data => {
+        //     console.log(data);
+        //     if (data.token) {
+        //         localStorage.setItem('token', data.token);
+        //         window.location.replace('../');
+        //     }
+        // })
+        // .catch((error) => {
+        //     console.error('Error:', error);
+        //     errorMessage.innerText = "Something when wrong, let us know if it continues";
+        // });  
     }
 }
 
