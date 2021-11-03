@@ -7,6 +7,13 @@ body {
     height: 100vh;
 }
 
+button, input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    outline: none;
+}
+
 header {
     background-color: rgb(41, 41, 41);
     padding: 1em;
@@ -73,17 +80,6 @@ header {
 
 .callOut p {
     font-size: 18pt;
-}
-
-#learnMoreButton {
-    background-color: #c69cdf; /* Green */
-    border: none;
-    width: 35%;
-    padding: 1rem 2rem;
-    text-align: center;
-    text-decoration: none;
-    font-size: 14pt;
-    border-radius: 5px;
 }
 
 .categoryHolder {
@@ -232,6 +228,10 @@ img {
     font-size: 18px;
     text-align: center;
     border-radius: 25px;
+}
+
+#productSearch::selection {
+    border: 1px solid black;
 }
 
 footer {

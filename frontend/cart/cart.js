@@ -113,14 +113,19 @@ function displayCart(item, id) {
     quantityInput.setAttribute("id", "quantity");
     quantityInput.setAttribute("value", item.number);
     quantityInput.setAttribute("max", 20);
+    quantityInput.setAttribute("min", 0);
     quantityInput.addEventListener("change", (e) => {
       console.log(quantityInput.value, id);
 
       cart[id].number = Number(quantityInput.value);
 
       if (quantityInput.value <= 0) {
-        // remove item
         delete cart[id];
+      }
+
+      if (quantityInput.value > 20) {
+        cart[id].number = 20;
+        quantityInput.value = 20;
       }
 
       console.log(cart);
@@ -134,7 +139,6 @@ function displayCart(item, id) {
       cartContent.innerHTML = "";
       total = 350;
       showCart();
-
     })
 
     divItems.appendChild(quantityLabel);
