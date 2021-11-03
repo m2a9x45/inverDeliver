@@ -18,12 +18,13 @@ const callbackMetric = new metrics.client.Counter({
 // Embed values are limited to 1024 characters
 router.post('/callback',
   body('email').isEmail().normalizeEmail().escape(),
-  body('phoneNumber').isMobilePhone(['en-GB']).escape(),
+  body('phoneNumber').optional({ checkFalsy: true }).isMobilePhone(['en-GB']).escape(),
   body('issue').isAlphanumeric().isLength({ max: 1024 }).escape(),
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ error: 'Invalid Phone Number' });
+      logger.error('Bad Request', { ip: req.ip });
+      return res.status(400);
     }
 
     const { email, issue, phoneNumber } = req.body;

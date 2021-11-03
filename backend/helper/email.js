@@ -5,7 +5,7 @@ const logger = require('../middleware/logger');
 
 async function sendWelcomEmail(email, name) {
   const data = {
-    from: 'InverDeliver <welcome@inverdeliver.com>',
+    from: 'InverDeliver <welcome@mail.inverdeliver.com>',
     to: email,
     subject: 'Welcome to InverDeliver 👋',
     template: 'welcome',
@@ -18,13 +18,13 @@ async function sendWelcomEmail(email, name) {
 
 async function sendOrderConformationEmail(email, name, orderID) {
   const data = {
-    from: 'InverDeliver <order-updates@inverdeliver.com>',
+    from: 'InverDeliver <order-updates@mail.inverdeliver.com>',
     to: email,
-    subject: 'Order Conformation 📦 ⏩ 🚚',
+    subject: 'Order Conformation 🛒 ⏩ 🏡',
     template: 'order_conformation',
     'v:name': name,
     'v:order_id': orderID,
-    'v:tracking_url': `localhost:8080/frontend/orders/info/?orderID=${orderID}`,
+    'v:tracking_url': `inverdeliver.com/orders/info/?orderID=${orderID}`,
   };
 
   const sentEmail = await mailgun.messages().send(data);

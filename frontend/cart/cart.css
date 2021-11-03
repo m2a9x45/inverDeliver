@@ -2,6 +2,14 @@ body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
     background-color: rgb(241, 241, 241);
+    font-size: 18px;
+}
+
+button, input, textarea {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    outline: none;
 }
 
 header {
@@ -104,7 +112,12 @@ header {
 }
 
 #quantity {
-    width: 12%;
+    width: 5rem;
+    text-align: center;
+    padding: 3px 10px;
+    box-sizing: border-box;
+    border: 1px solid black;
+    border-radius: 5px;
 }
 
 .total {
@@ -119,6 +132,18 @@ header {
 
 .total p {
     margin: 0;
+}
+
+#alcoholOrderInfo {
+    background-color: rgba(228, 52, 52, 0.541);
+    margin: 1.5rem;
+    padding: 1rem;
+    border-radius: 15px;
+    border: 1px solid red;
+}
+
+#alcoholOrderInfo h3 {
+    margin-top: 0;
 }
 
 .customerInfo {

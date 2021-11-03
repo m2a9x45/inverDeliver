@@ -127,21 +127,21 @@ router.post('/googleSignIn', async (req, res, next) => {
     // if they do issue a jwt and log them in
     try {
       const hasLinkedGoogleAcount = await dao.userByExternalID(googleUserID, 'GOOGLE');
-      logger.info(`User accounts found: ${hasLinkedGoogleAcount.length}`, { googleID: googleUserID });
+      logger.info(`User accounts found: ${hasLinkedGoogleAcount.length}`, { googleID: googleUserID, ip: req.ip });
       if (hasLinkedGoogleAcount.length !== 0) {
         // Checking to see if more than 1 user account matches the googleID we've been given
         if (hasLinkedGoogleAcount.length > 1) {
-          logger.warn('More than one userID to googleID match', { googleID: googleUserID, matched: hasLinkedGoogleAcount });
+          logger.warn('More than one userID to googleID match', { googleID: googleUserID, matched: hasLinkedGoogleAcount, ip: req.ip });
           loginsMetric.inc({ type: 'google', success: false, status: 500 });
           // return an error
         }
 
-        logger.info('Account found with matching googleID', { googleID: googleUserID, userID: hasLinkedGoogleAcount[0].user_id });
+        logger.info('Account found with matching googleID', { googleID: googleUserID, userID: hasLinkedGoogleAcount[0].user_id, ip: req.ip });
 
         const userID = hasLinkedGoogleAcount[0].user_id;
         jwt.sign({ userID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
           if (!err) {
-            logger.info('User signed in', { userID });
+            logger.info('User signed in', { userID, ip: req.ip });
             res.redirect(`${process.env.GOOGLE_REDIRECT_URL}/?token=${jwtToken}`);
             loginsMetric.inc({ type: 'google', success: true, status: 200 });
           } else {
@@ -151,7 +151,7 @@ router.post('/googleSignIn', async (req, res, next) => {
       } else {
         // if they don't create an account for them
         const userID = uuidv4();
-        logger.info('Account not found via googleID', { googleID: googleUserID, userID });
+        logger.info('Account not found via googleID', { googleID: googleUserID, userID, ip: req.ip });
 
         // generate a stripe customer ID
         const stripeCustomer = await stripe.customers.create({
@@ -159,7 +159,9 @@ router.post('/googleSignIn', async (req, res, next) => {
           metadata: { userID }, // Look at adding more data to the create customer part of Stripe
         });
 
-        logger.info('Stripe Customer ID creatted', { googleID: googleUserID, userID, StripeID: stripeCustomer.id });
+        logger.info('Stripe Customer ID creatted', {
+          googleID: googleUserID, userID, StripeID: stripeCustomer.id, ip: req.ip,
+        });
         // Create User account via sign in with google
 
         const acoountCreation = await createAccount(userID,
@@ -176,18 +178,12 @@ router.post('/googleSignIn', async (req, res, next) => {
           googleID: googleUserID,
           StripeID: stripeCustomer.id,
           dbID: acoountCreation.insertId,
+          ip: req.ip,
         });
 
         jwt.sign({ userID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
           if (!err) {
-            logger.info('JWT Created & Sent', {
-              userID,
-              googleID: googleUserID,
-              email: payload.email,
-              firstName: payload.given_name,
-              lastName: payload.family_name,
-              jwt: jwtToken,
-            });
+            logger.info('JWT Created & Sent', { userID, ip: req.ip });
             res.redirect(`${process.env.GOOGLE_REDIRECT_URL}/?token=${jwtToken}`);
             // res.json({ token: jwtToken });
           } else {
@@ -217,16 +213,16 @@ router.post('/fbSignIn', async (req, res, next) => {
     const hasLinkedFbAccount = await dao.userByExternalID(fbUserID, 'FB');
     if (hasLinkedFbAccount.length !== 0) {
       if (hasLinkedFbAccount.length > 1) {
-        logger.warn('More than one userID to fbID match', { fbID: fbUserID, matched: hasLinkedFbAccount });
+        logger.warn('More than one userID to fbID match', { fbID: fbUserID, matched: hasLinkedFbAccount, ip: req.ip });
         loginsMetric.inc({ type: 'facebook', success: false, status: 500 });
       }
 
-      logger.info('Account found with matching fbID', { fbID: fbUserID, userID: hasLinkedFbAccount[0].user_id });
+      logger.info('Account found with matching fbID', { fbID: fbUserID, userID: hasLinkedFbAccount[0].user_id, ip: req.ip });
 
       const userID = hasLinkedFbAccount[0].user_id;
       jwt.sign({ userID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (error, jwtToken) => {
         if (!error) {
-          logger.info('User signed in', { userID });
+          logger.info('User signed in', { userID, ip: req.ip });
           res.json({ token: jwtToken });
           loginsMetric.inc({ type: 'facebook', success: true, status: 200 });
         } else {
@@ -236,7 +232,7 @@ router.post('/fbSignIn', async (req, res, next) => {
     } else {
       // not found account so create one
       const userID = uuidv4();
-      logger.info('Account not found via FBID', { fbID: fbUserID, userID });
+      logger.info('Account not found via FBID', { fbID: fbUserID, userID, ip: req.ip });
 
       // get facebook profile info
       const fbUserInfo = await axios.get(`https://graph.facebook.com/me?access_token=${accessToken}&fields=id,email,first_name,last_name`);
@@ -248,7 +244,9 @@ router.post('/fbSignIn', async (req, res, next) => {
         metadata: { userID }, // Look at adding more data to the create customer part of Stripe
       });
 
-      logger.info('Stripe Customer ID creatted', { fbID: fbUserID, userID, StripeID: stripeCustomer.id });
+      logger.info('Stripe Customer ID creatted', {
+        fbID: fbUserID, userID, StripeID: stripeCustomer.id, ip: req.ip,
+      });
       // Create User account via sign in with google
       const acoountCreation = await createAccount(userID,
         fbUserID,
@@ -263,18 +261,12 @@ router.post('/fbSignIn', async (req, res, next) => {
         fbID: fbUserID,
         StripeID: stripeCustomer.id,
         dbID: acoountCreation.insertId,
+        ip: req.ip,
       });
 
       jwt.sign({ userID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (error, jwtToken) => {
         if (!error) {
-          logger.info('JWT Created & Sent', {
-            userID,
-            fbID: fbUserID,
-            email: payload.email,
-            firstName: payload.first_name,
-            lastName: payload.last_name,
-            jwt: jwtToken,
-          });
+          logger.info('JWT Created & Sent', { userID, ip: req.ip });
           res.json({ token: jwtToken });
         } else {
           next(err);
@@ -290,10 +282,10 @@ router.get('/account', authorisation.isAuthorized, async (req, res, next) => {
   try {
     const user = await dao.getAccountInfo(res.locals.user);
     if (user) {
-      logger.info('Found customers account data', { userID: res.locals.user, user });
+      logger.info('Found customers account data', { userID: res.locals.user, user, ip: req.ip });
       res.json(user);
     } else {
-      logger.error('Athenticated usersID does not match customer info in DB', { userID: res.locals.user });
+      logger.error('Athenticated usersID does not match customer info in DB', { userID: res.locals.user, ip: req.ip });
       res.json('User Not Found');
     }
   } catch (error) {
@@ -318,7 +310,7 @@ router.post('/createAccount',
     // check that this is a new user
       const account = await dao.hasAccountByEmail(email);
       if (account.length !== 0) {
-        logger.info('Account linked with that email', { email, userID: account[0].user_id });
+        logger.info('Account linked with that email', { email, userID: account[0].user_id, ip: req.ip });
         return res.json({ emailInUse: true });
       }
       const userID = uuidv4();
@@ -326,18 +318,18 @@ router.post('/createAccount',
         name,
         metadata: { userID },
       });
-      logger.info('Stripe Customer ID creatted', { userID, StripeID: stripeCustomer.id });
+      logger.info('Stripe Customer ID creatted', { userID, StripeID: stripeCustomer.id, ip: req.ip });
 
       // hash password and store new user in database
       const hash = await bcrypt.hash(password.trim(), 10);
       const createdAccount = await dao.createAccountWithEmail(userID, email,
         name, hash, stripeCustomer.id, req.ip);
 
-      logger.info('Account created', { userID, DBID: createdAccount.insertId });
+      logger.info('Account created', { userID, DBID: createdAccount.insertId, ip: req.ip });
       // send JWT
       jwt.sign({ userID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
         if (!err) {
-          logger.info('JWT Created & Sent', { userID, jwt: jwtToken });
+          logger.info('JWT Created & Sent', { userID, ip: req.ip });
           res.json({ token: jwtToken });
           createAccountMetric.inc({ type: 'email', status: 200 });
         }
@@ -362,7 +354,7 @@ router.post('/login',
     try {
       const hash = await dao.getHash(email);
       if (hash.length !== 1) {
-        logger.info('Account not found', { email });
+        logger.info('Account not found', { email, ip: req.ip });
         loginsMetric.inc({ type: 'email', success: false, status: 500 });
         return res.json({ accountFound: false });
       }
@@ -371,14 +363,14 @@ router.post('/login',
         const result = await bcrypt.compare(password.trim(), hash[0].password);
 
         if (result !== true) {
-          logger.info('Incorrect password', { email, userID: hash[0].user_id });
+          logger.info('Incorrect password', { email, userID: hash[0].user_id, ip: req.ip });
           loginsMetric.inc({ type: 'email', success: false, status: 500 });
           return res.json({ message: 'Sorry we couldn\'t log you in, it looks like your email address or password wasn\'t right' });
         }
 
         jwt.sign({ userID: hash[0].user_id }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
           if (!err) {
-            logger.info('JWT Created & Sent', { userID: hash[0].user_id, jwt: jwtToken });
+            logger.info('JWT Created & Sent', { userID: hash[0].user_id, ip: req.ip });
             res.json({ token: jwtToken });
             loginsMetric.inc({ type: 'email', success: true, status: 200 });
           } else {
@@ -386,7 +378,7 @@ router.post('/login',
           }
         });
       } else {
-        logger.info('Account found for social login', { userID: hash[0].user_id, email });
+        logger.info('Account found for social login', { userID: hash[0].user_id, email, ip: req.ip });
         res.json({ isSocial: true });
         loginsMetric.inc({ type: 'email', success: false, status: 500 });
       }
@@ -403,13 +395,13 @@ router.get('/hasAccount/:id', async (req, res, next) => {
     const account = await dao.hasAccountByEmail(email);
     // checks if an account with that email has been found and if more than one has been found
     if (account.length === 0) {
-      logger.info('No account linked with that email', { email });
+      logger.info('No account linked with that email', { email, ip: req.ip });
       res.json({ newAccount: true });
       return;
     }
 
     if (account.length > 1) {
-      logger.error('More than one account found for email address', { email, account });
+      logger.error('More than one account found for email address', { email, account, ip: req.ip });
       res.json({ message: 'Someting went wrong' });
       return;
     }
@@ -420,6 +412,7 @@ router.get('/hasAccount/:id', async (req, res, next) => {
         email,
         userID: account[0].user_id,
         loginType: account[0].external_type,
+        ip: req.ip,
       });
       res.json({
         newAccount: false,
@@ -431,7 +424,7 @@ router.get('/hasAccount/:id', async (req, res, next) => {
 
     if (account.length === 1 && account[0].external_id === null) {
       // account exist with that email and isn't a social login
-      logger.info('Account found with that email', { email });
+      logger.info('Account found with that email', { email, ip: req.ip });
       res.json({ newAccount: false, isSocial: false });
     }
     return;
@@ -445,18 +438,18 @@ router.get('/card', authorisation.isAuthorized, async (req, res, next) => {
     const { stripe_id: stripeID } = await dao.getStripeID(res.locals.user);
 
     if (stripeID === undefined || stripeID === '') {
-      logger.error('No stripeID found for customer', { userID: res.locals.user });
+      logger.error('No stripeID found for customer', { userID: res.locals.user, ip: req.ip });
       return res.status(500);
     }
 
-    logger.info('Got StripeID to retrive cards', { userID: res.locals.user, stripeID });
+    logger.info('Got StripeID to retrive cards', { userID: res.locals.user, stripeID, ip: req.ip });
 
     const paymentMethods = await stripe.paymentMethods.list({
       customer: stripeID,
       type: 'card',
     });
 
-    logger.info('Got payment methods for customer from stripe', { userID: res.locals.user, stripeID });
+    logger.info('Got payment methods for customer from stripe', { userID: res.locals.user, stripeID, ip: req.ip });
 
     return res.json(paymentMethods);
   } catch (error) {
@@ -468,10 +461,10 @@ router.get('/addresses', authorisation.isAuthorized, async (req, res, next) => {
   try {
     const addresses = await dao.getAddresses(res.locals.user);
     if (addresses) {
-      logger.info('Found customers addresses', { userID: res.locals.user });
+      logger.info('Found customers addresses', { userID: res.locals.user, ip: req.ip });
       res.json(addresses);
     } else {
-      logger.error('No addresses found', { userID: res.locals.user });
+      logger.error('No addresses found', { userID: res.locals.user, ip: req.ip });
       res.sendStatus(404);
     }
   } catch (error) {
@@ -481,13 +474,13 @@ router.get('/addresses', authorisation.isAuthorized, async (req, res, next) => {
 
 router.post('/postcodeLookup', authorisation.isAuthorized, body('postCode').isPostalCode('GB').escape(), async (req, res, next) => {
   const { postCode } = req.body;
-  logger.info('postcode lookup started', { userID: res.locals.user, postCode });
+  logger.info('postcode lookup started', { userID: res.locals.user, postCode, ip: req.ip });
   // add new address to DB
   const postCodeParsed = postCode.replace(/\s/g, '');
   const regixPostCode = postCodeParsed.toUpperCase().match(/^[A-Z][A-Z]{0,1}[0-9][A-Z0-9]{0,1}[0-9]/);
 
   if (regixPostCode === null) {
-    logger.warn('regix failed to find postcode', { userID: res.locals.user, postCode: postCodeParsed });
+    logger.warn('regix failed to find postcode', { userID: res.locals.user, postCode: postCodeParsed, ip: req.ip });
     postcodeMetric.inc({ type: 'not_postcode' });
     return res.json({ withInOpArea: false, message: 'Sorry something went wrong, it does not look like you have entered a vaild postcode' });
   }
@@ -498,7 +491,12 @@ router.post('/postcodeLookup', authorisation.isAuthorized, body('postCode').isPo
 
   // checing to see if the postcode sector the user has entered is one that we operater in
   if (!operatingArea.includes(regixPostCode[0])) {
-    logger.warn('Delivery address outside of operating area', { userID: res.locals.user, postCode: postCodeParsed, postCodeSector: regixPostCode[0] });
+    logger.warn('Delivery address outside of operating area', {
+      userID: res.locals.user,
+      postCode: postCodeParsed,
+      postCodeSector: regixPostCode[0],
+      ip: req.ip,
+    });
     postcodeMetric.inc({ type: 'outside_operating_are' });
     return res.json({ withInOpArea: false, message: 'Sorry something went wrong the selected postcode is not part of our operating area' });
   }
@@ -508,7 +506,7 @@ router.post('/postcodeLookup', authorisation.isAuthorized, body('postCode').isPo
     postcodeMetric.inc({ type: 'postcode_lookup' });
 
     if (response.status !== 200) {
-      logger.error('Postcoder lookup error', { status: response.status, errorMessage: response.statusText });
+      logger.error('Postcoder lookup error', { status: response.status, errorMessage: response.statusText, ip: req.ip });
       return res.json({
         lookupSuccess: false,
         message: 'Something went wrong whilst looking up your address, please let us know if this continues',
@@ -545,14 +543,15 @@ router.post('/addAddress', authorisation.isAuthorized,
     const address = req.body;
 
     try {
-      const addressDBInsertID = await dao.addAddress(res.locals.user, uuidv4(), `${address.premise} ${address.street}`,
+      const addressID = uuidv4();
+      const addressDBInsertID = await dao.addAddress(res.locals.user, addressID, `${address.premise} ${address.street}`,
         address.posttown, address.postcode, address.latitude, address.longitude);
 
-      console.log(addressDBInsertID.insertId);
-
-      res.sendStatus(201);
+      logger.info('Address added', { addressID, dbInsertID: addressDBInsertID.insertId, ip: req.ip });
+      return res.sendStatus(201);
     } catch (error) {
-      console.log(error);
+      logger.error('Error adding address', error);
+      return next(error);
     }
   });
 
@@ -562,11 +561,11 @@ router.delete('/address', authorisation.isAuthorized, async (req, res, next) => 
   try {
     const deleted = await dao.deleteAddresses(res.locals.user, addressID);
     if (deleted.changedRows !== 1) {
-      logger.warn('Deleting address possibly failed or was already deleted', { userID: res.locals.user, addressID });
+      logger.warn('Deleting address possibly failed or was already deleted', { userID: res.locals.user, addressID, ip: req.ip });
       res.sendStatus(500);
       return;
     }
-    logger.info('Address deleted', { userID: res.locals.user, addressID });
+    logger.info('Address deleted', { userID: res.locals.user, addressID, ip: req.ip });
     res.sendStatus(204);
   } catch (error) {
     next(error);
@@ -591,22 +590,28 @@ router.patch('/updatePhoneNumber', authorisation.isAuthorized,
     }
 
     const { SMScode } = req.body;
-    logger.info('Updated phone number request', { userID: res.locals.user, SMScode });
+    logger.info('Updated phone number request', { userID: res.locals.user, SMScode, ip: req.ip });
 
     const result = await redis.get(res.locals.user);
-    logger.info('redis code for the user', { userID: res.locals.user, SMScode, redisCode: result });
+    logger.info('redis code for the user', {
+      userID: res.locals.user, SMScode, redisCode: result, ip: req.ip,
+    });
 
     if (SMScode === result) {
-      logger.info('SMS code matches redis code for user', { userID: res.locals.user, SMScode, redisCode: result });
+      logger.info('SMS code matches redis code for user', {
+        userID: res.locals.user, SMScode, redisCode: result, ip: req.ip,
+      });
       const validateNumber = await dao.validatePhoneNumber(res.locals.user);
       if (validateNumber.affectedRows !== 1) {
         logger.warn('Phone number not updated, either no number was updated or too many were',
-          { userID: res.locals.user });
+          { userID: res.locals.user, ip: req.ip });
         return res.status(500).json({ error: 'Something went wrong when trying to verify your number' });
       }
       res.sendStatus(201);
     } else {
-      logger.info('Could not validate phone number', { userID: res.locals.user, SMScode, redisCode: result });
+      logger.info('Could not validate phone number', {
+        userID: res.locals.user, SMScode, redisCode: result, ip: req.ip,
+      });
       res.status(400).json({ error: 'Sadly we can not validate your phone number' });
     }
   });
@@ -620,26 +625,30 @@ router.post('/generateSMScode', authorisation.isAuthorized,
     }
 
     const { phoneNumber } = req.body;
-    logger.info('asked to generate a new SMS verfication code', { userID: res.locals.user, phoneNumber });
+    logger.info('asked to generate a new SMS verfication code', { userID: res.locals.user, phoneNumber, ip: req.ip });
     try {
       const phoneNumberParsed = phone.parsePhoneNumber(phoneNumber, 'GB');
-      logger.info('Parseed phone number', { userID: res.locals.user, phoneNumber, parsedPhoneNumber: phoneNumberParsed.number });
+      logger.info('Parseed phone number', {
+        userID: res.locals.user, phoneNumber, parsedPhoneNumber: phoneNumberParsed.number, ip: req.ip,
+      });
 
       const updated = await dao.updatePhoneNumber(res.locals.user, phoneNumberParsed.number);
       if (updated.changedRows === 1) {
-        logger.info('Adding unverfied phone number to database', { userID: res.locals.user, parsedPhoneNumber: phoneNumberParsed.number });
+        logger.info('Adding unverfied phone number to database', { userID: res.locals.user, parsedPhoneNumber: phoneNumberParsed.number, ip: req.ip });
 
         const SMScode = Math.floor(Math.random() * 99999) + 10000;
         // Add error checking for redis set
         // SMS code will expiry in 4 hours
         redis.set(res.locals.user, SMScode, 'ex', 14400);
-        logger.info('SMS code generated and added to redis', { userID: res.locals.user, SMScode, parsedPhoneNumber: phoneNumberParsed.number });
+        logger.info('SMS code generated and added to redis', {
+          userID: res.locals.user, SMScode, parsedPhoneNumber: phoneNumberParsed.number, ip: req.ip,
+        });
         // Send Verification SMS code.
         // await sendSMScode(SMScode, phoneNumberParsed.number, res.locals.user);
 
         res.sendStatus(204);
       } else {
-        logger.error('The number of rows in the DB that were updated was not 1', { userID: res.locals.user, parsedPhoneNumber: phoneNumberParsed.number });
+        logger.error('The number of rows in the DB that were updated was not 1', { userID: res.locals.user, parsedPhoneNumber: phoneNumberParsed.number, ip: req.ip });
         res.sendStatus(404);
       }
     } catch (error) {
@@ -655,18 +664,22 @@ router.patch('/resendSMS', authorisation.isAuthorized, async (req, res, next) =>
     const phoneData = await dao.getPhoneNumber(res.locals.user);
 
     if (phoneData.phone_number === null) {
-      logger.warn('No phone number found, when trying to resend SMS code', { userID: res.locals.user });
+      logger.warn('No phone number found, when trying to resend SMS code', { userID: res.locals.user, ip: req.ip });
       return res.sendStatus(500);
     }
 
     if (SMScode === null) {
       const newSMScode = Math.floor(Math.random() * 99999) + 10000;
       redis.set(res.locals.user, newSMScode, 'ex', 14400);
-      logger.info('New SMS code set', { newSMScode, userID: res.locals.user, phoneNumber: phoneData.phone_number });
+      logger.info('New SMS code set', {
+        newSMScode, userID: res.locals.user, phoneNumber: phoneData.phone_number, ip: req.ip,
+      });
       // await sendSMScode(newSMScode, phoneData.phone_number, res.locals.user);
       return res.sendStatus(204);
     }
-    logger.info('SMS code resent', { SMScode, userID: res.locals.user, phoneNumber: phoneData.phone_number });
+    logger.info('SMS code resent', {
+      SMScode, userID: res.locals.user, phoneNumber: phoneData.phone_number, ip: req.ip,
+    });
     // await sendSMScode(SMScode, phoneData.phone_number, res.locals.user);
     return res.sendStatus(204);
   } catch (error) {
