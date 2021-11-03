@@ -3,7 +3,7 @@ const API_URL = "https://api.inverdeliver.com";
 const navBarToggle = document.querySelector('.navbarToggle');
 const navtoggle = document.querySelector('.mainNav');
 
-const stripe = Stripe("pk_test_51H7AsMK7XxBFOf2KD3wGhUSnQRncvlSgpaez5NPRCilzrFxxJPsKgUNU0li9EHwtSigGZV1Y1Y6gtYu7kmbjs9KC00LtASdb7Q");
+const stripe = Stripe("pk_live_51H7AsMK7XxBFOf2Kh04RP9dnu1cqitmiQWDpqYMgjfpsMInAmYNHi51f9rp6gpGlD3ybg8t45sDkeeTVpm8eEAUJ00SKn47LQE");
 const cartContent = document.querySelector(".cartContent");
 
 const url_string = window.location.href;
