@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const mailgun = require('mailgun-js')({ apiKey: process.env.MAILGUN_APIKEY, domain: process.env.MAILGUN_DOMAIN });
+const mailgun = require('mailgun-js')({ apiKey: process.env.MAILGUN_APIKEY, domain: process.env.MAILGUN_DOMAIN, host: 'api.eu.mailgun.net' });
 const logger = require('../middleware/logger');
 
 async function sendWelcomEmail(email, name) {
@@ -12,8 +12,12 @@ async function sendWelcomEmail(email, name) {
     'v:name': name,
   };
 
-  const sentEmail = await mailgun.messages().send(data);
-  logger.info('welcome email sent', { email, emailID: sentEmail.id });
+  try {
+    const sentEmail = await mailgun.messages().send(data);
+    logger.info('welcome email sent', { email, emailID: sentEmail.id });
+  } catch (error) {
+    logger.error('Welcome email failed to send', { email, error });
+  }
 }
 
 async function sendOrderConformationEmail(email, name, orderID) {
@@ -27,8 +31,12 @@ async function sendOrderConformationEmail(email, name, orderID) {
     'v:tracking_url': `inverdeliver.com/orders/info/?orderID=${orderID}`,
   };
 
-  const sentEmail = await mailgun.messages().send(data);
-  logger.info('order conformation sent', { email, orderID, emailID: sentEmail.id });
+  try {
+    const sentEmail = await mailgun.messages().send(data);
+    logger.info('order conformation sent', { email, orderID, emailID: sentEmail.id });
+  } catch (error) {
+    logger.error('Order conformation email failed to send', { email, error });
+  }
 }
 
 module.exports = {

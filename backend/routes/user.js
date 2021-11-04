@@ -296,7 +296,7 @@ router.get('/account', authorisation.isAuthorized, async (req, res, next) => {
 router.post('/createAccount',
   body('email').isEmail().normalizeEmail().escape(),
   body('password').isString().escape(),
-  body('name').isAlpha().escape(),
+  body('name').isString().escape(),
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -326,6 +326,7 @@ router.post('/createAccount',
         name, hash, stripeCustomer.id, req.ip);
 
       logger.info('Account created', { userID, DBID: createdAccount.insertId, ip: req.ip });
+      mailgun.sendWelcomEmail(email, name);
       // send JWT
       jwt.sign({ userID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
         if (!err) {
@@ -520,24 +521,24 @@ router.post('/postcodeLookup', authorisation.isAuthorized, body('postCode').isPo
 });
 
 router.post('/addAddress', authorisation.isAuthorized,
-  body('addressline1').isAlphanumeric().escape(),
-  body('addressline2').isAlphanumeric().escape(),
-  body('county').isAlpha().escape(),
+  body('addressline1').isString().escape(),
+  body('addressline2').isString().escape(),
+  body('county').isString().escape(),
   body('grideasting').isNumeric().escape(),
   body('gridnorthing').isNumeric().escape(),
   body('latitude').isNumeric().escape(),
   body('longitude').isNumeric().escape(),
   body('number').isNumeric().escape(),
-  body('postcode').isAlphanumeric().escape(),
-  body('posttown').isAlpha().escape(),
-  body('premise').isAlphanumeric().escape(),
-  body('street').isAlpha().escape(),
-  body('subbuildingname').isAlphanumeric().escape(),
-  body('summaryline').isAlphanumeric().escape(),
+  body('postcode').isString().escape(),
+  body('posttown').isString().escape(),
+  body('premise').isString().escape(),
+  body('street').isString().escape(),
+  body('subbuildingname').isString().escape(),
+  body('summaryline').isString().escape(),
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ error: 'Invalid Phone Number' });
+      return res.status(400).json({ error: errors });
     }
 
     const address = req.body;
@@ -644,7 +645,7 @@ router.post('/generateSMScode', authorisation.isAuthorized,
           userID: res.locals.user, SMScode, parsedPhoneNumber: phoneNumberParsed.number, ip: req.ip,
         });
         // Send Verification SMS code.
-        // await sendSMScode(SMScode, phoneNumberParsed.number, res.locals.user);
+        await sendSMScode(SMScode, phoneNumberParsed.number, res.locals.user);
 
         res.sendStatus(204);
       } else {
@@ -674,13 +675,13 @@ router.patch('/resendSMS', authorisation.isAuthorized, async (req, res, next) =>
       logger.info('New SMS code set', {
         newSMScode, userID: res.locals.user, phoneNumber: phoneData.phone_number, ip: req.ip,
       });
-      // await sendSMScode(newSMScode, phoneData.phone_number, res.locals.user);
+      await sendSMScode(newSMScode, phoneData.phone_number, res.locals.user);
       return res.sendStatus(204);
     }
     logger.info('SMS code resent', {
       SMScode, userID: res.locals.user, phoneNumber: phoneData.phone_number, ip: req.ip,
     });
-    // await sendSMScode(SMScode, phoneData.phone_number, res.locals.user);
+    await sendSMScode(SMScode, phoneData.phone_number, res.locals.user);
     return res.sendStatus(204);
   } catch (error) {
     return next(error);
