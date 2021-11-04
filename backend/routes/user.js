@@ -296,7 +296,7 @@ router.get('/account', authorisation.isAuthorized, async (req, res, next) => {
 router.post('/createAccount',
   body('email').isEmail().normalizeEmail().escape(),
   body('password').isString().escape(),
-  body('name').isAlpha().escape(),
+  body('name').isString().escape(),
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -326,6 +326,7 @@ router.post('/createAccount',
         name, hash, stripeCustomer.id, req.ip);
 
       logger.info('Account created', { userID, DBID: createdAccount.insertId, ip: req.ip });
+      mailgun.sendWelcomEmail(email, name);
       // send JWT
       jwt.sign({ userID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
         if (!err) {
@@ -644,7 +645,7 @@ router.post('/generateSMScode', authorisation.isAuthorized,
           userID: res.locals.user, SMScode, parsedPhoneNumber: phoneNumberParsed.number, ip: req.ip,
         });
         // Send Verification SMS code.
-        // await sendSMScode(SMScode, phoneNumberParsed.number, res.locals.user);
+        await sendSMScode(SMScode, phoneNumberParsed.number, res.locals.user);
 
         res.sendStatus(204);
       } else {
@@ -674,13 +675,13 @@ router.patch('/resendSMS', authorisation.isAuthorized, async (req, res, next) =>
       logger.info('New SMS code set', {
         newSMScode, userID: res.locals.user, phoneNumber: phoneData.phone_number, ip: req.ip,
       });
-      // await sendSMScode(newSMScode, phoneData.phone_number, res.locals.user);
+      await sendSMScode(newSMScode, phoneData.phone_number, res.locals.user);
       return res.sendStatus(204);
     }
     logger.info('SMS code resent', {
       SMScode, userID: res.locals.user, phoneNumber: phoneData.phone_number, ip: req.ip,
     });
-    // await sendSMScode(SMScode, phoneData.phone_number, res.locals.user);
+    await sendSMScode(SMScode, phoneData.phone_number, res.locals.user);
     return res.sendStatus(204);
   } catch (error) {
     return next(error);
