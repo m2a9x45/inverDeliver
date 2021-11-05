@@ -182,6 +182,7 @@ productSearch.addEventListener("keypress", (e) => {
 
 async function getproducts(category, search) {
   gridCcontainer.innerHTML = "";
+  document.activeElement.blur(); // hides iOS keyboard 
   let url;
   
   if (search && category) url = `category=${category}&search=${search}`;
