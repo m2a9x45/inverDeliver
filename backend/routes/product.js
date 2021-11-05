@@ -14,7 +14,7 @@ router.get('/standard', async (req, res, next) => {
     if (category && search) {
       const products = await dao.productByCategoryAndSearch(category, search);
       if (products.length === 0) {
-        res.json({ data: null, message: 'No products found' });
+        res.json({ data: [], message: 'No products found' });
         return null;
       }
       return res.json({ data: products });
@@ -23,7 +23,7 @@ router.get('/standard', async (req, res, next) => {
     if (category) {
       const products = await dao.productByCategory(category);
       if (products.length === 0) {
-        res.json({ data: null, message: 'No products found' });
+        res.json({ data: [], message: 'No products found' });
         return null;
       }
       return res.json({ data: products });
