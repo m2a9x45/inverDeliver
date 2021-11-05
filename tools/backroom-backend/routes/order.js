@@ -49,4 +49,15 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
+router.get('/getStatus/:id', async (req, res, next) => {
+  const orderID = req.params.id;
+  try {
+    const data = await dao.getOrderStatus(orderID);
+    res.json(data);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
 module.exports = router;

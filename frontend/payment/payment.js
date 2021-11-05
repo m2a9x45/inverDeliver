@@ -429,7 +429,7 @@ form.addEventListener("submit", (event) => {
           showError(result.error.message);
         } else {
           localStorage.removeItem("cart");
-          // orderComplete(result.paymentIntent.id);
+          orderComplete(result.paymentIntent.id);
         }
       });
       return;
@@ -454,7 +454,7 @@ function payWithCard(stripe, card, clientSecret) {
         showError(result.error.message);
       } else {
         localStorage.removeItem("cart");
-        // orderComplete(result.paymentIntent.id);
+        orderComplete(result.paymentIntent.id);
       }
     });
 };

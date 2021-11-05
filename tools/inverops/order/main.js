@@ -3,34 +3,55 @@ const API_URL = "http://localhost:3002";
 const orderList = document.querySelector(".orderList");
 const completeButton = document.querySelector("#completeButton");
 const shoppingNowButton = document.querySelector('#shoppingNowButton');
+const nameText = document.querySelector('#name');
+
+const token = localStorage.getItem('stoken');
 
 const url_string = window.location.href;
 const url = new URL(url_string);
 const orderID = url.searchParams.get("orderID");
 console.log(orderID);
 
-completeButton.addEventListener("click", () => {
-    updateStatus(orderID, 'pending_delivery');
-})
+document.addEventListener("DOMContentLoaded", async () => {
 
-shoppingNowButton.addEventListener("click", () => {
-    updateStatus(orderID, 'shopping');
+    try {
+        getOrderContent();
+        const { status, first_name: name } = await getOrderStatus();
+        nameText.innerHTML = `Order for ${name}`;
+        console.log(status);
+
+        switch (status) {
+            case 'order_received':
+                completeButton.innerHTML = 'Start Shopping';
+                completeButton.addEventListener('click', () => updateStatus(orderID, 'shopping'));
+                break;
+            case 'shopping':
+                completeButton.innerHTML = 'Finish Shopping';
+                completeButton.addEventListener('click', () => updateStatus(orderID, 'pending_delivery'));
+                break;
+            default:
+                completeButton.innerHTML = status;
+                completeButton.disabled = true;
+        }
+    } catch (error) {
+        
+    }
+
 })
 
 async function updateStatus(orderID, status) {
     try {
-        const response = await fetch(`${API_URL}/order/status/${orderID}/${status}`, {"method": "PATCH"});
+        const response = await fetch(`${API_URL}/order/status/${orderID}/${status}`, {method: "PATCH", headers: { 'authorization' : `Bearer ${token}` }});
         console.log(response);
+        location.reload();
     } catch (error) {
         console.error(error);
     }
 }
 
-getOrderContent();
-
 async function getOrderContent() {
     try {
-        const response = await fetch(`${API_URL}/order/${orderID}`);
+        const response = await fetch(`${API_URL}/order/${orderID}`, { headers: { 'authorization' : `Bearer ${token}` }});
         const orderItems = await response.json();
         console.log(orderItems);
         orderItems.forEach(orderItem => {
@@ -40,6 +61,18 @@ async function getOrderContent() {
         console.error(error);
     } 
 }
+
+async function getOrderStatus() {
+    try {
+        const response = await fetch(`${API_URL}/order/getStatus/${orderID}`, { headers: { 'authorization' : `Bearer ${token}` }});
+        const status = await response.json();
+        console.log(status);
+        return status;
+    } catch (error) {
+        console.error(error);
+    } 
+}
+
 
 function displayOrder(product) {
     const orderDiv = document.createElement("div");

@@ -41,6 +41,17 @@ async function getOrderContent(orderID) {
   }
 }
 
+async function getOrderStatus(orderID) {
+  try {
+    const selectedRows = await db.knex.select('o.status', 'u.first_name').from('order AS o')
+      .join('users AS u', 'o.user_id', 'u.user_id')
+      .where('order_id', orderID);
+    return selectedRows[0];
+  } catch (error) {
+    return error;
+  }
+}
+
 async function updateOrderStatus(orderID, status) {
   try {
     const selectedRows = await db.knex('order').where('order_id', orderID).update({ status });
@@ -55,4 +66,5 @@ module.exports = {
   getLatestOrders,
   getOrderContent,
   updateOrderStatus,
+  getOrderStatus,
 };

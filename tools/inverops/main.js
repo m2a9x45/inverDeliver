@@ -1,11 +1,12 @@
 const API_URL = "http://localhost:3002";
 const orderTable = document.querySelector('#orderTable');
+const token = localStorage.getItem('stoken');
 
 getOrders();
 
 async function getOrders() {
     try {
-        const response = await fetch(`${API_URL}/order/latest`);
+        const response = await fetch(`${API_URL}/order/latest`, { headers: { 'authorization' : `Bearer ${token}`} });
         const orders = await response.json();
         console.log(orders);
         orders.forEach(order => {
