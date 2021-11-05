@@ -230,10 +230,6 @@ img {
     border-radius: 25px;
 }
 
-#productSearch::selection {
-    border: 1px solid black;
-}
-
 footer {
     background-color:rgba(66, 176, 255, 0.151);
     margin-top:auto; 
