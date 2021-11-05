@@ -1,4 +1,5 @@
 const API_URL = "http://localhost:3002";
+const token = localStorage.getItem('stoken');
 
 const ordersList = document.querySelector(".ordersList");
 
@@ -6,7 +7,7 @@ getOrders();
 
 async function getOrders() {
     try {
-        const response = await fetch(`${API_URL}/delivery/upcoming`);
+        const response = await fetch(`${API_URL}/delivery/upcoming`, { headers: { 'authorization' : `Bearer ${token}` }});
         const deliveries = await response.json();
         console.log(deliveries);
         deliveries.forEach(delivery => {

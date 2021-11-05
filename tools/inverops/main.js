@@ -1,16 +1,28 @@
 const API_URL = "http://localhost:3002";
 const orderTable = document.querySelector('#orderTable');
+const token = localStorage.getItem('stoken');
 
-getOrders();
+document.addEventListener('DOMContentLoaded', async () => {
 
-async function getOrders() {
     try {
-        const response = await fetch(`${API_URL}/order/latest`);
-        const orders = await response.json();
-        console.log(orders);
+        const orders = await getOrders();
         orders.forEach(order => {
             addOrderToTable(order);
         });
+    } catch (error) {
+        console.error(error);
+    }
+
+})
+
+async function getOrders() {
+    try {
+        const response = await fetch(`${API_URL}/order/latest`, { headers: { 'authorization' : `Bearer ${token}`} });
+        if (!response.ok) {
+            throw `❌ ${response.status} - ${response.statusText}`;
+        }
+        const orders = await response.json();
+        return orders;
     } catch (error) {
         console.error(error);
     } 

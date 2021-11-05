@@ -197,23 +197,31 @@ function showOrderStatus(status) {
       status1.style.opacity = 1;
       status1.style.backgroundColor = "rgb(66, 176, 255)";
       break;
-    case 'pending_delivery' || 'shopping':
+    case 'shopping':
       status1.style.opacity = 1;
       status2.style.opacity = 1;
       status2.style.backgroundColor = "rgb(66, 176, 255)";
+      break;
+    case 'pending_delivery':
+      status1.style.opacity = 1;
+      status2.style.opacity = 1;
+      status3.style.opacity = 1;
+      status3.style.backgroundColor = "rgb(66, 176, 255)";
       break;
     case 'out_for_delivery':
       status1.style.opacity = 1;
       status2.style.opacity = 1;
       status3.style.opacity = 1;
-      status3.style.backgroundColor = "rgb(66, 176, 255)";
+      status4.style.opacity = 1;
+      status4.style.backgroundColor = "rgb(66, 176, 255)";
       break;
     case 'delivered':
       status1.style.opacity = 1;
       status2.style.opacity = 1;
       status3.style.opacity = 1;
       status4.style.opacity = 1;
-      status4.style.backgroundColor = "rgb(66, 176, 255)";
+      status5.style.opacity = 1;
+      status5.style.backgroundColor = "rgb(66, 176, 255)";
       break;
     default:
       break;

@@ -175,7 +175,7 @@ function displayOrders(order) {
 
     const deliveryStatus = document.createElement("p");
     deliveryStatus.setAttribute("id", "deliveryStatus");
-
+    console.log(order.status);
     switch (order.status) {
         case 'payment_required':
             deliveryStatus.innerText = "Awaiting Payment";
@@ -185,8 +185,12 @@ function displayOrders(order) {
             deliveryStatus.innerText = "Order recived";
             deliveryStatus.style.backgroundColor = "rgb(66, 176, 255)"; // blue
             break;
-        case 'pending_delivery' || 'shopping':
+        case 'shopping':
             deliveryStatus.innerText = "Shopping";
+            deliveryStatus.style.backgroundColor = "#ff8f2e"; // orange
+            break;
+        case 'pending_delivery':
+            deliveryStatus.innerText = "Awaiting Delivery";
             deliveryStatus.style.backgroundColor = "#ff8f2e"; // orange
             break;
         case 'out_for_delivery':

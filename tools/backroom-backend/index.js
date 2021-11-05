@@ -5,8 +5,10 @@ const app = express();
 const port = 3002;
 
 const orders = require('./routes/order');
-const planning = require('./routes/planning');
+// const planning = require('./routes/planning');
 const delivery = require('./routes/delivery');
+const staff = require('./routes/staff');
+const authorisation = require('./middleware/auth');
 
 const corsOptions = {
   origin: ['http://localhost:8080'],
@@ -15,9 +17,11 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use('/order', orders);
-app.use('/delivery', delivery);
-app.use('/planning', planning);
+
+app.use('/order', authorisation.isAuthorized, orders);
+app.use('/delivery', authorisation.isAuthorized, delivery);
+app.use('/staff', staff);
+// app.use('/planning', planning);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
