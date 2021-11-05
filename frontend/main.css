@@ -181,9 +181,9 @@ img {
 }
 
 .addCartButton {
-    background-color: rgb(66, 176, 255); /* Green */
+    background-color: rgb(66, 176, 255);
+    color: black;
     border: none;
-    /* color: white; */
     padding: 15px 32px;
     text-align: center;
     text-decoration: none;
