@@ -282,6 +282,17 @@ footer {
 }
 
 @media only screen and (max-width: 935px) {
+    .categoryHolder {
+        flex-wrap: nowrap;
+        overflow-x: scroll;
+        white-space: nowrap;
+        justify-content: left;
+    }
+
+    .categoryHolder::-webkit-scrollbar {
+        display: none;
+      }
+
     .grid-container {
         grid-template-columns: auto auto auto;
     }
