@@ -130,7 +130,7 @@ function displayCart(item, id) {
   if (item.name != "Delivery Fee") {
     quantityLabel = document.createElement("label");
     quantityLabel.setAttribute("for", "quantity");
-    quantityLabel.innerText = "quantity: ";
+    quantityLabel.innerText = "Quantity: ";
   
     quantityInput = document.createElement("Input");
     quantityInput.setAttribute("type", "number");
