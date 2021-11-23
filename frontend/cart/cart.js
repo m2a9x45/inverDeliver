@@ -134,6 +134,8 @@ function displayCart(item, id) {
   
     quantityInput = document.createElement("Input");
     quantityInput.setAttribute("type", "number");
+    quantityInput.setAttribute("inputmode", "numeric");
+    quantityInput.setAttribute("pattern", "[0-9]*");
     quantityInput.setAttribute("id", "quantity");
     quantityInput.setAttribute("value", item.number);
     quantityInput.setAttribute("max", 20);
