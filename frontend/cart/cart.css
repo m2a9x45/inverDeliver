@@ -183,6 +183,8 @@ header {
 
 #addphoneNumberForm {
     padding: 1rem 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 }
 
 #verfiyphoneNumberForm {
