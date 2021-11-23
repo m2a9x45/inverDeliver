@@ -60,26 +60,39 @@ header {
     color: rgb(66, 176, 255);
 }
 
-.callOutHolder {
-    width: 100%;
-    background-color:rgb(66, 176, 255);
-    padding-top: 1.5rem;
-    padding-bottom: 1.5rem;
+/* .cartHolderAlign {
+    margin: 00.5rem auto;
+    width: 25%;
 }
 
-.callOut {
-    width: 40%;
-    margin: 0 auto;
+#cartHolderLink {
+    text-decoration: none;
+    color: black;
+}
+
+.cartHolder {
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    background-color: antiquewhite;
+    border-radius: 25px;
+    justify-content: center;
+}
+
+#cartItemNumber {
+    background-color: rgb(247, 132, 0);
+    font-weight: bold;
+    width: 25px;
+    height: 25px;
+    margin-left: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 50%;
     text-align: center;
-}
+} */
 
-.callOut h4 {
-    margin: 1rem;
-    font-size: 32pt;
-}
-
-.callOut p {
-    font-size: 18pt;
+.cartHolder p {
+    margin: 0;
+    font-size: 20px;
 }
 
 .categoryHolder {

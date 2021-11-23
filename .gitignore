@@ -4,6 +4,8 @@ backend/node_modules
 backend/package-lock.json
 *.log
 *.gz
+*.txt
+*.csv
 backend/public
 
 frontend/email
@@ -25,3 +27,5 @@ tools/itemGetter.py
 tools/csv-product-importer
 tools/sku-image.py
 tools/csv-product-importer
+tools/m-price-checker.py
+tools/m-price-updater.py
