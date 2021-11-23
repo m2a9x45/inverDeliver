@@ -76,7 +76,8 @@ function addProducts(productArray) {
 
     const size = document.createElement("p");
     size.setAttribute("class", "size");
-    size.innerHTML = product.size;
+    size.innerHTML = product.size === null ? size.style.visibility = 'hidden' : product.size = product.size;
+
 
     const title = document.createElement("p");
     title.setAttribute("class", "title");
@@ -127,14 +128,15 @@ function addProducts(productArray) {
 }
 
 function addProductToCart(product) {
-  console.log(product.product_id);
+  console.log(product);
 
   if (cart[product.product_id]) cart[product.product_id].number++; 
   else {
     cart[product.product_id] = {
       "name": product.name,
       "number": 1,
-      "price": product.price
+      "price": product.price,
+      "img": product.image_url
     };
   }
   console.log(cart);

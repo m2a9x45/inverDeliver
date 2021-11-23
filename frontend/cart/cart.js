@@ -93,7 +93,11 @@ function displayCart(item, id) {
   const div = document.createElement("div");
   div.setAttribute("class", "cartItem");
 
+  const divPicAndItems = document.createElement('div');
+  divPicAndItems.setAttribute('class', 'itemPictureDiv');
+
   const divItems = document.createElement("div");
+  divItems.setAttribute('class', 'divItems');
 
   const itemName = document.createElement("p");
   itemName.innerText = item.name;
@@ -102,6 +106,7 @@ function displayCart(item, id) {
 
   let quantityLabel
   let quantityInput;
+  
 
   if (item.name != "Delivery Fee") {
     quantityLabel = document.createElement("label");
@@ -141,8 +146,21 @@ function displayCart(item, id) {
       showCart();
     })
 
+    let itemPictureDiv = document.createElement('div');
+
+    const itemPicture = document.createElement('img')
+    itemPicture.setAttribute("src", `${API_URL}/productImage/${item.img}`);
+    itemPicture.setAttribute("loading", "lazy");
+    itemPicture.setAttribute("width", "75px");
+    itemPicture.setAttribute("height", "75px");
+
+    itemPictureDiv.appendChild(itemPicture);
+
     divItems.appendChild(quantityLabel);
     divItems.appendChild(quantityInput);
+
+    divPicAndItems.appendChild(itemPictureDiv);
+    divPicAndItems.appendChild(divItems);
   } 
 
   const divPrice = document.createElement("div");
@@ -155,11 +173,16 @@ function displayCart(item, id) {
 
   divPrice.appendChild(itemPrice);
 
-  div.appendChild(divItems);
+  if (item.name != "Delivery Fee") {
+    div.appendChild(divPicAndItems);
+  } else {
+    div.appendChild(divItems);
+  }
+
+
   div.appendChild(divPrice);
 
   cartContent.appendChild(div);
-
 };
 
 function showAddNewAddress() {

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,7 @@
 
     <title>InverDeliver | Cart</title>
 </head>
+
 <body>
     <header>
         <nav class="navbar">
@@ -35,41 +37,46 @@
             <div class="CartSection">
                 <h2 id="cartLabel">Your Cart 🛒</h2>
                 <div class="cartContent">
+
                     <!-- <div class="cartItem">
-                            <div class="orderItemImgAndName">
-                                <img src="http://localhost:3001/productImage/d45b890b-4107-42fb-bcd0-bbea680f0724.jpeg" alt="" width="70px">
-                                <div class="itemInfo">
-                                    <p>Milk</p>
-                                    <p>product description</p>
-                                </div>
+                        <div>
+                            <div>
+                                <img src="https://api.inverdeliver.com/productImage/d45b890b-4107-42fb-bcd0-bbea680f0724.jpeg" alt="" width="75px">
                             </div>
                             <div>
-                                <label for="quantity">Quantity:</label>
-                                <input type="number" id="quantity" name="quantity" min="0" max="10" value="1">
+                                <p>Market Steet Brownie Doughnuts</p><label for="quantity">quantity: </label><input
+                                    type="number" id="quantity" value="1" max="20" min="0">
                             </div>
-                        <div>      
-                            <p>£ 6.53</p>
+                        </div>
+
+                        <div>
+                            <p>£2.00</p>
                         </div>
                     </div> -->
+
                 </div>
+
                 <div class="total">
                     <p id="priceTotal"></p>
                 </div>
             </div>
+
             <div class="DeliverySection">
                 <h2 id="cartLabel">Delivery Info 🚚</h2>
 
                 <div id="alcoholOrderInfo">
                     <h3>Orders Containing Alcohol 🚨</h3>
                     <p>
-                        If your order contains any alcohol products, we'll need you to show our delivery partner your ID before we can deliver your order 
+                        If your order contains any alcohol products, we'll need you to show our delivery partner your ID
+                        before we can deliver your order
                         <a href="../us/legal/terms/" target="_blank" rel="noopener noreferrer">find out more</a>.
                     </p>
                 </div>
 
                 <div class="customerInfo">
                     <form id="addphoneNumberForm">
-                        <input type="tel" name="phone" id="phone" placeholder="Your phone number" autocomplete="tel" required>
+                        <input type="tel" name="phone" id="phone" placeholder="Your phone number" autocomplete="tel"
+                            required>
                         <button id="addPhoneNumber" class="submit">Add phone number</button>
                     </form>
 
@@ -78,14 +85,16 @@
                             We've just sent you a verfication code to your phone number.
                             Please enter it below to verify your number. Thanks 👍
                         </p>
-                        <input id="verificationCode" type="tel" inputmode="numeric" placeholder="5 digit - Vefication Code" minlength="5" maxlength="5" pattern="[0-9]*"
-                        autocomplete="one-time-code">
+                        <input id="verificationCode" type="tel" inputmode="numeric"
+                            placeholder="5 digit - Vefication Code" minlength="5" maxlength="5" pattern="[0-9]*"
+                            autocomplete="one-time-code">
                         <button class="submit">Verfiy Phone Number</button>
-                        <p style="text-align: center;"><a href="javascript:;" onclick="resendSMS()">Resend SMS code</a></p>
+                        <p style="text-align: center;"><a href="javascript:;" onclick="resendSMS()">Resend SMS code</a>
+                        </p>
                         <p style="text-align: center;" id="SMSerrorMessage"></p>
                     </form>
-                    
-                    
+
+
 
                     <form id="deliveryForm">
                         <div>
@@ -104,7 +113,8 @@
                                 </a>      -->
                             </div>
                             <div class="addNewAddress">
-                                <input type="text" placeholder="EH1 2KL" autocomplete="postal-code" name="post_code" id="post_code" disabled required>
+                                <input type="text" placeholder="EH1 2KL" autocomplete="postal-code" name="post_code"
+                                    id="post_code" disabled required>
                                 <button id="postcodeLookupButton" class="submit">Search postcode</button>
                             </div>
 
@@ -113,19 +123,22 @@
                                 <button id="addNewAddressButton" class="submit">Add Address</button>
                             </div>
 
-                            <p style="text-align: center;"><a id="addNewAddressLink" href="javascript:;" onclick="showAddNewAddress()">Add a new address</a></p>
+                            <p style="text-align: center;"><a id="addNewAddressLink" href="javascript:;"
+                                    onclick="showAddNewAddress()">Add a new address</a></p>
 
                             <label for="delivery_note">Delivery Instructions</label>
-                            <textarea id="deliveryNote" name="delivery_note" placeholder="Door code, who to leave your shopping with. etc."></textarea>
-                            
+                            <textarea id="deliveryNote" name="delivery_note"
+                                placeholder="Door code, who to leave your shopping with. etc."></textarea>
+
                         </div>
                         <input id="ContinuePaymentButton" class="submit" type="submit" value="Continue to Payment">
                         <p id="errorMessage">Error message</p>
-                    </form>            
+                    </form>
                 </div>
             </div>
         </div>
     </main>
-    <script src="cart.js" ></script>
+    <script src="cart.js"></script>
 </body>
+
 </html>
