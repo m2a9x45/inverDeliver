@@ -136,7 +136,8 @@ function addProductToCart(product) {
       "name": product.name,
       "number": 1,
       "price": product.price,
-      "img": product.image_url
+      "img": product.image_url,
+      "category": product.category
     };
   }
   console.log(cart);

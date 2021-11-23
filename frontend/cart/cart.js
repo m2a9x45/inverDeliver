@@ -76,6 +76,8 @@ function showCart() {
   }
   console.log(cart);
 
+  doesCartConatinAlcohol(cart);
+
   for (const [key, value] of Object.entries(cart)) {
     console.log(`${key}: ${value.name} ${value.number} £ ${value.price} £${value.price * value.number}`);
     total = total + (value.price * value.number);
@@ -88,6 +90,23 @@ function showCart() {
 
   priceTotal.innerText = `Your total: ${totalFormat}`;
 };
+
+function doesCartConatinAlcohol(cart) {
+  let orderHasAlcohol = false;
+
+  for (const [productID, item] of Object.entries(cart)) {
+    if (item.category === 'alcohol') {
+      orderHasAlcohol = true;
+    }
+  }
+
+  if (orderHasAlcohol === true) {
+    document.querySelector('#alcoholOrderInfo').style.display = 'block';
+  } else {
+    document.querySelector('#alcoholOrderInfo').style.display = 'none';
+  }
+
+}
 
 function displayCart(item, id) {
   const div = document.createElement("div");

@@ -143,6 +143,7 @@ header {
 }
 
 #alcoholOrderInfo {
+    display: none;
     background-color: rgba(228, 52, 52, 0.541);
     margin: 1.5rem;
     padding: 1rem;
