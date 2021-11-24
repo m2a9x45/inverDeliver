@@ -23,8 +23,8 @@ router.post('/callback',
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      logger.error('Bad Request', { ip: req.ip });
-      return res.status(400).send();
+      logger.error('Bad Request', { ip: req.ip, error: errors.array() });
+      return res.status(400).json({ errors: errors.array() });
     }
 
     const { email, issue, phoneNumber } = req.body;
