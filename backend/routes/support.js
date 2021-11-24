@@ -24,7 +24,7 @@ router.post('/callback',
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       logger.error('Bad Request', { ip: req.ip });
-      return res.status(400);
+      return res.status(400).send();
     }
 
     const { email, issue, phoneNumber } = req.body;
