@@ -19,7 +19,7 @@ const callbackMetric = new metrics.client.Counter({
 router.post('/callback',
   body('email').isEmail().normalizeEmail().escape(),
   body('phoneNumber').optional({ checkFalsy: true }).isMobilePhone(['en-GB']).escape(),
-  body('issue').isAlphanumeric().isLength({ max: 1024 }).escape(),
+  body('issue').isString().isLength({ max: 1024 }).escape(),
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
