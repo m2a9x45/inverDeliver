@@ -129,6 +129,7 @@ header {
     margin: 8px 0;
     box-sizing: border-box;
     font-family: 'Roboto', sans-serif;
+    font-size: 18px;
 }
 
 .callbackForm input[type="tel"], input[type="email"] {
@@ -136,6 +137,7 @@ header {
     padding: 12px 20px;
     margin: 8px 0;
     box-sizing: border-box;
+    font-size: 18px;
 }
 
 .callbackForm button {
