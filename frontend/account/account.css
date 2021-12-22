@@ -85,7 +85,7 @@ header {
     transform: translateX(-50%);
     text-align: center;
     margin: 0.5rem 0;
-    background-color: rgb(107, 3, 167);
+    background-image: linear-gradient(to right, #d45ce6 , #4500ff);
     color: #eeeeee;
     border-radius: 25px;
     padding: 0.3em 1em;
