@@ -19,12 +19,12 @@ const callbackMetric = new metrics.client.Counter({
 router.post('/callback',
   body('email').isEmail().normalizeEmail().escape(),
   body('phoneNumber').optional({ checkFalsy: true }).isMobilePhone(['en-GB']).escape(),
-  body('issue').isAlphanumeric().isLength({ max: 1024 }).escape(),
+  body('issue').isString().isLength({ max: 1024 }).escape(),
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      logger.error('Bad Request', { ip: req.ip });
-      return res.status(400).send();
+      logger.error('Bad Request', { ip: req.ip, error: errors.array() });
+      return res.status(400).json({ errors: errors.array() });
     }
 
     const { email, issue, phoneNumber } = req.body;
