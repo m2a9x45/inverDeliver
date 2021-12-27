@@ -96,13 +96,13 @@ async function createAccount(userID, externalID, externalType,
 
 async function sendSMScode(SMScode, phoneNumber, userID) {
   try {
-    const message = await client.messages.create({ body: `Hey 👋 your verfication code is ${SMScode}`, messagingServiceSid: 'MGad653ffd0889357ac879d70dafc51478', to: phoneNumber });
+    const message = await client.messages.create({ body: `Hey 👋 your verification code is ${SMScode}`, messagingServiceSid: 'MGad653ffd0889357ac879d70dafc51478', to: phoneNumber });
     twilioSMS.inc();
     logger.info('SMS code sent', {
       userID,
       twilioRes: message.status,
       twilioSID: message.sid,
-      twllioErrorCode: message.errorCode,
+      twilioErrorCode: message.errorCode,
     });
   } catch (error) {
     logger.error('Problem sending sms code', userID);
