@@ -12,9 +12,13 @@ const orders = require('./routes/order');
 const payments = require('./routes/payment');
 const users = require('./routes/user');
 const support = require('./routes/support');
+const stores = require('./routes/store');
+
+const metric = require('./routes/metric');
+
 const authorisation = require('./middleware/auth');
 const logger = require('./middleware/logger');
-const metric = require('./routes/metric');
+
 // const seller = require('./routes/seller');
 // const bussiness = require('./routes/bussiness');
 
@@ -45,6 +49,7 @@ app.use('/order', authorisation.isAuthorized, orders);
 app.use('/payment', payments);
 app.use('/user', users);
 app.use('/support', support);
+app.use('/store', stores);
 // app.use('/seller', seller);
 // app.use('/bussiness', authorisation.isAuthorizedSeller);
 

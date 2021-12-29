@@ -13,15 +13,6 @@
 
     <script async src="https://kit.fontawesome.com/4c9a84b417.js" crossorigin="anonymous"></script>
 
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RRDNZXH6WB"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-
-        gtag('config', 'G-RRDNZXH6WB');
-    </script>
-
     <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16x16.png">
@@ -54,52 +45,41 @@
         </nav>
     </header>
     <main>
-        <!-- <div class="cartHolderAlign">
-            <a href="./cart/" id="cartHolderLink">
-                <div class="cartHolder">
-                    <p>🛒 Items in your Cart</p>
-                    <p id="cartItemNumber">2</p>
-                </div>
-            </a>
-        </div> -->
-
-        <div class="mainUiHolder">
-            <div class="categoryHolder">
-                <a class="categoryItem" href="javascript:;" onclick="category(this, 'alcohol')">🍷 Alcohol</a>
-                <a class="categoryItem" href="javascript:;" onclick="category(this, 'bakery')">🍰 Bakery</a>
-                <a class="categoryItem" href="javascript:;" onclick="category(this, 'drink')">🧃 Drinks</a>
-                <a class="categoryItem" href="javascript:;" onclick="category(this, 'fish')">🐟 Fish & Seafood</a>
-                <a class="categoryItem" href="javascript:;" onclick="category(this, 'cupboard')">🥫 Food Cupboard</a>
-                <a class="categoryItem" href="javascript:;" onclick="category(this, 'fresh')">🧀 Fresh</a>
-                <a class="categoryItem" href="javascript:;" onclick="category(this, 'frozen')">🧊 Frozen</a>
-                <a class="categoryItem" href="javascript:;" onclick="category(this, 'fruit')">🥕 Fruit & Veg</a>
-                <a class="categoryItem" href="javascript:;" onclick="category(this, 'market')">🛒 Market Street</a>
-                <a class="categoryItem" href="javascript:;" onclick="category(this, 'meat')">🐄 Meat</a>
+        <section style="background-image: linear-gradient(to left, #5982d3 , #9b76ff);">
+            <div class="postCodeSearchForm">
+                <form id="postCodeSearchForm" style="text-align: center;">
+                    <label for="" style="font-size: large; font-weight: 500;">Enter your postcode to find local shops</label><br>
+                    <div class="postCodeSearchHolder">
+                        <input id="postCodeSearch" type="text" placeholder="AB12 4XP">
+                        <input id="searchPostCode" type="submit" value="Search">
+                    </div>
+                </form>
             </div>
+        </section>
 
-            <div class="productsContainer">
-                <div class="productSearchDiv">
-                    <input id="productSearch" type="text" placeholder="Find a product">
+        <section>
+            <div id="storeHolder">
+                <!-- <div class="store">
+                    <img src="http://localhost:3001/storeLogo/asda.jpg" alt="Asda Logo" style="height: 50px;">
+                    <h2>Asda</h2>
+                    <h4>Asda Portlethen Superstore</h4>
+                    <a class="storeSelectButton" href="">Select Shop</a>
                 </div>
-    
-                <div id="snackbar">🍏 Product added</div>
-                <div class="loader"></div>
-                <p id="errorMessage" style="display: none;"></p>
-                <div class="grid-container">
-                    <!-- <div class="grid-item">
-                        <img src="http://localhost:3001/productImage/04e24436-502f-11eb-ae93-0242ac130002.jpeg" alt="" width="150px" height="150px">
-                            <p>4 Pints</p>
-                            <p>British Semi Skimmed Milk</p>
-                            <div class="productLinks">
-                                <div>
-                                    <p>£ 1.50</p>
-                                    <button class="addCartButton">Add to Cart</button>
-                                </div>
-                            </div>  
-                    </div> -->
-                </div>
+                <div class="store">
+                    <img src="http://localhost:3001/storeLogo/aldi.jpg" alt="Asda Logo" style="height: 50px;">
+                    <h2>ALDI</h2>
+                    <h4>ALDI Portlethen</h4>
+                    <a class="storeSelectButton" href="">Select Shop</a>
+                </div> -->
+                <!-- <div class="store">
+                    <img src="http://localhost:3001/storeLogo/asda.jpg" alt="Asda Logo" style="height: 50px;">
+                    <h2>Asda</h2>
+                    <h4>ALDI Portlethen</h4>
+                    <a class="storeSelectButton" href="">Select Shop</a>
+                </div> -->
             </div>
-        </div>
+        </section>
+
     </main>
     <footer>
         <div class="footerContainer">

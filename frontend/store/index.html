@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="We're on a mission to make grocery delivery as simple as possible. Try us out now">
+
+    <link rel="stylesheet" href="store.css">
+    <!-- <link rel="preload" href="main.css" as="style" onload="this.onload=null;this.rel='stylesheet'"> -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preconnect" href="https://fonts.googleapis.com/css2?family=Roboto:wght@150;300;400&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+
+    <script async src="https://kit.fontawesome.com/4c9a84b417.js" crossorigin="anonymous"></script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RRDNZXH6WB"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-RRDNZXH6WB');
+    </script>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16x16.png">
+    <link rel="manifest" href="./icons/site.webmanifest">
+    <link rel="mask-icon" href="./icons/safari-pinned-tab.svg" color="#42b0ff">
+    <link rel="shortcut icon" href="./icons/favicon.ico">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-config" content="./icons/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
+
+    <title>InverDeliver</title>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar" id="myTopnav">
+            <span class="navbarToggle">
+                <i class="fa fa-bars"></i>
+            </span>
+            <ul class="navbarList">
+                <li id="navbarItem" style="margin-right: auto;"><a href=".">Home</a></li>
+                <div class="mainNav">
+                    <li id="navbarItem"><a id="order" href="../orders/">Orders</a></li>
+                    <li id="navbarItem"><a id="cart" href="../cart/">Cart</a></li>
+                    <li id="navbarItem"><a id="help" href="../us/">Help</a></li>
+                    <li id="navbarItem"><a id="account" href="../account/">Account</a></li>
+                    <li id="navbarItem"><a id="logout" href="../signin">Login</a></li>
+                </div>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <!-- <div class="cartHolderAlign">
+            <a href="./cart/" id="cartHolderLink">
+                <div class="cartHolder">
+                    <p>🛒 Items in your Cart</p>
+                    <p id="cartItemNumber">2</p>
+                </div>
+            </a>
+        </div> -->
+
+        <div class="mainUiHolder">
+            <div class="categoryHolder">
+                <a class="categoryItem" href="javascript:;" onclick="category(this, 'alcohol')">🍷 Alcohol</a>
+                <a class="categoryItem" href="javascript:;" onclick="category(this, 'bakery')">🍰 Bakery</a>
+                <a class="categoryItem" href="javascript:;" onclick="category(this, 'drink')">🧃 Drinks</a>
+                <a class="categoryItem" href="javascript:;" onclick="category(this, 'fish')">🐟 Fish & Seafood</a>
+                <a class="categoryItem" href="javascript:;" onclick="category(this, 'cupboard')">🥫 Food Cupboard</a>
+                <a class="categoryItem" href="javascript:;" onclick="category(this, 'fresh')">🧀 Fresh</a>
+                <a class="categoryItem" href="javascript:;" onclick="category(this, 'frozen')">🧊 Frozen</a>
+                <a class="categoryItem" href="javascript:;" onclick="category(this, 'fruit')">🥕 Fruit & Veg</a>
+                <a class="categoryItem" href="javascript:;" onclick="category(this, 'market')">🛒 Market Street</a>
+                <a class="categoryItem" href="javascript:;" onclick="category(this, 'meat')">🐄 Meat</a>
+            </div>
+
+            <div class="productsContainer">
+                <div class="productSearchDiv">
+                    <input id="productSearch" type="text" placeholder="Find a product">
+                </div>
+    
+                <div id="snackbar">🍏 Product added</div>
+                <div class="loader"></div>
+                <p id="errorMessage" style="display: none;"></p>
+                <div class="grid-container">
+                    <!-- <div class="grid-item">
+                        <img src="http://localhost:3001/productImage/04e24436-502f-11eb-ae93-0242ac130002.jpeg" alt="" width="150px" height="150px">
+                            <p>4 Pints</p>
+                            <p>British Semi Skimmed Milk</p>
+                            <div class="productLinks">
+                                <div>
+                                    <p>£ 1.50</p>
+                                    <button class="addCartButton">Add to Cart</button>
+                                </div>
+                            </div>  
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <div class="footerContainer">
+            <div class="footerSection">
+                <h2>Us</h2>
+                <ul>
+                    <li><a href="./us/howitworks/">How to use InverDeliver</a></li>
+                    <li><a href="./us">FAQ</a></li>
+                    <li><a href="./us">About us</a></li>
+                    <li><a href="./us/help/">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footerSection">
+                <h2>Legal Stuff</h2>
+                <ul>
+                    <li><a href="./us/legal/terms/">Terms & Conditions</a></li>
+                    <li><a href="./us/legal/privacy/">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+
+    </footer>
+    <script defer src="store.js"></script>
+</body>
+
+</html>
