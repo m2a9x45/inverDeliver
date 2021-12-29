@@ -95,7 +95,7 @@ header {
 }
 
 #storeHolder {
-    display: flex;
+    display: none;
     flex-wrap: wrap;
     justify-content: center;
     margin: 2rem auto;
@@ -132,6 +132,13 @@ header {
     text-decoration: none;
     display: inline-block;
     font-size: 1.3em;
+}
+
+#storeHolderForSavedAddresses {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 0rem auto 2rem auto;
 }
 
 footer {

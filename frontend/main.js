@@ -5,6 +5,7 @@ const navtoggle = document.querySelector('.mainNav');
 
 const postCodeSearchForm = document.querySelector('#postCodeSearchForm');
 const storeHolder = document.querySelector('#storeHolder');
+const storeHolderForSavedAddresses = document.querySelector('#storeHolderForSavedAddresses');
 
 // Navbar toggle code
 const x = window.matchMedia("(max-width: 680px)");
@@ -30,8 +31,19 @@ async function searchForStores(postCode){
   stores.forEach( async (store) => {
     const storeInfo = await getStoreInfo(store.store_id);
     console.log(storeInfo);
-    showStore(store.store_id, storeInfo[0]);
+    const htmlToDisplay = showStore(store.store_id, storeInfo[0]);
+    storeHolder.appendChild(htmlToDisplay);
+    storeHolder.style.display = 'flex';
   });
+}
+
+async function storesNearSavedCustomerAddress(token) {
+  const response = await fetch(`${API_URL}/store/near/saved-customer-address`, { headers: {
+    'authorization': `bearer ${token}`,
+  }})
+  const json = await response.json();
+  console.log(json);
+  return json;
 }
 
 document.addEventListener('DOMContentLoaded', async () => {  
@@ -41,6 +53,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (postCodeFromURL) {
     searchForStores(postCodeFromURL);
+  }
+
+  if (localStorage.getItem("token")) {
+    const foundStores = await storesNearSavedCustomerAddress(localStorage.getItem("token"));
+    if (foundStores) {
+      foundStores.stores.forEach( async (store) => {
+        const storeInfo = await getStoreInfo(store.store_id);
+        console.log(storeInfo);
+        const htmlToDisplay = showStore(store.store_id, storeInfo[0]);
+        storeHolderForSavedAddresses.appendChild(htmlToDisplay);
+      });
+    }
   }
 });
 
@@ -75,15 +99,14 @@ function showStore(storeID, storeInfo) {
   const storeLink = document.createElement('a');
   storeLink.setAttribute('class', 'storeSelectButton');
   storeLink.setAttribute('href', `./store/?storeID=${storeID}`)
-  storeLink.innerHTML = 'Select Shop';
+  storeLink.innerHTML = 'Shop';
 
   storeDiv.appendChild(img);
   storeDiv.appendChild(storeBrand);
   storeDiv.appendChild(storeName);
   storeDiv.appendChild(storeLink);
 
-  storeHolder.appendChild(storeDiv);
-
+  return storeDiv;
 };
 
 postCodeSearchForm.addEventListener('submit', async (e) => {
