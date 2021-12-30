@@ -120,5 +120,3 @@ postCodeSearchForm.addEventListener('submit', async (e) => {
     console.log(postCode); 
     searchForStores(postCode);
 });
-
-
