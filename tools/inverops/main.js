@@ -33,10 +33,34 @@ function addOrderToTable(order) {
     const tr = document.createElement('tr');
 
     const orderID = document.createElement('td');
-    orderID.innerHTML = order.order_id;
+    const orderIDLink = document.createElement('a');
+    orderIDLink.innerHTML = order.order_id;
+
+    let url;
+
+    switch (order.status) {
+        case 'order_received':
+            url = `./order/?orderID=${order.order_id}`;
+            break;
+        case 'shopping':
+            url = `./order/?orderID=${order.order_id}`;
+            break;
+        case 'pending_delivery':
+            url = `./delivery/?deliveryID=${order.delivery_id}`;
+            break;
+        case 'out_for_delivery':
+            url = `./delivery/?deliveryID=${order.delivery_id}`;
+            break;
+        default:
+            url = `./order/?orderID=${order.order_id}`;
+    }
+
+    orderIDLink.setAttribute('href', url)
+
+    orderID.appendChild(orderIDLink);
 
     const name = document.createElement('td');
-    name.innerHTML = `${order.first_name} ${order.last_name}`;
+    name.innerHTML = order.last_name ? `${order.first_name} ${order.last_name}` : `${order.first_name}`;
 
     const email = document.createElement('td');
     email.innerHTML = order.email;
