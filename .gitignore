@@ -9,7 +9,6 @@ backend/package-lock.json
 backend/public
 
 frontend/email
-frontend/icons
 frontend/us/why-join/*.jpg
 
 .vscode
