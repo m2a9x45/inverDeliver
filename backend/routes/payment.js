@@ -136,17 +136,43 @@ async function handlePaymentIntentSucceeded(id) {
   try {
     const updated = await dao.updateOrderStatus(id, 'order_received');
     if (updated.changedRows === 1) {
-      // Order conformation email
-      const { email, first_name: name, order_id: orderID } = await dao.getOrderConfirmEmailInfo(id);
-      logger.info('Order conformation email attempted to be sent', { orderID });
-      mailgun.sendOrderConformationEmail(email, name, orderID);
-      return true;
+      const orderInfo = await dao.getOrderConfirmEmailInfo(id);
+      const cardInfo = await stripe.paymentIntents.retrieve(id);
+
+      const deliveryDate = new Date(orderInfo.time);
+      const displaydate = deliveryDate.toLocaleDateString('en-GB', {
+        month: 'short',
+        day: 'numeric',
+        weekday: 'long',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+      });
+
+      orderInfo.time = displaydate;
+      orderInfo.total = `£${orderInfo.total / 100}`;
+      const { brand, last4 } = cardInfo.charges.data[0].payment_method_details.card;
+
+      logger.info('Order conformation email attempted to be sent', { paymentIntent: id });
+      mailgun.sendOrderConformationEmail(orderInfo, brand, last4);
+      return orderInfo;
     }
     return `Issue with updating order status: ${id}`;
   } catch (error) {
     return error;
   }
 }
+
+// router.post('/test-webhook', async (req, res, next) => {
+//   const { paymentIntent } = req.body;
+
+//   try {
+//     const response = await handlePaymentIntentSucceeded(paymentIntent);
+//     res.json(response);
+//   } catch (error) {
+//     next(error);
+//   }
+// });
 
 router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res, next) => {
   // Remove ::1 localhost as a vaild Ip: https://stripe.com/docs/ips
