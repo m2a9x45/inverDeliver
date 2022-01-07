@@ -25,6 +25,8 @@ const addNewAddressButton = document.querySelector('#addNewAddressButton');
 
 const ContinuePaymentButton = document.querySelector('#ContinuePaymentButton');
 
+const storeID = localStorage.getItem('storeID');
+
 
 const token = localStorage.getItem('token');
 
@@ -72,7 +74,7 @@ showCart();
 function showCart() {
   cart = JSON.parse(localStorage.getItem("cart"));
   if (cart === null || Object.keys(cart).length === 0 && cart.constructor === Object) {
-    window.location = '../';
+    window.location = `../store/?storeID=${storeID}`;
   }
   console.log(cart);
 
@@ -496,6 +498,7 @@ ContinuePaymentButton.addEventListener("click", (e) => {
   e.preventDefault();
 
   const orderData = {
+    store_id: storeID,
     products: []
   };
 
@@ -541,28 +544,29 @@ ContinuePaymentButton.addEventListener("click", (e) => {
   // check that the deliver time is greater than the current time + 2 hours
   if (deliverTime > currentTimeNumber + 7200000) {
     console.log("Delivery time is at least 2 hours from the current time");
-    fetch(`${API_URL}/order/create`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'authorization': `bearer ${token}`,
-      },
-      body: JSON.stringify(orderData),
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log(data);
-      if (data.order_id) {
-        window.location.replace(`../payment/index.html?orderID=${data.order_id}`);
-      } else {
-        console.log('something went wrong');
-        errorMessage.style.display = 'block';
-        errorMessage.innerHTML = data.message;
-      }
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-    });
+    console.log(orderData);
+    // fetch(`${API_URL}/order/create`, {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'authorization': `bearer ${token}`,
+    //   },
+    //   body: JSON.stringify(orderData),
+    // })
+    // .then(response => response.json())
+    // .then(data => {
+    //   console.log(data);
+    //   if (data.order_id) {
+    //     window.location.replace(`../payment/index.html?orderID=${data.order_id}`);
+    //   } else {
+    //     console.log('something went wrong');
+    //     errorMessage.style.display = 'block';
+    //     errorMessage.innerHTML = data.message;
+    //   }
+    // })
+    // .catch((error) => {
+    //   console.error('Error:', error);
+    // });
   } else {
     console.log("Delivery time is not at least 2 hours from the current time");
   }

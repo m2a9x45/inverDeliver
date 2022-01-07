@@ -98,7 +98,8 @@ function showStore(storeID, storeInfo) {
 
   const storeLink = document.createElement('a');
   storeLink.setAttribute('class', 'storeSelectButton');
-  storeLink.setAttribute('href', `./store/?storeID=${storeID}`)
+  storeLink.setAttribute('href', 'javascript:;');
+  storeLink.addEventListener('click', () => selectStore(storeID));
   storeLink.innerHTML = 'Shop';
 
   storeDiv.appendChild(img);
@@ -109,14 +110,21 @@ function showStore(storeID, storeInfo) {
   return storeDiv;
 };
 
+function selectStore(storeID) {
+  console.log(storeID);
+  localStorage.setItem('storeID', storeID);
+  window.location.href = `./store/?storeID=${storeID}`;
+
+}
+
 postCodeSearchForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const postCode = document.querySelector('#postCodeSearch').value;
+  const postCode = document.querySelector('#postCodeSearch').value;
 
-    var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + `?search=${postCode}`;
-    window.history.pushState({path:newurl},'',newurl);
+  var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + `?search=${postCode}`;
+  window.history.pushState({path:newurl},'',newurl);
 
-    console.log(postCode); 
-    searchForStores(postCode);
+  console.log(postCode); 
+  searchForStores(postCode);
 });

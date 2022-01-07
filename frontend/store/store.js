@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const urlParams = new URLSearchParams(window.location.search);
   storeID = urlParams.get('storeID');
+  localStorage.setItem('storeID', storeID);
   console.log(storeID);
 
   try {

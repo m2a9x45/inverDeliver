@@ -52,14 +52,14 @@ function createOrderWithNewAddress(userID, orderID, deliveryID, addressID, order
   }));
 }
 
-function createOrder(userID, orderID, deliveryID, addressID, orderData) {
+function createOrder(userID, orderID, deliveryID, addressID, storeID, orderData) {
   return new Promise(((resolve, reject) => {
     db.beginTransaction((err) => {
       if (err) {
         throw err;
       }
 
-      db.query('INSERT INTO food.order (user_id, order_id, delivery_id) VALUES (?,?,?)', [userID, orderID, deliveryID], (errorFood, valueFood) => {
+      db.query('INSERT INTO food.order (user_id, order_id, delivery_id, store_id) VALUES (?,?,?,?)', [userID, orderID, deliveryID, storeID], (errorFood, valueFood) => {
         if (errorFood) {
           return db.rollback(() => {
             reject(errorFood);
@@ -244,6 +244,20 @@ function getOrderConfirmEmailInfo(id) {
   }));
 }
 
+function getStoreIDFromProduct(productID) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT retailer_id FROM product WHERE product_id=(?)';
+    db.query(sql, [productID], (err, value) => {
+      // console.log(err, value);
+      if (err === null) {
+        resolve(value[0]);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
 module.exports = {
   createOrder,
   addOrderDetails,
@@ -257,4 +271,5 @@ module.exports = {
   getOrderPrice,
   createOrderWithNewAddress,
   getOrderConfirmEmailInfo,
+  getStoreIDFromProduct,
 };
