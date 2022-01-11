@@ -96,7 +96,20 @@ function getAddresses(userID) {
   }));
 }
 
-function getAddress(userID, addressID) {
+function getAddressPostCode(userID, addressID) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT post_code FROM addresses WHERE user_id=(?) AND address_id=(?) AND deleted_at IS NULL';
+    db.query(sql, [userID, addressID], (err, value) => {
+      if (err === null) {
+        resolve(value[0]);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
+function checkAddressExists(userID, addressID) {
   return new Promise(((resolve, reject) => {
     const sql = 'SELECT address_id FROM addresses WHERE user_id=(?) AND address_id=(?) AND deleted_at IS NULL';
     db.query(sql, [userID, addressID], (err, value) => {
@@ -187,10 +200,10 @@ function validatePhoneNumber(userID) {
   }));
 }
 
-function isDeliveryAddressWithinOperatingArea(storeID, postCode) {
+function isDeliveryAddressWithinOperatingArea(storeID, postCodeSector) {
   return new Promise(((resolve, reject) => {
     const sql = 'SELECT count(1) AS operates FROM operating_area WHERE store_id=(?) AND postcode_sector=(?) LIMIT 1';
-    db.query(sql, [storeID, postCode], (err, value) => {
+    db.query(sql, [storeID, postCodeSector], (err, value) => {
       if (err === null) {
         resolve(value[0]);
       } else {
@@ -207,12 +220,13 @@ module.exports = {
   getAccountInfo,
   getStripeID,
   updatePhoneNumber,
+  getAddressPostCode,
   getAddresses,
   addAddress,
   deleteAddresses,
   getPhoneNumber,
   validatePhoneNumber,
-  getAddress,
+  checkAddressExists,
   hasAccountByEmail,
   getHash,
   isDeliveryAddressWithinOperatingArea,

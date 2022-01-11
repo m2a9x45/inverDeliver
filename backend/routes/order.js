@@ -36,13 +36,37 @@ router.post('/create',
 
     const deliverTime = new Date(data.delivery_time);
 
-    // Check the deleryID's postcode sectore is within the operatrating area of the storeID that's been provided
-
     // Checks that the order deliver time isn't a Saturday or Sunday
     // 6 = Saturday, 0 = Sunday
     if (deliverTime.getDay() === 6 || deliverTime.getDay() === 0) {
       logger.warn('Delivery date is weekend', { ip: req.ip, userID: res.locals.user });
       return res.json({ error: "We don't deliver on weekends" });
+    }
+
+    // Check the deleryID's postcode sector is within the operatrating area of the storeID that's been provided
+    try {
+      const { post_code: postCode } = await daoUser.getAddressPostCode(res.locals.user, addressID);
+      // Get the post code sector from the post code
+      const postCodeParsed = postCode.replace(/\s/g, '');
+      const regixPostCode = postCodeParsed.toUpperCase().match(/^[A-Z][A-Z]{0,1}[0-9][A-Z0-9]{0,1}[0-9]/);
+
+      // Then query the stores operting area with that post code sectore
+      console.log(postCode);
+      const { operates: isWithinOperatingArea } = await daoUser
+        .isDeliveryAddressWithinOperatingArea(data.store_id, regixPostCode[0]);
+
+      if (isWithinOperatingArea === 0) {
+        logger.warn('Delivery address out with stores operating area', {
+          ip: req.ip,
+          userID: res.locals.user,
+          storeID: data.store_id,
+          postCodeSector: regixPostCode[0],
+          postCode,
+        });
+        return res.json({ error: "This shop doesn't deliver to the selected address" });
+      }
+    } catch (error) {
+      next(error);
     }
 
     // Checks that the provided products all belong to the same store
@@ -90,7 +114,7 @@ router.post('/create',
         ip: req.ip, orderID, userID: res.locals.user, addressID,
       });
 
-      const vaildAddressID = await daoUser.getAddress(res.locals.user, addressID);
+      const vaildAddressID = await daoUser.checkAddressExists(res.locals.user, addressID);
 
       if (vaildAddressID === undefined) {
         logger.warn('No address found for the addressID given', {

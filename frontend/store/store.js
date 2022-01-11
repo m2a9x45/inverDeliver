@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   try {
     const products = await getProducts(storeID);
-    if (products.data.length === 0) return gridCcontainer.innerHTML = 'Sorry we cannot find any products';
+    if (products.data.length === 0) gridCcontainer.innerHTML = 'Sorry we cannot find any products';
 
     const store = await getStoreInfo(storeID);
 
