@@ -13,7 +13,7 @@ const orderID = url.searchParams.get("orderID");
 const token = localStorage.getItem('token');
 
 if (!token) {
-  window.location.replace("../signin");
+  window.location.replace("../../signin");
 } else {
     const jwtExp = JSON.parse(atob(token.split('.')[1]));
   
