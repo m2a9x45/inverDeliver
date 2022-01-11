@@ -20,7 +20,7 @@ function getStoreInfo(storeID) {
     WHERE s.store_id=(?);`;
     db.query(sql, [storeID], (err, value) => {
       if (err === null) {
-        resolve(value);
+        resolve(value[0]);
       } else {
         reject(err);
       }

@@ -31,7 +31,7 @@ async function searchForStores(postCode){
   stores.forEach( async (store) => {
     const storeInfo = await getStoreInfo(store.store_id);
     console.log(storeInfo);
-    const htmlToDisplay = showStore(store.store_id, storeInfo[0]);
+    const htmlToDisplay = showStore(store.store_id, storeInfo);
     storeHolder.appendChild(htmlToDisplay);
     storeHolder.style.display = 'flex';
   });
@@ -58,10 +58,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (localStorage.getItem("token")) {
     const foundStores = await storesNearSavedCustomerAddress(localStorage.getItem("token"));
     if (foundStores) {
+
+      const titleForSavedAddresses = document.querySelector('#titleForSavedAddresses');
+      titleForSavedAddresses.innerHTML = `Shops near your postcode of ${foundStores.post_code}`;
+      titleForSavedAddresses.style.display = 'block';
+      
       foundStores.stores.forEach( async (store) => {
         const storeInfo = await getStoreInfo(store.store_id);
         console.log(storeInfo);
-        const htmlToDisplay = showStore(store.store_id, storeInfo[0]);
+        const htmlToDisplay = showStore(store.store_id, storeInfo);
         storeHolderForSavedAddresses.appendChild(htmlToDisplay);
       });
     }

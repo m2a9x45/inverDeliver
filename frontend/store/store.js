@@ -50,6 +50,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   try {
     const products = await getProducts(storeID);
+    if (products.data.length === 0) return gridCcontainer.innerHTML = 'Sorry we cannot find any products';
+
+    const store = await getStoreInfo(storeID);
+
+    const storeDisplayName = document.querySelector('#storeDisplayName');    
+    const subStoreDisplayName = document.querySelector('#subStoreDisplayName');  
+
+    storeDisplayName.innerHTML = `You're shopping at ${store.name}`;
+    subStoreDisplayName.innerHTML = store.store_name;
+    
+
     initProducts = products.data;
     addProducts(products.data);
   } catch (error) {
@@ -67,6 +78,17 @@ async function getProducts(storeID){
   } catch (error) {
     hideSpinner();
     showError("Something went wrong, if this continues please get in touch");
+    console.error(error);
+  }
+}
+
+async function getStoreInfo(storeID) {
+  try {
+    const response = await fetch(`${API_URL}/store/${storeID}`); 
+    const data = await response.json();
+    console.log(data);
+    return data;
+  } catch (error) {
     console.error(error);
   }
 }

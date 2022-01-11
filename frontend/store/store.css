@@ -60,6 +60,19 @@ header {
     color: rgb(66, 176, 255);
 }
 
+#selectedStore {
+    text-align: center;
+    background-color: white;
+    padding: 0.5rem 1rem;
+    width: fit-content;
+    margin: 1rem auto;
+    border-radius: 15px;
+}
+
+#selectedStore h2, p {
+    margin: 0.5rem 0;
+}
+
 /* .cartHolderAlign {
     margin: 00.5rem auto;
     width: 25%;
