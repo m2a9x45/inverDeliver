@@ -473,52 +473,65 @@ router.get('/addresses', authorisation.isAuthorized, async (req, res, next) => {
   }
 });
 
-router.post('/postcodeLookup', authorisation.isAuthorized, body('postCode').isPostalCode('GB').escape(), async (req, res, next) => {
-  const { postCode } = req.body;
-  logger.info('postcode lookup started', { userID: res.locals.user, postCode, ip: req.ip });
-  // add new address to DB
-  const postCodeParsed = postCode.replace(/\s/g, '');
-  const regixPostCode = postCodeParsed.toUpperCase().match(/^[A-Z][A-Z]{0,1}[0-9][A-Z0-9]{0,1}[0-9]/);
-
-  if (regixPostCode === null) {
-    logger.warn('regix failed to find postcode', { userID: res.locals.user, postCode: postCodeParsed, ip: req.ip });
-    postcodeMetric.inc({ type: 'not_postcode' });
-    return res.json({ withInOpArea: false, message: 'Sorry something went wrong, it does not look like you have entered a vaild postcode' });
-  }
-
-  // List of postcode sectors where we operater
-  const operatingArea = ['EH11', 'EH12', 'EH13', 'EH21', 'EH22', 'EH23', 'EH24', 'EH35', 'EH36', 'EH37', 'EH38', 'EH39',
-    'EH126', 'EH125', 'EH112', 'EH111', 'EH104', 'EH165', 'EH91', 'EH92', 'EH89', 'EH87', 'EH88', 'EH75', 'EH74', 'EH41', 'EH42', 'EH43'];
-
-  // checing to see if the postcode sector the user has entered is one that we operater in
-  if (!operatingArea.includes(regixPostCode[0])) {
-    logger.warn('Delivery address outside of operating area', {
-      userID: res.locals.user,
-      postCode: postCodeParsed,
-      postCodeSector: regixPostCode[0],
-      ip: req.ip,
-    });
-    postcodeMetric.inc({ type: 'outside_operating_are' });
-    return res.json({ withInOpArea: false, message: 'Sorry something went wrong the selected postcode is not part of our operating area' });
-  }
-
-  try {
-    const response = await axios.get(`https://ws.postcoder.com/pcw/${process.env.POSTCODER_API_KEY}/address/UK/${postCode}?format=json&lines=2&addtags=latitude,longitude`);
-    postcodeMetric.inc({ type: 'postcode_lookup' });
-
-    if (response.status !== 200) {
-      logger.error('Postcoder lookup error', { status: response.status, errorMessage: response.statusText, ip: req.ip });
-      return res.json({
-        lookupSuccess: false,
-        message: 'Something went wrong whilst looking up your address, please let us know if this continues',
-      });
+router.post('/postcodeLookup', authorisation.isAuthorized, body('postCode').isPostalCode('GB').escape(),
+  body('storeID').isString().escape(), async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: errors });
     }
 
-    res.json(response.data);
-  } catch (error) {
-    next(error);
-  }
-});
+    const { postCode, storeID } = req.body;
+    logger.info('postcode lookup started', { userID: res.locals.user, postCode, ip: req.ip });
+
+    const postCodeParsed = postCode.replace(/\s/g, '');
+    const regixPostCode = postCodeParsed.toUpperCase().match(/^[A-Z][A-Z]{0,1}[0-9][A-Z0-9]{0,1}[0-9]/);
+
+    if (regixPostCode === null) {
+      logger.warn('regix failed to find postcode', { userID: res.locals.user, postCode: postCodeParsed, ip: req.ip });
+      postcodeMetric.inc({ type: 'not_postcode' });
+      return res.json({ withInOpArea: false, message: 'Sorry something went wrong, it does not look like you have entered a vaild postcode' });
+    }
+
+    // checing to see if the postcode sector the user has entered is one that we operater in
+    try {
+      const { operates: addressAddable } = await dao.isDeliveryAddressWithinOperatingArea(storeID,
+        regixPostCode[0]);
+
+      if (addressAddable === 0) {
+        logger.warn('Delivery address outside of operating area', {
+          userID: res.locals.user,
+          postCode: postCodeParsed,
+          postCodeSector: regixPostCode[0],
+          storeID,
+          ip: req.ip,
+        });
+        postcodeMetric.inc({ type: 'outside_operating_area' });
+        return res.json({ withInOpArea: false, message: 'Sorry something went wrong the selected postcode is not part of this shops operating area' });
+      }
+    } catch (error) {
+      next(error);
+    }
+
+    // Perform the same check when we try and create an order
+
+    try {
+      const response = await axios.get(`https://ws.postcoder.com/pcw/${process.env.POSTCODER_API_KEY}/address/UK/${postCode}?format=json&lines=2&addtags=latitude,longitude`);
+      postcodeMetric.inc({ type: 'postcode_lookup' });
+
+      if (response.status !== 200) {
+        logger.error('Postcoder lookup error', { status: response.status, errorMessage: response.statusText, ip: req.ip });
+        postcodeMetric.inc({ type: 'postcode_lookup_error' });
+        return res.json({
+          lookupSuccess: false,
+          message: 'Something went wrong whilst looking up your address, please let us know if this continues',
+        });
+      }
+
+      res.json(response.data);
+    } catch (error) {
+      next(error);
+    }
+  });
 
 router.post('/addAddress', authorisation.isAuthorized,
   body('addressline1').isString().escape(),

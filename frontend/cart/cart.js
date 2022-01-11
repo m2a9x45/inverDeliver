@@ -397,7 +397,8 @@ postcodeLookupButton.addEventListener('click', (e) => {
   errorMessage.innerHTML = '';
 
   const data = {
-    postCode: post_code.value
+    postCode: post_code.value,
+    storeID: storeID,
   }
 
   fetch(`${API_URL}/user/postcodeLookup`, {

@@ -187,6 +187,19 @@ function validatePhoneNumber(userID) {
   }));
 }
 
+function isDeliveryAddressWithinOperatingArea(storeID, postCode) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT count(1) AS operates FROM operating_area WHERE store_id=(?) AND postcode_sector=(?) LIMIT 1';
+    db.query(sql, [storeID, postCode], (err, value) => {
+      if (err === null) {
+        resolve(value[0]);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
 module.exports = {
   userByExternalID,
   CreateAccountWithExternalID,
@@ -202,4 +215,5 @@ module.exports = {
   getAddress,
   hasAccountByEmail,
   getHash,
+  isDeliveryAddressWithinOperatingArea,
 };

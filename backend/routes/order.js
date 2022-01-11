@@ -36,6 +36,8 @@ router.post('/create',
 
     const deliverTime = new Date(data.delivery_time);
 
+    // Check the deleryID's postcode sectore is within the operatrating area of the storeID that's been provided
+
     // Checks that the order deliver time isn't a Saturday or Sunday
     // 6 = Saturday, 0 = Sunday
     if (deliverTime.getDay() === 6 || deliverTime.getDay() === 0) {
