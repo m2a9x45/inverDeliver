@@ -150,7 +150,13 @@ async function handlePaymentIntentSucceeded(id) {
       });
 
       orderInfo.time = displaydate;
-      orderInfo.total = `£${orderInfo.total / 100}`;
+
+      const formatedPrice = new Intl.NumberFormat('en-UK', {
+        style: 'currency',
+        currency: 'GBP',
+      }).format(orderInfo.total / 100);
+
+      orderInfo.total = formatedPrice;
       const { brand, last4 } = cardInfo.charges.data[0].payment_method_details.card;
 
       logger.info('Order conformation email attempted to be sent', { paymentIntent: id });
