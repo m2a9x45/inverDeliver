@@ -301,7 +301,7 @@ router.post('/createAccount',
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       createAccountMetric.inc({ type: 'email', status: 400 });
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ errors: errors.array()[0] });
     }
 
     const { email, name, password } = req.body;
@@ -331,14 +331,14 @@ router.post('/createAccount',
       jwt.sign({ userID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
         if (!err) {
           logger.info('JWT Created & Sent', { userID, ip: req.ip });
-          res.json({ token: jwtToken });
           createAccountMetric.inc({ type: 'email', status: 200 });
+          return res.json({ token: jwtToken });
         }
-        next(err);
+        return next(err);
       });
     } catch (error) {
       createAccountMetric.inc({ type: 'email', status: 500 });
-      next(error);
+      return next(error);
     }
   });
 

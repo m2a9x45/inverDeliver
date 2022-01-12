@@ -6,7 +6,7 @@
     
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link  href="https://fonts.googleapis.com/css2?family=Roboto:wght@150;300;400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="signin.css">
+    <link rel="stylesheet" href="signup.css">
 
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
@@ -18,7 +18,7 @@
     <meta name="msapplication-TileColor" content="#603cba">
     <meta name="theme-color" content="#ffffff">
 
-    <title>InverDeliver | Login</title>
+    <title>InverDeliver | Create Account</title>
 </head>
 <body>
     <div id="fb-root"></div>
@@ -26,17 +26,19 @@
     <main>
         <div class="signInSelect">
             <div class="passwordSignInHolder">
-                <h1>InverDeliver</h1>
-                <label for="">Enter your email address</label>
-                <input class="loginInput" id="email" type="email" placeholder="Email">
-                <input class="loginInput" id="name" type="text"  placeholder="Name">
-                <input class="loginInput" id="password" type="password" placeholder="Password">
-                <button id="continueButton" type="submit">Continue</button>
-                <button id="createAccountButton" type="submit">Create Account</button>
-                <button id="loginButton" type="submit">Login</button>
-                <!-- <p id="forgotPassword"><a href="./forgot/">Forgot password</a></p> -->
-                <p id="errorMessage" style="color: red;"></p>
-                <p id="otherSignInOptions">Other Login Options</p>
+                <form id="createAccountForm"> 
+                    <h1>Create Account</h1>
+                    <label for="">Enter your name</label>
+                    <input class="loginInput" id="name" type="text"  placeholder="John Doe" required>
+                    <label for="">Eneter your email address</label>
+                    <input class="loginInput" id="email" type="email" placeholder="john.doe@email.com" required>
+                    <label for="">Choose a password</label>
+                    <input class="loginInput" id="password" type="password" placeholder="&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679" required> 
+                    <button id="createAccountButton" type="submit">Create Account</button>
+                    <div class="loader"></div>
+                    <p id="errorMessage"></p>
+                    <p id="otherSignInOptions">Or</p>
+                </form>
             </div>
             
             <div class="FbSignInHolder">
@@ -66,6 +68,6 @@
         </div>
     </main>
 
-    <script src="signin.js"></script>
+    <script src="signup.js"></script>
 </body>
 </html>
