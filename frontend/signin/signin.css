@@ -45,42 +45,11 @@ body {
     font-size: 18px;
 }
 
-#name, #password, #createAccountButton {
-    display: none;
-}
-
-#continueButton {
-    width: 100%;
-    margin: 0.5rem 0 0.2rem 0;
-    background-color: rgb(66, 176, 255); /* Green */
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    font-size: 14pt;
-}
-
-#createAccountButton {
-    display: none;
-    width: 100%;
-    margin: 0.5rem 0 0.2rem 0;
-    background-color: rgb(66, 176, 255); /* Green */
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    font-size: 14pt;
-}
-
 #loginButton {
-    display: none;
     width: 100%;
     margin: 0.5rem 0 0.2rem 0;
     background-color: rgb(66, 176, 255); /* Green */
     border: none;
-    color: white;
     padding: 15px 32px;
     text-align: center;
     text-decoration: none;
@@ -89,6 +58,33 @@ body {
 
 #forgotPassword {
     text-align: center;
+}
+
+#errorMessage {
+    display: none;
+    background-color: rgba(228, 52, 52, 0.541);
+    text-align: center;
+    padding: 1rem;
+    border-radius: 15px;
+    border: 1px solid red;
+}
+
+.loader {
+    display: none;
+    margin: 1rem auto;
+    border-top: 8px solid rgb(66, 176, 255); /* Blue */
+    border-right: 8px solid rgb(126, 243, 100);
+    border-bottom: 8px solid rgb(246, 99, 99);
+    border-left: 8px solid rgb(244, 186, 4);
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    animation: spin 1.2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 @media only screen and (max-width: 935px) {

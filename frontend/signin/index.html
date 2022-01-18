@@ -25,19 +25,22 @@
     <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v10.0&appId=521249838906358&autoLogAppEvents=1" nonce="4Tob4fOW"></script>
     <main>
         <div class="signInSelect">
-            <div class="passwordSignInHolder">
-                <h1>InverDeliver</h1>
-                <label for="">Enter your email address</label>
-                <input class="loginInput" id="email" type="email" placeholder="Email">
-                <input class="loginInput" id="name" type="text"  placeholder="Name">
-                <input class="loginInput" id="password" type="password" placeholder="Password">
-                <button id="continueButton" type="submit">Continue</button>
-                <button id="createAccountButton" type="submit">Create Account</button>
-                <button id="loginButton" type="submit">Login</button>
-                <!-- <p id="forgotPassword"><a href="./forgot/">Forgot password</a></p> -->
-                <p id="errorMessage" style="color: red;"></p>
-                <p id="otherSignInOptions">Other Login Options</p>
-            </div>
+            <form id="loginForm">
+                <div class="passwordSignInHolder">
+                    <h1>Login</h1>
+                    <label for="email">Enter your email address</label>
+                    <input class="loginInput" name="email" id="email" type="email" placeholder="john.doe@email.com" autocomplete="email" required>
+                    <label for="password">Enter your password</label>
+                    <input class="loginInput" name="password" id="password" type="password" placeholder="&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679" autocomplete="current-password" required>
+                    <button id="loginButton" type="submit">Login</button>
+                    <p style="text-align: center;"><a href="../signup/">Create Account</a></p>
+                    
+                    <div class="loader"></div>
+                    <p id="errorMessage"></p>
+                    <p id="otherSignInOptions">Or</p>
+                </div>
+            </form>
+
             
             <div class="FbSignInHolder">
                 <div class="fb-login-button" onlogin="checkLoginState();" data-width="300" data-size="large" data-button-type="continue_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="false"></div>
@@ -63,6 +66,7 @@
                     data-width="300"
                 ></div>
             </div>
+            <p id="forgotPassword"><a href="./forgot/">Forgot your password?</a></p>
         </div>
     </main>
 
