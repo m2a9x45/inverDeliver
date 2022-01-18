@@ -213,6 +213,19 @@ function isDeliveryAddressWithinOperatingArea(storeID, postCodeSector) {
   }));
 }
 
+function addPasswordResetLink(userID, ip, resetCode, expiresAt) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'INSERT INTO reset_password_request (user_id, ip, reset_code, expires_at) VALUES (?,?,?,?)';
+    db.query(sql, [userID, ip, resetCode, expiresAt], (err, value) => {
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
 module.exports = {
   userByExternalID,
   CreateAccountWithExternalID,
@@ -230,4 +243,5 @@ module.exports = {
   hasAccountByEmail,
   getHash,
   isDeliveryAddressWithinOperatingArea,
+  addPasswordResetLink,
 };

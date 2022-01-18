@@ -1,0 +1,44 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background-color: #e4e4e4;
+}
+
+label {
+    font-size: 18px;
+}
+
+.holder {
+    margin: 10rem auto;
+    padding: 0.5rem 2rem 2rem 2rem;
+    width: 40%;
+    background-color: #fafafa;
+    border-radius: 15px;
+}
+
+.holder h1 {
+    text-align: center;
+}
+
+#resetExplanText {
+    font-size: 18px;
+}
+
+#emailInput {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 0.3rem 0;
+    box-sizing: border-box;
+    font-size: 18px;
+}
+
+#resetButton {
+    width: 100%;
+    margin: 0.5rem 0 0.2rem 0;
+    background-color: rgb(66, 176, 255); /* Green */
+    border: none;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 14pt;
+}

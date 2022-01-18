@@ -9,6 +9,7 @@ const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWI
 const Redis = require('ioredis');
 const phone = require('libphonenumber-js');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 
 const dao = require('../dao/dataUser');
 const metrics = require('./metric');
@@ -699,6 +700,48 @@ router.patch('/resendSMS', authorisation.isAuthorized, async (req, res, next) =>
   } catch (error) {
     return next(error);
   }
+});
+
+router.post('/sendPasswordResetLink', body('email').isEmail().normalizeEmail().escape(), async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ error: 'Invalid Email Address' });
+  }
+
+  const { email } = req.body;
+
+  try {
+    const user = await dao.getHash(email);
+
+    if (!user[0].user_id) {
+      logger.info('No user found with that email, skipping sending reset email', { email });
+      return res.status(200).send();
+    }
+
+    const resetTokenBytes = crypto.randomBytes(128);
+    const resetToken = resetTokenBytes.toString('hex');
+
+    // Time in seconds, 3600 = 1 Hour, 10800 = 3 hours
+    const expiryTimeInSec = Math.floor(new Date() / 1000 + 10800);
+
+    // Save expiry time and reset token with userID in DB
+    const addedResetRow = await dao.addPasswordResetLink(user[0].user_id, req.ip,
+      resetToken, expiryTimeInSec);
+
+    if (!addedResetRow.insertId) {
+      // Something went wrong with the DB
+    }
+
+    // Send email with password reset link & look into different data types for storeing the reset_code
+
+    res.json(addedResetRow);
+  } catch (error) {
+    next(error);
+  }
+
+  // Check email address is linked to a user account, find userID from email address
+  // Generate a reset code that we'll send to that email
+  // Send out reset email and save the code to the DB
 });
 
 module.exports = router;
