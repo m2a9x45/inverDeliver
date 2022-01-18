@@ -29,12 +29,13 @@
                 <form id="createAccountForm"> 
                     <h1>Create Account</h1>
                     <label for="">Enter your name</label>
-                    <input class="loginInput" id="name" type="text"  placeholder="John Doe" required>
+                    <input class="loginInput" id="name" type="text"  placeholder="John Doe" autocomplete="name" required>
                     <label for="">Eneter your email address</label>
-                    <input class="loginInput" id="email" type="email" placeholder="john.doe@email.com" required>
+                    <input class="loginInput" id="email" type="email" placeholder="john.doe@email.com" autocomplete="email" required>
                     <label for="">Choose a password</label>
-                    <input class="loginInput" id="password" type="password" placeholder="&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679" required> 
+                    <input class="loginInput" id="password" type="password" placeholder="&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679" autocomplete="new-password" required> 
                     <button id="createAccountButton" type="submit">Create Account</button>
+                    <p style="text-align: center;"><a href="../signin/">Already have an account?</a></p>
                     <div class="loader"></div>
                     <p id="errorMessage"></p>
                     <p id="otherSignInOptions">Or</p>

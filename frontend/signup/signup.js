@@ -70,7 +70,10 @@ createAccountForm.addEventListener('submit', async (e) => {
 
     loader.style.display = 'none';
     createAccountButton.style.display = 'block';
-    if (createdAccount.token) {
+
+    if (createdAccount.emailInUse === true) {
+        showErrorMessage("Can't create account, your email address is already in use");
+    } else if (createdAccount.token) {
         localStorage.setItem('token', createdAccount.token);
         window.location = './';
     }
