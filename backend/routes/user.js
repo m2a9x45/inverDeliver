@@ -714,7 +714,7 @@ router.post('/sendPasswordResetLink', body('email').isEmail().normalizeEmail().e
     const user = await dao.getHash(email);
 
     if (user.length === 0) {
-      logger.info('No user found with that email, skipping sending reset email', { email });
+      logger.error('No user found with that email, skipping sending reset email', { email });
       return res.status(200).send();
     }
 
@@ -722,8 +722,8 @@ router.post('/sendPasswordResetLink', body('email').isEmail().normalizeEmail().e
     const existingPasswordResetRequest = await dao.getPasswordResetLink(user[0].user_id);
 
     if (existingPasswordResetRequest) {
-      console.log(`http://localhost:8080/frontend/forgot/verfiy?token=${existingPasswordResetRequest.reset_code}`);
-      // mailgun.sendPasswordResetEmail(email, `https://inverdeliver.com/forgot/verfiy?token=${existingPasswordResetRequest.reset_code}`);
+      console.log(`http://localhost:8080/frontend/forgot/verfiy/?token=${existingPasswordResetRequest.reset_code}`);
+      // mailgun.sendPasswordResetEmail(email, `https://inverdeliver.com/forgot/verfiy/?token=${existingPasswordResetRequest.reset_code}`);
       return res.status(200).send();
     }
 
@@ -747,13 +747,57 @@ router.post('/sendPasswordResetLink', body('email').isEmail().normalizeEmail().e
       res.status(500).json({ error: 'Failed to insert reset link into database' });
     }
 
-    console.log(`http://localhost:8080/frontend/forgot/verfiy?token=${resetToken}`);
-    const resetLink = `https://inverdeliver.com/forgot/verfiy?token=${resetToken}`;
+    console.log(`http://localhost:8080/frontend/forgot/verfiy/?token=${resetToken}`);
+    const resetLink = `https://inverdeliver.com/forgot/verfiy/?token=${resetToken}`;
 
     // mailgun.sendPasswordResetEmail(email, resetLink);
     res.status(200).send();
   } catch (error) {
     next(error);
+  }
+});
+
+async function updatePassword(userID, password) {
+  try {
+    const hash = await bcrypt.hash(password.trim(), 10);
+    console.log(hash);
+    const inserted = await dao.updatePassword(userID, hash);
+    return inserted;
+  } catch (error) {
+    logger.error('Failed to hash or update password', { error });
+    return { updatedSuccesful: false };
+  }
+}
+
+router.post('/updateForgotPassword', body('token').isString().escape(), body('password').isString().escape(), async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ error: 'Invalid Email Address' });
+  }
+
+  const { token, password } = req.body;
+
+  try {
+    const userID = await dao.getUserIDFromPasswordReset(token);
+
+    if (userID.length === 0) {
+      logger.error('Invaild or expired reset code used', { ip: req.ip, token });
+      return res.json({ error: 'Invaild or expired reset code used' });
+    }
+
+    const updatedPasswordSucess = await updatePassword(userID[0].user_id, password);
+
+    if (updatedPasswordSucess.changedRows === 0) {
+      logger.error('Failed updating password', { ip: req.ip, userID: userID[0].user_id });
+      return res.json({ passwordUpdated: false, error: 'Updating password failed' });
+    }
+
+    logger.info('User password updated from reset link', { userID: userID[0].user_id, ip: req.ip });
+
+    const updatedSuccess = await dao.setResetTokenToUsed(token);
+    return res.json({ passwordUpdated: true });
+  } catch (error) {
+    return next(error);
   }
 });
 

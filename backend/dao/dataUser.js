@@ -46,7 +46,7 @@ function createAccountWithEmail(userID, email, firstName, password, stripeID, ip
 
 function getHash(email) {
   return new Promise(((resolve, reject) => {
-    const sql = 'SELECT user_id, password FROM users WHERE email=(?)';
+    const sql = 'SELECT user_id, password FROM users WHERE email=(?) AND external_type IS NULL';
     db.query(sql, [email], (err, value) => {
       if (err === null) {
         resolve(value);
@@ -239,6 +239,48 @@ function getPasswordResetLink(userID) {
   }));
 }
 
+function getUserIDFromPasswordReset(token) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT user_id FROM reset_password_request WHERE reset_code=(?) AND used=0 AND expires_at >= UNIX_TIMESTAMP()';
+    db.query(sql, [token], (err, value) => {
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
+function setResetTokenToUsed(token) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'UPDATE reset_password_request SET used=1 WHERE reset_code=(?)';
+    db.query(sql, [token], (err, value) => {
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
+function updatePassword(userID, password) {
+  console.log(userID);
+  return new Promise(((resolve, reject) => {
+    const sql = 'UPDATE users SET password=(?) WHERE user_id=(?) AND external_type IS NULL';
+    db.query(sql, [password, userID], (err, value) => {
+      console.log(sql);
+      console.log(err, value);
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
 module.exports = {
   userByExternalID,
   CreateAccountWithExternalID,
@@ -257,5 +299,8 @@ module.exports = {
   getHash,
   isDeliveryAddressWithinOperatingArea,
   addPasswordResetLink,
+  getUserIDFromPasswordReset,
   getPasswordResetLink,
+  setResetTokenToUsed,
+  updatePassword,
 };
