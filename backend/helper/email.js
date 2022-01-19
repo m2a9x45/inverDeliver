@@ -1,6 +1,8 @@
 require('dotenv').config();
 
-const mailgun = require('mailgun-js')({ apiKey: process.env.MAILGUN_APIKEY, domain: process.env.MAILGUN_DOMAIN, host: 'api.eu.mailgun.net' });
+// host: 'api.eu.mailgun.net'
+
+const mailgun = require('mailgun-js')({ apiKey: process.env.MAILGUN_APIKEY, domain: process.env.MAILGUN_DOMAIN });
 const logger = require('../middleware/logger');
 
 async function sendWelcomEmail(email, name) {
@@ -46,7 +48,24 @@ async function sendOrderConformationEmail(orderInfo, brand, last4) {
   }
 }
 
+async function sendPasswordResetEmail(email, resetToken) {
+  const data = {
+    from: 'InverDeliver <security@mail.inverdeliver.com>',
+    to: email,
+    subject: '🔐 Password Reset',
+    text: `Please click this link to reset your password: ${resetToken}. If this wasn't requested by you please ignore it`,
+  };
+
+  try {
+    const sentEmail = await mailgun.messages().send(data);
+    logger.info('welcome email sent', { email, emailID: sentEmail.id });
+  } catch (error) {
+    logger.error('Welcome email failed to send', { email, error });
+  }
+}
+
 module.exports = {
   sendWelcomEmail,
   sendOrderConformationEmail,
+  sendPasswordResetEmail,
 };

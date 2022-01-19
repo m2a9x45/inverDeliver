@@ -226,6 +226,19 @@ function addPasswordResetLink(userID, ip, resetCode, expiresAt) {
   }));
 }
 
+function getPasswordResetLink(userID) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT reset_code, expires_at FROM reset_password_request WHERE user_id=(?) AND used=0 AND expires_at > UNIX_TIMESTAMP()';
+    db.query(sql, [userID], (err, value) => {
+      if (err === null) {
+        resolve(value[0]);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
 module.exports = {
   userByExternalID,
   CreateAccountWithExternalID,
@@ -244,4 +257,5 @@ module.exports = {
   getHash,
   isDeliveryAddressWithinOperatingArea,
   addPasswordResetLink,
+  getPasswordResetLink,
 };

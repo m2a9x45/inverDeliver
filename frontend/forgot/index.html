@@ -22,17 +22,22 @@
 <body>
     <main>
         <div class="holder">
-            <form>
+            <form id="resetPasswordRequestForm">
                 <h1>Reset Password Request</h1>
                 <p id="resetExplanText">
-                    To regain access to your account, we'll send you a link to the email address register to your InverDeliver account. Once you get this email
+                    To regain access to your account, we'll send you a link to the email address registered to your InverDeliver account. Once you get this email
                     you'll be able to set a new password for your account. And then login again. 
                 </p>
                 <label for="email">Enter the email address registered with your InverDeliver account</label>
-                <input type="email" id="emailInput" placeholder="john.doe@email.com">
+                <input type="email" id="emailInput" placeholder="john.doe@email.com" autocomplete="email" required>
                 <button id="resetButton" type="submit">Send Reset Link</button>
+                <p id="emailSentMessage"><b>Password Reset Email Sent ✅</b></p>
+                <p style="text-align: center;"><a href="">My password reset link hasn't arrived</a></p>
+                <div class="loader"></div>
+                <p id="errorMessage"></p>
             </form>
         </div>
     </main>
+    <script src="forgot.js"></script>
 </body>
 </html>

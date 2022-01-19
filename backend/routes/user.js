@@ -713,8 +713,17 @@ router.post('/sendPasswordResetLink', body('email').isEmail().normalizeEmail().e
   try {
     const user = await dao.getHash(email);
 
-    if (!user[0].user_id) {
+    if (user.length === 0) {
       logger.info('No user found with that email, skipping sending reset email', { email });
+      return res.status(200).send();
+    }
+
+    // Check if a password reset link already exists
+    const existingPasswordResetRequest = await dao.getPasswordResetLink(user[0].user_id);
+
+    if (existingPasswordResetRequest) {
+      console.log(`http://localhost:8080/frontend/forgot/verfiy?token=${existingPasswordResetRequest.reset_code}`);
+      // mailgun.sendPasswordResetEmail(email, `https://inverdeliver.com/forgot/verfiy?token=${existingPasswordResetRequest.reset_code}`);
       return res.status(200).send();
     }
 
@@ -729,19 +738,23 @@ router.post('/sendPasswordResetLink', body('email').isEmail().normalizeEmail().e
       resetToken, expiryTimeInSec);
 
     if (!addedResetRow.insertId) {
-      // Something went wrong with the DB
+      logger.error('Failed to insert reset link into database', {
+        userID: user[0].user_id,
+        ip: req.ip,
+        resetToken,
+        expiryTimeInSec,
+      });
+      res.status(500).json({ error: 'Failed to insert reset link into database' });
     }
 
-    // Send email with password reset link & look into different data types for storeing the reset_code
+    console.log(`http://localhost:8080/frontend/forgot/verfiy?token=${resetToken}`);
+    const resetLink = `https://inverdeliver.com/forgot/verfiy?token=${resetToken}`;
 
-    res.json(addedResetRow);
+    // mailgun.sendPasswordResetEmail(email, resetLink);
+    res.status(200).send();
   } catch (error) {
     next(error);
   }
-
-  // Check email address is linked to a user account, find userID from email address
-  // Generate a reset code that we'll send to that email
-  // Send out reset email and save the code to the DB
 });
 
 module.exports = router;
