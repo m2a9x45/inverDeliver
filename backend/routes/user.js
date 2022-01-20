@@ -778,23 +778,30 @@ router.post('/updateForgotPassword', body('token').isString().escape(), body('pa
   const { token, password } = req.body;
 
   try {
-    const userID = await dao.getUserIDFromPasswordReset(token);
+    let userID = await dao.getUserIDFromPasswordReset(token);
 
     if (userID.length === 0) {
       logger.error('Invaild or expired reset code used', { ip: req.ip, token });
       return res.json({ error: 'Invaild or expired reset code used' });
     }
 
-    const updatedPasswordSucess = await updatePassword(userID[0].user_id, password);
+    userID = userID[0].user_id;
+    const updatedPasswordSucess = await updatePassword(userID, password);
 
     if (updatedPasswordSucess.changedRows === 0) {
-      logger.error('Failed updating password', { ip: req.ip, userID: userID[0].user_id });
+      logger.error('Failed updating password', { ip: req.ip, userID });
       return res.json({ passwordUpdated: false, error: 'Updating password failed' });
     }
 
-    logger.info('User password updated from reset link', { userID: userID[0].user_id, ip: req.ip });
+    logger.info('User password updated from reset link', { userID, ip: req.ip });
 
     const updatedSuccess = await dao.setResetTokenToUsed(token);
+
+    if (updatedSuccess.changedRows === 0) {
+      logger.error('Failed updating token expiry to true', { ip: req.ip, userID, updateToken: token });
+      return res.json({ passwordUpdated: false, error: 'Updating password failed' });
+    }
+
     return res.json({ passwordUpdated: true });
   } catch (error) {
     return next(error);
