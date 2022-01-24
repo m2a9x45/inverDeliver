@@ -1,6 +1,13 @@
 const puppeteer = require('puppeteer');
 const cheerio = require('cheerio');
 const fs = require('fs');
+const http = require('https');
+
+const { v4: uuidv4 } = require('uuid');
+const dao = require('./dao/dataAldiProducts');
+
+const args = process.argv.slice(2);
+console.log(args);
 
 const aldiUrls = [
     {category:'fresh', url: 'https://groceries.aldi.co.uk/en-GB/chilled-food'},
@@ -18,9 +25,29 @@ const aldiUrls = [
     {category: 'alcohol', url:'https://groceries.aldi.co.uk/en-GB/drinks/spirits-liqueurs'},
 ]
 
+switch(args[0]) {
+    case '--scrape':
+        main();
+        break;
+    case '--toJSON':
+        HTMLtoJSON();
+        break;
+    case '--addDB':
+        addToDatabase();
+        break;
+    case '--image':
+        downloadImages();
+        break;
+    case '--lookupTable':
+        generateLookupTable();
+        break;
+    default:
+  }
+
 async function main() {
     const htmlPages = await scrape(aldiUrls[0].url);
     console.log(htmlPages.length);
+
     htmlPages.forEach((htmlpage, i) => {
         console.log(htmlpage.url);
         fs.writeFile(`./aldi-html/fresh-${i}.html`, htmlpage.html, function (err) {
@@ -28,9 +55,21 @@ async function main() {
             console.log('Results Received');
         }); 
     });
-};
 
-// main();
+//     fs.readdir('./aldi-html/', function (err, files) {
+//     //handling error
+//     if (err) {
+//         return console.log('Unable to scan directory: ' + err);
+//     } 
+//     //listing all files using forEach
+//     files.forEach((file) => {
+//         fs.readFile(`./aldi-html/${file}`, function(err, data) {
+//             console.log(file); 
+//             proceesFileContents(data.toString(), file);
+//         });
+//     });
+// });
+};
 
 async function scrape(url) {
     const browser = await puppeteer.launch({ headless: false });
@@ -56,17 +95,16 @@ async function scrape(url) {
             console.log('Not the end');
             const html = await page.content();
             htmlArray.push({url: page.url(), html});
-
             await page.click('body > div.container-md > div.searchgrid > div > div > div > div.col-12.col-lg-9.mt-3.pl-1 > div > div > div:nth-child(1) > div.col-6.d-none.d-lg-block > div > ul > li.page-item.next.ml-2 > a', {waitUntil: 'domcontentloaded'});
-            await page.waitForTimeout(2000);
+            await page.waitForTimeout(3000);
         }
     }
 
     await browser.close();
     return htmlArray;
-}
+};
 
-function proceesFileContents(html) {
+function proceesFileContents(html, filename) {
     const $ = cheerio.load(html);
     const products = [];
 
@@ -81,18 +119,145 @@ function proceesFileContents(html) {
         }
 
         products.push(product);
-
-        // console.log($('a[data-qa="search-product-title"]', elm).attr('title'))
-        // console.log($('a[data-qa="search-product-title"]', elm).attr('data-productid'));
-        // console.log($('a[data-qa="search-product-title"]', elm).attr('href'));
-        // console.log($('img', elm).attr('src'));
-        // console.log($('div .product-tile-price > div > span > span', elm).text());
-        // console.log($('div .d-flex > div .text-gray-small', elm).html());
+    });
+    
+    products.forEach(product => {
+        const price = product.price;
+        const removePoundSymbol = price.replace('£', '');
+        const removeDecimalPoint = removePoundSymbol.replace('.', '');
+        product.price = Math.floor(removeDecimalPoint);
     });
 
-    console.log(products);
+    fs.writeFile(`./json/${filename}.json`, JSON.stringify(products), function (err) {
+        if (err) throw err;
+        console.log(`${filename} converted to JSON ✅`);
+    }); 
+};
+
+function HTMLtoJSON() {
+    fs.readdir('./aldi-html/', function (err, files) {
+        if (err) return console.log('Unable to scan directory: ' + err);
+        
+        files.forEach((file) => {
+            fs.readFile(`./aldi-html/${file}`, (err, data) => {
+                if (err) throw err;
+                console.log(file); 
+                proceesFileContents(data.toString(), file);
+            });
+        });
+    });
+};
+
+async function addToDatabase() {
+    fs.readdir('./json', (err, files) => {
+        if (err) return console.log('Unable to scan directory: ' + err);
+        
+        files.forEach((file) => {
+            fs.readFile(`./json/${file}`, function(err, data) {
+                if (err) throw err;
+                const products = JSON.parse(data);
+                products.forEach(async (product) => {
+                    const productID = uuidv4();
+                    console.log(productID, product.id, 'store_fdfdc63d-f865-4e06-815a-8164820358d8', product.id, product.name, 'fresh', `aldi/${product.id}.jpg`, product.size, product.price);
+                    try {
+                        const added = await dao.addProduct(productID, product.id, 'store_fdfdc63d-f865-4e06-815a-8164820358d8', product.id, product.name, 'fresh', `aldi/${product.id}.jpg`, product.size, product.price);
+                    } catch (error) {
+                        console.log(error);
+                    }
+                });
+            });
+        });
+    });
+};
+
+function downloadImages() {
+
+    let productcount = 0;
+
+    fs.readdir('./json', (err, files) => {
+        if (err) return console.log('Unable to scan directory: ' + err);
+        
+        files.forEach((file) => {
+            fs.readFile(`./json/${file}`, function(err, data) {
+                if (err) throw err;
+                // console.log(file); 
+                const products = JSON.parse(data);
+
+                products.forEach(product => {
+                    // console.log(product.img);
+
+                    const file = fs.createWriteStream(`./images/${product.id}.jpg`);
+                    const request = http.get(product.img, (response) => {
+                        response.pipe(file);
+                    });
+
+                    productcount++;
+                });
+
+                console.log(productcount);
+                // console.log(products.length);
+        });
+    });
+});
+
+    
 }
 
-fs.readFile('./aldi-html/fresh-17.html', function(err, data) {
-    proceesFileContents(data.toString());
-});
+function generateLookupTable() {
+    fs.readdir('./json', (err, files) => {
+        if (err) return console.log('Unable to scan directory: ' + err);
+        
+        files.forEach((file) => {
+            fs.readFile(`./json/${file}`, async (err, data) => {
+                if (err) throw err;
+                const products = JSON.parse(data);
+                const dataToAddArray = [];
+
+                for (let i = 0; i < products.length; i++) {
+                    try {
+                        const productInfo = await dao.getproductBySKU(products[i].id)   
+
+                        const dataToAdd = {
+                            productID: productInfo.product_id,
+                            sku: products[i].id,
+                            url: products[i].des
+                        };
+
+                        dataToAddArray.push(dataToAdd);
+                    } catch (error) {
+                        console.log(error);
+                    }
+                }
+
+                console.log(dataToAddArray);
+
+                fs.writeFile(`./lookup/${file}`, JSON.stringify(dataToAddArray), function (err) {
+                    if (err) throw err;
+                    console.log(`Added to lookUpTable ✅`);
+                }); 
+            });
+        });
+    });
+
+    // Create a file where we link our productIDs to Aldi product urls 
+
+    // The JSON contains the SKU and URL 
+    // Find productID from SKU and then link the URL
+
+
+
+
+}
+
+// fs.readFile(`./aldi-html/fresh-fresh-0.html.json`, function(err, data) {
+//     const products = JSON.parse(data);
+
+//     products.forEach(product => {
+//         const price = product.price;
+//         const removePoundSymbol = price.replace('£', '');
+//         const removeDecimalPoint = removePoundSymbol.replace('.', '');
+    
+//         console.log(price, Math.floor(removeDecimalPoint));
+//     });
+// });
+

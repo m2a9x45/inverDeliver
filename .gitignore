@@ -31,3 +31,7 @@ tools/m-price-updater.py
 tools/aldi-scrapper/node_modules
 tools/aldi-scrapper/package-lock.json
 tools/aldi-scrapper/aldi-html
+tools/aldi-scrapper/images
+tools/aldi-scrapper/json
+tools/aldi-scrapper/lookup
+tools/aldi-scrapper/.env
