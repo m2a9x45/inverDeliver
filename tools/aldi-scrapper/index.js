@@ -9,20 +9,20 @@ const dao = require('./dao/dataAldiProducts');
 const args = process.argv.slice(2);
 console.log(args);
 
+const catogory = 'meat';
+
 const aldiUrls = [
-    {category:'fresh', url: 'https://groceries.aldi.co.uk/en-GB/chilled-food'},
-    {category: 'fruit', url:'https://groceries.aldi.co.uk/en-GB/fresh-food/fruit-vegetables'},
+    // {category:'fresh', url: 'https://groceries.aldi.co.uk/en-GB/chilled-food'},
+    // {category: 'fruit', url:'https://groceries.aldi.co.uk/en-GB/fresh-food/fruit-vegetables'},
     {category: 'meat', url:'https://groceries.aldi.co.uk/en-GB/fresh-food/meat-poultry'},
-    {category: 'cupboard', url:'https://groceries.aldi.co.uk/en-GB/food-cupboard'},
-    {category: 'bakery', url:'https://groceries.aldi.co.uk/en-GB/bakery'},
-    {category: 'fish', url:'https://groceries.aldi.co.uk/en-GB/fresh-food/fresh-fish'},
-    {category: 'frozen', url:'https://groceries.aldi.co.uk/en-GB/frozen'},
-    {category: 'drink', url:'https://groceries.aldi.co.uk/en-GB/drinks/coffee'},
-    {category: 'drink', url:'https://groceries.aldi.co.uk/en-GB/drinks/tea'},
-    {category: 'drink', url:'https://groceries.aldi.co.uk/en-GB/drinks/soft-drinks-juices'},
-    {category: 'alcohol', url:'https://groceries.aldi.co.uk/en-GB/drinks/beers-ciders'},
-    {category: 'alcohol', url:'https://groceries.aldi.co.uk/en-GB/drinks/wine'},
-    {category: 'alcohol', url:'https://groceries.aldi.co.uk/en-GB/drinks/spirits-liqueurs'},
+    // {category: 'cupboard', url:'https://groceries.aldi.co.uk/en-GB/food-cupboard'},
+    // {category: 'bakery', url:'https://groceries.aldi.co.uk/en-GB/bakery'},
+    // {category: 'fish', url:'https://groceries.aldi.co.uk/en-GB/fresh-food/fresh-fish'},
+    // {category: 'frozen', url:'https://groceries.aldi.co.uk/en-GB/frozen'},
+    // {category: 'drink', url:'https://groceries.aldi.co.uk/en-GB/drinks'},
+    // // {category: 'alcohol', url:'https://groceries.aldi.co.uk/en-GB/drinks/beers-ciders'},
+    // // {category: 'alcohol_2', url:'https://groceries.aldi.co.uk/en-GB/drinks/wine'},
+    // // {category: 'alcohol_3', url:'https://groceries.aldi.co.uk/en-GB/drinks/spirits-liqueurs'},
 ]
 
 switch(args[0]) {
@@ -41,20 +41,28 @@ switch(args[0]) {
     case '--lookupTable':
         generateLookupTable();
         break;
+    case '--count':
+        checkProductCount();
+        break;
     default:
   }
 
-async function main() {
-    const htmlPages = await scrape(aldiUrls[0].url);
-    console.log(htmlPages.length);
+function main() {
 
-    htmlPages.forEach((htmlpage, i) => {
-        console.log(htmlpage.url);
-        fs.writeFile(`./aldi-html/fresh-${i}.html`, htmlpage.html, function (err) {
-            if (err) throw err;
-            console.log('Results Received');
-        }); 
+    aldiUrls.forEach(async url => {
+        const htmlPages = await scrape(url.url);
+        console.log(htmlPages.length);
+    
+        htmlPages.forEach((htmlpage, i) => {
+            console.log(htmlpage.url);
+            fs.writeFile(`./aldi-html/${url.category}-${i}.html`, htmlpage.html, function (err) {
+                if (err) throw err;
+                console.log('Results Received');
+            }); 
+        });
     });
+
+
 
 //     fs.readdir('./aldi-html/', function (err, files) {
 //     //handling error
@@ -128,18 +136,18 @@ function proceesFileContents(html, filename) {
         product.price = Math.floor(removeDecimalPoint);
     });
 
-    fs.writeFile(`./json/${filename}.json`, JSON.stringify(products), function (err) {
+    fs.writeFile(`./json/${catogory}/${filename}.json`, JSON.stringify(products), function (err) {
         if (err) throw err;
         console.log(`${filename} converted to JSON ✅`);
     }); 
 };
 
 function HTMLtoJSON() {
-    fs.readdir('./aldi-html/', function (err, files) {
+    fs.readdir(`./aldi-html/${catogory}`, function (err, files) {
         if (err) return console.log('Unable to scan directory: ' + err);
         
         files.forEach((file) => {
-            fs.readFile(`./aldi-html/${file}`, (err, data) => {
+            fs.readFile(`./aldi-html/${catogory}/${file}`, (err, data) => {
                 if (err) throw err;
                 console.log(file); 
                 proceesFileContents(data.toString(), file);
@@ -149,20 +157,24 @@ function HTMLtoJSON() {
 };
 
 async function addToDatabase() {
-    fs.readdir('./json', (err, files) => {
+    fs.readdir(`./json/${catogory}`, (err, files) => {
         if (err) return console.log('Unable to scan directory: ' + err);
         
         files.forEach((file) => {
-            fs.readFile(`./json/${file}`, function(err, data) {
+            fs.readFile(`./json/${catogory}/${file}`, function(err, data) {
                 if (err) throw err;
                 const products = JSON.parse(data);
                 products.forEach(async (product) => {
                     const productID = uuidv4();
-                    console.log(productID, product.id, 'store_fdfdc63d-f865-4e06-815a-8164820358d8', product.id, product.name, 'fresh', `aldi/${product.id}.jpg`, product.size, product.price);
+                    console.log(productID, product.id, 'store_fdfdc63d-f865-4e06-815a-8164820358d8', product.id, product.name, catogory, `aldi/${product.id}.jpg`, product.size, product.price);
                     try {
-                        const added = await dao.addProduct(productID, product.id, 'store_fdfdc63d-f865-4e06-815a-8164820358d8', product.id, product.name, 'fresh', `aldi/${product.id}.jpg`, product.size, product.price);
+                        const added = await dao.addProduct(productID, product.id, 'store_fdfdc63d-f865-4e06-815a-8164820358d8', product.id, product.name, catogory, `aldi/${product.id}.jpg`, product.size, product.price);
                     } catch (error) {
-                        console.log(error);
+                        if (error.code === 'ER_DUP_ENTRY') {
+                            console.log('❌', productID, product.id, 'store_fdfdc63d-f865-4e06-815a-8164820358d8', product.id, product.name, catogory, `aldi/${product.id}.jpg`, product.size, product.price);
+                        } else {
+                            console.log(error);
+                        }
                     }
                 });
             });
@@ -174,11 +186,11 @@ function downloadImages() {
 
     let productcount = 0;
 
-    fs.readdir('./json', (err, files) => {
+    fs.readdir(`./json/${catogory}`, (err, files) => {
         if (err) return console.log('Unable to scan directory: ' + err);
         
         files.forEach((file) => {
-            fs.readFile(`./json/${file}`, function(err, data) {
+            fs.readFile(`./json/${catogory}/${file}`, function(err, data) {
                 if (err) throw err;
                 // console.log(file); 
                 const products = JSON.parse(data);
@@ -196,12 +208,31 @@ function downloadImages() {
 
                 console.log(productcount);
                 // console.log(products.length);
+            });
         });
-    });
-});
-
-    
+    }); 
 }
+
+function checkProductCount() {
+    let productcount = 0;
+    fs.readdir(`./json/${catogory}`, (err, files) => {
+        if (err) return console.log('Unable to scan directory: ' + err);
+        
+        files.forEach((file) => {
+            fs.readFile(`./json/${catogory}/${file}`, function(err, data) {
+                if (err) throw err;
+                const products = JSON.parse(data);
+
+                products.forEach(product => {
+                    productcount++;
+                });
+
+                console.log(productcount);
+            });
+        });
+    }); 
+}
+
 
 function generateLookupTable() {
     fs.readdir('./json', (err, files) => {
