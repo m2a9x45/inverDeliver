@@ -46,7 +46,7 @@ function createAccountWithEmail(userID, email, firstName, password, stripeID, ip
 
 function getHash(email) {
   return new Promise(((resolve, reject) => {
-    const sql = 'SELECT user_id, password FROM users WHERE email=(?)';
+    const sql = 'SELECT user_id, password FROM users WHERE email=(?) AND external_type IS NULL';
     db.query(sql, [email], (err, value) => {
       if (err === null) {
         resolve(value);
@@ -96,7 +96,20 @@ function getAddresses(userID) {
   }));
 }
 
-function getAddress(userID, addressID) {
+function getAddressPostCode(userID, addressID) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT post_code FROM addresses WHERE user_id=(?) AND address_id=(?) AND deleted_at IS NULL';
+    db.query(sql, [userID, addressID], (err, value) => {
+      if (err === null) {
+        resolve(value[0]);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
+function checkAddressExists(userID, addressID) {
   return new Promise(((resolve, reject) => {
     const sql = 'SELECT address_id FROM addresses WHERE user_id=(?) AND address_id=(?) AND deleted_at IS NULL';
     db.query(sql, [userID, addressID], (err, value) => {
@@ -187,6 +200,87 @@ function validatePhoneNumber(userID) {
   }));
 }
 
+function isDeliveryAddressWithinOperatingArea(storeID, postCodeSector) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT count(1) AS operates FROM operating_area WHERE store_id=(?) AND postcode_sector=(?) LIMIT 1';
+    db.query(sql, [storeID, postCodeSector], (err, value) => {
+      if (err === null) {
+        resolve(value[0]);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
+function addPasswordResetLink(userID, ip, resetCode, expiresAt) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'INSERT INTO reset_password_request (user_id, ip, reset_code, expires_at) VALUES (?,?,?,?)';
+    db.query(sql, [userID, ip, resetCode, expiresAt], (err, value) => {
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
+function getPasswordResetLink(userID) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT reset_code, expires_at FROM reset_password_request WHERE user_id=(?) AND used=0 AND expires_at > UNIX_TIMESTAMP()';
+    db.query(sql, [userID], (err, value) => {
+      if (err === null) {
+        resolve(value[0]);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
+function getUserIDFromPasswordReset(token) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT user_id FROM reset_password_request WHERE reset_code=(?) AND used=0 AND expires_at >= UNIX_TIMESTAMP()';
+    db.query(sql, [token], (err, value) => {
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
+function setResetTokenToUsed(token) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'UPDATE reset_password_request SET used=1 WHERE reset_code=(?)';
+    db.query(sql, [token], (err, value) => {
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
+function updatePassword(userID, password) {
+  console.log(userID);
+  return new Promise(((resolve, reject) => {
+    const sql = 'UPDATE users SET password=(?) WHERE user_id=(?) AND external_type IS NULL';
+    db.query(sql, [password, userID], (err, value) => {
+      console.log(sql);
+      console.log(err, value);
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
 module.exports = {
   userByExternalID,
   CreateAccountWithExternalID,
@@ -194,12 +288,19 @@ module.exports = {
   getAccountInfo,
   getStripeID,
   updatePhoneNumber,
+  getAddressPostCode,
   getAddresses,
   addAddress,
   deleteAddresses,
   getPhoneNumber,
   validatePhoneNumber,
-  getAddress,
+  checkAddressExists,
   hasAccountByEmail,
   getHash,
+  isDeliveryAddressWithinOperatingArea,
+  addPasswordResetLink,
+  getUserIDFromPasswordReset,
+  getPasswordResetLink,
+  setResetTokenToUsed,
+  updatePassword,
 };

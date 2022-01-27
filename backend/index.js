@@ -12,9 +12,13 @@ const orders = require('./routes/order');
 const payments = require('./routes/payment');
 const users = require('./routes/user');
 const support = require('./routes/support');
+const stores = require('./routes/store');
+
+const metric = require('./routes/metric');
+
 const authorisation = require('./middleware/auth');
 const logger = require('./middleware/logger');
-const metric = require('./routes/metric');
+
 // const seller = require('./routes/seller');
 // const bussiness = require('./routes/bussiness');
 
@@ -32,12 +36,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(metric.logMetric);
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-});
+// const limiter = rateLimit({
+//   windowMs: 15 * 60 * 1000, // 15 minutes
+//   max: 500, // limit each IP to 100 requests per windowMs
+// });
 
-app.use(limiter);
+// app.use(limiter);
 
 app.use('/metrics', metric.router);
 app.use('/product', products);
@@ -45,6 +49,7 @@ app.use('/order', authorisation.isAuthorized, orders);
 app.use('/payment', payments);
 app.use('/user', users);
 app.use('/support', support);
+app.use('/store', stores);
 // app.use('/seller', seller);
 // app.use('/bussiness', authorisation.isAuthorizedSeller);
 

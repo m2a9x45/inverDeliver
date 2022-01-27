@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link  href="https://fonts.googleapis.com/css2?family=Roboto:wght@150;300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="forgot.css">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+    <link rel="manifest" href="../site.webmanifest">
+    <link rel="mask-icon" href="../safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#603cba">
+    <meta name="theme-color" content="#ffffff">
+
+    <title>InverDeliver | Forgot Password</title>
+</head>
+<body>
+    <main>
+        <div class="holder">
+            <form id="resetPasswordRequestForm">
+                <h1>Reset Password Request</h1>
+                <p id="resetExplanText">
+                    To regain access to your account, we'll send you a link to the email address registered to your InverDeliver account. Once you get this email
+                    you'll be able to set a new password for your account. And then login again. 
+                </p>
+                <label for="email">Enter the email address registered with your InverDeliver account</label>
+                <input type="email" id="emailInput" placeholder="john.doe@email.com" autocomplete="email" required>
+                <button id="resetButton" type="submit">Send Reset Link</button>
+                <p id="emailSentMessage"><b>Password Reset Email Sent ✅</b></p>
+                <p style="text-align: center;"><a href="">My password reset link hasn't arrived</a></p>
+                <div class="loader"></div>
+                <p id="errorMessage"></p>
+            </form>
+        </div>
+    </main>
+    <script src="forgot.js"></script>
+</body>
+</html>

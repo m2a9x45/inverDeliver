@@ -52,14 +52,14 @@ function createOrderWithNewAddress(userID, orderID, deliveryID, addressID, order
   }));
 }
 
-function createOrder(userID, orderID, deliveryID, addressID, orderData) {
+function createOrder(userID, orderID, deliveryID, addressID, storeID, orderData) {
   return new Promise(((resolve, reject) => {
     db.beginTransaction((err) => {
       if (err) {
         throw err;
       }
 
-      db.query('INSERT INTO food.order (user_id, order_id, delivery_id) VALUES (?,?,?)', [userID, orderID, deliveryID], (errorFood, valueFood) => {
+      db.query('INSERT INTO food.order (user_id, order_id, delivery_id, store_id) VALUES (?,?,?,?)', [userID, orderID, deliveryID, storeID], (errorFood, valueFood) => {
         if (errorFood) {
           return db.rollback(() => {
             reject(errorFood);
@@ -174,7 +174,7 @@ function updateOrderPrice(price, paymentID, fee, orderID, userID) {
 
 function updateOrderStatus(paymentID, status) {
   return new Promise(((resolve, reject) => {
-    const sql = 'UPDATE food.order SET status=(?) WHERE payment_id=(?)';
+    const sql = 'UPDATE food.order SET status=(?) WHERE payment_id=(?) AND status="payment_required"';
     db.query(sql, [status, paymentID], (err, value) => {
       // console.log(err, value);
       if (err === null) {
@@ -230,11 +230,29 @@ function getOrderPrice(orderID, userID) {
 
 function getOrderConfirmEmailInfo(id) {
   return new Promise(((resolve, reject) => {
-    const sql = `SELECT first_name, email, order_id from food.order o
+    const sql = `SELECT u.first_name, u.email, o.order_id, (o.price + o.fee) AS total, 
+    d.time, a.street, a.city, a.post_code, s.store_name from food.order o
     INNER JOIN users u ON u.user_id=o.user_id
-    Where payment_id=(?)`;
+    INNER JOIN delivery d ON d.delivery_id = o.delivery_id
+    INNER JOIN addresses a ON a.address_id = d.address_id
+    INNER JOIN store s ON s.store_id = o.store_id
+    WHERE o.payment_id = (?); `;
     db.query(sql, [id], (err, value) => {
       console.log(err, value);
+      if (err === null) {
+        resolve(value[0]);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
+function getStoreIDFromProduct(productID) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT retailer_id FROM product WHERE product_id=(?)';
+    db.query(sql, [productID], (err, value) => {
+      // console.log(err, value);
       if (err === null) {
         resolve(value[0]);
       } else {
@@ -257,4 +275,5 @@ module.exports = {
   getOrderPrice,
   createOrderWithNewAddress,
   getOrderConfirmEmailInfo,
+  getStoreIDFromProduct,
 };

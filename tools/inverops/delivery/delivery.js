@@ -8,10 +8,11 @@ const map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v11',
     center: [-3.194890, 55.948842],
-    zoom: 14
+    zoom: 16
 });
 
 map.addControl(new mapboxgl.NavigationControl());
+map.addControl(new mapboxgl.FullscreenControl());
 
 const url_string = window.location.href;
 const url = new URL(url_string);

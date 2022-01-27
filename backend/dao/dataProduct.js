@@ -1,9 +1,9 @@
 const db = require('./conn');
 
-function products() {
+function products(storeID) {
   return new Promise(((resolve, reject) => {
-    const sql = 'SELECT id, product_id, category, brand, name, image_url, price, price_variable, size FROM product LIMIT 50';
-    db.query(sql, (err, value) => {
+    const sql = 'SELECT id, product_id, category, brand, name, image_url, price, price_variable, size FROM product WHERE retailer_id=(?) LIMIT 50';
+    db.query(sql, [storeID], (err, value) => {
       if (err === null) {
         resolve(value);
       } else {
@@ -13,11 +13,37 @@ function products() {
   }));
 }
 
-function product(searchTerm) {
+function product(storeID, searchTerm) {
   return new Promise(((resolve, reject) => {
-    const sql = 'SELECT id, product_id, category, brand, name, image_url, price, price_variable, size FROM product WHERE name LIKE (?)';
-    db.query(sql, [`%${searchTerm}%`], (err, value) => {
+    const sql = 'SELECT id, product_id, category, brand, name, image_url, price, price_variable, size FROM product WHERE retailer_id=(?) AND name LIKE (?)';
+    db.query(sql, [storeID, `%${searchTerm}%`], (err, value) => {
       // console.log(err, value);
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
+function productByCategory(storeID, category) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT id, product_id, category, brand, name, image_url, price, price_variable, size FROM product WHERE retailer_id=(?) AND category LIKE (?) LIMIT 250';
+    db.query(sql, [storeID, category], (err, value) => {
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
+function productByCategoryAndSearch(storeID, category, search) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT id, product_id, category, brand, name, image_url, price, price_variable, size FROM product WHERE retailer_id=(?) AND category LIKE (?) AND product.name LIKE (?)';
+    db.query(sql, [storeID, category, `%${search}%`], (err, value) => {
       if (err === null) {
         resolve(value);
       } else {
@@ -31,32 +57,6 @@ function productById(productID) {
   return new Promise(((resolve, reject) => {
     const sql = 'SELECT name, image_url, price FROM product WHERE product_id=(?)';
     db.query(sql, [productID], (err, value) => {
-      if (err === null) {
-        resolve(value);
-      } else {
-        reject(err);
-      }
-    });
-  }));
-}
-
-function productByCategory(category) {
-  return new Promise(((resolve, reject) => {
-    const sql = 'SELECT id, product_id, category, brand, name, image_url, price, price_variable, size FROM product WHERE category LIKE (?) LIMIT 250';
-    db.query(sql, [category], (err, value) => {
-      if (err === null) {
-        resolve(value);
-      } else {
-        reject(err);
-      }
-    });
-  }));
-}
-
-function productByCategoryAndSearch(category, search) {
-  return new Promise(((resolve, reject) => {
-    const sql = 'SELECT id, product_id, category, brand, name, image_url, price, price_variable, size FROM product WHERE category LIKE (?) AND product.name LIKE (?)';
-    db.query(sql, [category, `%${search}%`], (err, value) => {
       if (err === null) {
         resolve(value);
       } else {

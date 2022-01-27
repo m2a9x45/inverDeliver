@@ -9,10 +9,16 @@ const logger = require('../middleware/logger.js');
 router.get('/standard', async (req, res, next) => {
   const { category } = req.query;
   const { search } = req.query;
+  const { storeID } = req.query;
+
+  if (!storeID) {
+    // return an error
+    return res.status(400).send();
+  }
 
   try {
     if (category && search) {
-      const products = await dao.productByCategoryAndSearch(category, search);
+      const products = await dao.productByCategoryAndSearch(storeID, category, search);
       if (products.length === 0) {
         res.json({ data: [], message: 'No products found' });
         return null;
@@ -21,7 +27,7 @@ router.get('/standard', async (req, res, next) => {
     }
 
     if (category) {
-      const products = await dao.productByCategory(category);
+      const products = await dao.productByCategory(storeID, category);
       if (products.length === 0) {
         res.json({ data: [], message: 'No products found' });
         return null;
@@ -31,14 +37,14 @@ router.get('/standard', async (req, res, next) => {
 
     if (search) {
       try {
-        const product = await dao.product(search);
+        const product = await dao.product(storeID, search);
         return res.json({ data: product });
       } catch (error) {
         next(error);
       }
     }
 
-    const products = await dao.products();
+    const products = await dao.products(storeID);
     return res.json({ data: products });
   } catch (error) {
     next(error);
@@ -47,16 +53,16 @@ router.get('/standard', async (req, res, next) => {
 
 // Get a product via a serach term
 // This route has been replaced with /standard and query params
-router.get('/search', async (req, res, next) => {
-  const { productName } = req.query;
+// router.get('/search', async (req, res, next) => {
+//   const { productName } = req.query;
 
-  try {
-    const product = await dao.product(productName);
-    res.json(product);
-  } catch (error) {
-    next(error);
-  }
-});
+//   try {
+//     const product = await dao.product(productName);
+//     res.json(product);
+//   } catch (error) {
+//     next(error);
+//   }
+// });
 
 // Get a product via it's product ID
 router.get('/productById', async (req, res, next) => {

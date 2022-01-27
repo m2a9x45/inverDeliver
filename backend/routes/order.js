@@ -20,6 +20,7 @@ router.post('/create',
   body('products').isArray(),
   body('delivery_time').isString().escape(),
   body('address_id').isString().escape(),
+  body('store_id').isString().escape(),
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -34,38 +35,86 @@ router.post('/create',
     const addressID = data.address_id;
 
     const deliverTime = new Date(data.delivery_time);
+
+    // Checks that the order deliver time isn't a Saturday or Sunday
     // 6 = Saturday, 0 = Sunday
     if (deliverTime.getDay() === 6 || deliverTime.getDay() === 0) {
-      logger.warn('Delivery date is weekend', { userID: res.locals.user });
+      logger.warn('Delivery date is weekend', { ip: req.ip, userID: res.locals.user });
       return res.json({ error: "We don't deliver on weekends" });
     }
 
+    // Check the deleryID's postcode sector is within the operatrating area of the storeID that's been provided
     try {
-      const phoneNumberVerfied = await daoUser.getPhoneNumber(res.locals.user);
-      if (phoneNumberVerfied.phone_verified === 0) {
-        logger.warn('phone number not verfied', { ip: req.ip, userID: res.locals.user, phoneNumber: phoneNumberVerfied.phone_number });
-        orderCreatedMetric.inc({ type: 'phone_number_not_verfied', status: 400 });
-        res.json({ error: 'You have not verfied your phone number' });
-        return null;
+      const { post_code: postCode } = await daoUser.getAddressPostCode(res.locals.user, addressID);
+      // Get the post code sector from the post code
+      const postCodeParsed = postCode.replace(/\s/g, '');
+      const regixPostCode = postCodeParsed.toUpperCase().match(/^[A-Z][A-Z]{0,1}[0-9][A-Z0-9]{0,1}[0-9]/);
+
+      // Then query the stores operting area with that post code sectore
+      console.log(postCode);
+      const { operates: isWithinOperatingArea } = await daoUser
+        .isDeliveryAddressWithinOperatingArea(data.store_id, regixPostCode[0]);
+
+      if (isWithinOperatingArea === 0) {
+        logger.warn('Delivery address out with stores operating area', {
+          ip: req.ip,
+          userID: res.locals.user,
+          storeID: data.store_id,
+          postCodeSector: regixPostCode[0],
+          postCode,
+        });
+        return res.json({ error: "This shop doesn't deliver to the selected address" });
       }
     } catch (error) {
       next(error);
     }
 
+    // Checks that the provided products all belong to the same store
+    const cartIssues = [];
+
+    for (let i = 0; i < data.products.length; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      const correctStoreID = await dao.getStoreIDFromProduct(data.products[i][0]);
+      // console.log(correctStoreID.retailer_id, data.store_id);
+      if (correctStoreID === null || correctStoreID === undefined) {
+        cartIssues.push({ product_id: data.products[i][0], issue_reason: 'invaild_product_id' });
+        logger.warn('invaild product ID in cart', { ip: req.ip, userID: res.locals.user, product_id: data.products[i][0] });
+      } else if (correctStoreID.retailer_id !== data.store_id) {
+        cartIssues.push({ product_id: data.products[i][0], correctStoreID, issue_reason: 'wrong_store_id' });
+        logger.warn('invaild product ID for given store ID', {
+          ip: req.ip, userID: res.locals.user, product_id: data.products[i][0], correctStoreID,
+        });
+      }
+    }
+
+    if (cartIssues.length > 0) {
+      return res.status(400).json(cartIssues);
+    }
+
+    // Checks the customer has verified their phone number
+    try {
+      const phoneNumberVerfied = await daoUser.getPhoneNumber(res.locals.user);
+      if (phoneNumberVerfied.phone_verified === 0) {
+        logger.warn('phone number not verfied', { ip: req.ip, userID: res.locals.user, phoneNumber: phoneNumberVerfied.phone_number });
+        orderCreatedMetric.inc({ type: 'phone_number_not_verfied', status: 400 });
+        return res.json({ error: 'You have not verfied your phone number' });
+      }
+    } catch (error) {
+      return next(error);
+    }
+
     logger.info('Create new order request', {
       ip: req.ip, orderID, userID: res.locals.user, addressID,
     });
+
     data.products.forEach((product) => { productsArray.push([orderID, product[0], product[1]]); });
-    logger.info('Product array created', {
-      ip: req.ip, orderID, userID: res.locals.user, productsArray,
-    });
 
     try {
       logger.info('Checking if an existing address has been used', {
         ip: req.ip, orderID, userID: res.locals.user, addressID,
       });
 
-      const vaildAddressID = await daoUser.getAddress(res.locals.user, addressID);
+      const vaildAddressID = await daoUser.checkAddressExists(res.locals.user, addressID);
 
       if (vaildAddressID === undefined) {
         logger.warn('No address found for the addressID given', {
@@ -76,7 +125,7 @@ router.post('/create',
       }
       // link address to order
       const orderInfo = await dao.createOrder(res.locals.user, orderID, deliveryID,
-        addressID, data);
+        addressID, data.store_id, data);
       logger.info('create order with exsiting address', {
         ip: req.ip, orderID, userID: res.locals.user, addressID,
       });
@@ -103,23 +152,20 @@ router.post('/create',
           userID: res.locals.user,
           addressID,
         });
-        res.json({
-          order_id: orderID,
-        });
-      } else {
-        logger.error('Something went wrong with creating the order', {
-          ip: req.ip,
-          orderID,
-          userID: res.locals.user,
-          orderdbID,
-          deliverydbID,
-          productListdbID,
-          ProductsdbRownum: addProductToOrder.affectedRows,
-        });
-        res.statusCode(500);
+        return res.json({ order_id: orderID });
       }
+      logger.error('Something went wrong with creating the order', {
+        ip: req.ip,
+        orderID,
+        userID: res.locals.user,
+        orderdbID,
+        deliverydbID,
+        productListdbID,
+        ProductsdbRownum: addProductToOrder.affectedRows,
+      });
+      return res.statusCode(500);
     } catch (error) {
-      next(error);
+      return next(error);
     }
   });
 

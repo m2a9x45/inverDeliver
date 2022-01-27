@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link  href="https://fonts.googleapis.com/css2?family=Roboto:wght@150;300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="signup.css">
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+    <link rel="manifest" href="../site.webmanifest">
+    <link rel="mask-icon" href="../safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#603cba">
+    <meta name="theme-color" content="#ffffff">
+
+    <title>InverDeliver | Create Account</title>
+</head>
+<body>
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v10.0&appId=521249838906358&autoLogAppEvents=1" nonce="4Tob4fOW"></script>
+    <main>
+        <div class="signInSelect">
+            <div class="passwordSignInHolder">
+                <form id="createAccountForm"> 
+                    <h1>Create Account</h1>
+                    <label for="">Enter your name</label>
+                    <input class="loginInput" id="name" type="text"  placeholder="John Doe" autocomplete="name" required>
+                    <label for="">Enter your email address</label>
+                    <input class="loginInput" id="email" type="email" placeholder="john.doe@email.com" autocomplete="email" required>
+                    <label for="">Choose a password</label>
+                    <input class="loginInput" id="password" type="password" placeholder="&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679&#9679" autocomplete="new-password" required> 
+                    <button id="createAccountButton" type="submit">Create Account</button>
+                    <p style="text-align: center;"><a href="../signin/">Already have an account?</a></p>
+                    <div class="loader"></div>
+                    <p id="errorMessage"></p>
+                    <p id="otherSignInOptions">Or</p>
+                </form>
+            </div>
+            
+            <div class="FbSignInHolder">
+                <div class="fb-login-button" onlogin="checkLoginState();" data-width="300" data-size="large" data-button-type="continue_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="false"></div>
+            </div>
+            <div class="googleSignInHolder">
+                <div 
+                    id="g_id_onload"
+                    data-client_id="367206505484-duqc704rjojig4ogbkb5k372v0pk4gnd.apps.googleusercontent.com"
+                    data-context="signin"
+                    data-ux_mode="redirect"
+                    data-login_uri="https://api.inverdeliver.com/user/googleSignIn"
+                    data-auto_prompt="false">
+                </div>
+           
+                <div 
+                    class="g_id_signin"
+                    data-type="standard"
+                    data-shape="rectangular"
+                    data-theme="outline"
+                    data-text="continue_with"
+                    data-size="large"
+                    data-logo_alignment="left"
+                    data-width="300"
+                ></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="signup.js"></script>
+</body>
+</html>

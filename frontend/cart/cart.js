@@ -25,6 +25,8 @@ const addNewAddressButton = document.querySelector('#addNewAddressButton');
 
 const ContinuePaymentButton = document.querySelector('#ContinuePaymentButton');
 
+const storeID = localStorage.getItem('storeID');
+
 
 const token = localStorage.getItem('token');
 
@@ -72,7 +74,7 @@ showCart();
 function showCart() {
   cart = JSON.parse(localStorage.getItem("cart"));
   if (cart === null || Object.keys(cart).length === 0 && cart.constructor === Object) {
-    window.location = '../';
+    window.location = `../store/?storeID=${storeID}`;
   }
   console.log(cart);
 
@@ -205,6 +207,29 @@ function displayCart(item, id) {
 
   cartContent.appendChild(div);
 };
+
+document.addEventListener('DOMContentLoaded', async () => {  
+  try {
+    const store = await getStoreInfo(storeID);
+
+    const storeNameDisplay = document.querySelector('#storeNameDisplay');
+    storeNameDisplay.innerHTML = store.store_name;
+
+  } catch (error) {
+    
+  }
+});
+
+async function getStoreInfo(storeID) {
+  try {
+    const response = await fetch(`${API_URL}/store/${storeID}`); 
+    const data = await response.json();
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 function showAddNewAddress() {
   selectedAddress = null;
@@ -372,7 +397,8 @@ postcodeLookupButton.addEventListener('click', (e) => {
   errorMessage.innerHTML = '';
 
   const data = {
-    postCode: post_code.value
+    postCode: post_code.value,
+    storeID: storeID,
   }
 
   fetch(`${API_URL}/user/postcodeLookup`, {
@@ -496,6 +522,7 @@ ContinuePaymentButton.addEventListener("click", (e) => {
   e.preventDefault();
 
   const orderData = {
+    store_id: storeID,
     products: []
   };
 
@@ -541,6 +568,7 @@ ContinuePaymentButton.addEventListener("click", (e) => {
   // check that the deliver time is greater than the current time + 2 hours
   if (deliverTime > currentTimeNumber + 7200000) {
     console.log("Delivery time is at least 2 hours from the current time");
+    console.log(orderData);
     fetch(`${API_URL}/order/create`, {
       method: 'POST',
       headers: {

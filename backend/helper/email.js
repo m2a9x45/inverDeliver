@@ -20,26 +20,50 @@ async function sendWelcomEmail(email, name) {
   }
 }
 
-async function sendOrderConformationEmail(email, name, orderID) {
+async function sendOrderConformationEmail(orderInfo, brand, last4) {
   const data = {
     from: 'InverDeliver <order-updates@mail.inverdeliver.com>',
-    to: email,
-    subject: 'Order Conformation 🛒 ⏩ 🏡',
+    to: orderInfo.email,
+    subject: `Order confirmation 🛒 ⏩ 🏡 Order Number #${orderInfo.order_id}`,
     template: 'order_conformation',
-    'v:name': name,
-    'v:order_id': orderID,
-    'v:tracking_url': `inverdeliver.com/orders/info/?orderID=${orderID}`,
+    'v:name': orderInfo.first_name,
+    'v:address_first_line': orderInfo.street,
+    'v:address_city': orderInfo.city,
+    'v:address_post_code': orderInfo.post_code,
+    'v:order_delivery_datetime': orderInfo.time,
+    'v:order_id': orderInfo.order_id,
+    'v:shop_name': orderInfo.store_name,
+    'v:order_price': orderInfo.total,
+    'v:order_payment_method': `${brand} - ${last4}`,
+    'v:tracking_url': `inverdeliver.com/orders/info/?orderID=${orderInfo.order_id}`,
   };
 
   try {
     const sentEmail = await mailgun.messages().send(data);
-    logger.info('order conformation sent', { email, orderID, emailID: sentEmail.id });
+    logger.info('order conformation sent', { email: orderInfo.email, orderID: orderInfo.order_id, emailID: sentEmail.id });
   } catch (error) {
-    logger.error('Order conformation email failed to send', { email, error });
+    logger.error('Order conformation email failed to send', { email: orderInfo.email, error });
+  }
+}
+
+async function sendPasswordResetEmail(email, resetToken) {
+  const data = {
+    from: 'InverDeliver <security@mail.inverdeliver.com>',
+    to: email,
+    subject: '🔐 Password Reset',
+    text: `Please click this link to reset your password: ${resetToken}. If this wasn't requested by you please ignore it`,
+  };
+
+  try {
+    const sentEmail = await mailgun.messages().send(data);
+    logger.info('welcome email sent', { email, emailID: sentEmail.id });
+  } catch (error) {
+    logger.error('Welcome email failed to send', { email, error });
   }
 }
 
 module.exports = {
   sendWelcomEmail,
   sendOrderConformationEmail,
+  sendPasswordResetEmail,
 };

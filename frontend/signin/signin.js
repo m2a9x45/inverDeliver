@@ -2,12 +2,13 @@ const API_URL = "https://api.inverdeliver.com";
 const errorMessage = document.querySelector('#errorMessage');
 const token = localStorage.getItem('token');
 
+const loginForm = document.querySelector('#loginForm');
+
 const emailInput = document.querySelector('#email');
-const nameInput = document.querySelector('#name');
 const passwordInput = document.querySelector('#password');
-const continueButton = document.querySelector('#continueButton');
-const createAccountButton = document.querySelector('#createAccountButton');
 const loginButton = document.querySelector('#loginButton');
+
+const loader = document.querySelector('.loader');
 
 const urlString = window.location.href;
 const url = new URL(urlString);
@@ -22,101 +23,60 @@ if (token) {
     window.location.replace("../");
 }
 
-emailInput.addEventListener('change', () => {
-    nameInput.style.display = 'none';
-    passwordInput.style.display = 'none';
-    createAccountButton.style.display = 'none';
-    loginButton.style.display = 'none';
-    continueButton.style.display = 'block';
-    errorMessage.style.display = 'none';
-})
+async function login(loginInfo) {
+    try {
+        const response = await fetch(`${API_URL}/user/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(loginInfo)
+        });
 
-continueButton.addEventListener('click', (e) => {
-    console.log(emailInput.value);
-    // check to see if email is linked to an account
-    fetch(`${API_URL}/user/hasAccount/${emailInput.value}`)
-    .then(response => response.json())
-    .then((data) => {
-        console.log(data);
-        // new user
-        if (data.newAccount === true) {
-            
-            nameInput.style.display = 'block';
-            passwordInput.style.display = 'block';
+        if (!response.ok) {
+            loader.style.display = 'none';
             createAccountButton.style.display = 'block';
-            continueButton.style.display = 'none';
-        } 
+            if (response.status = 400) {
+                showErrorMessage("Some of the information you've entered doesn't look to be right");
+            } else {
+                showErrorMessage("Something when wrong, let us know if it continues");
+            } 
+        }
 
-        // email password login
-        if (data.newAccount === false && data.isSocial === false) {
-            passwordInput.style.display = 'block';
-            continueButton.style.display = 'none';
-            loginButton.style.display = 'block';
-        }
-        // social login
-        if (data.newAccount === false && data.isSocial === true) {
-            // Tell user to use social login
-            errorMessage.innerHTML = 'It looks like your email is linked to a social login';
-            errorMessage.style.display = 'block';
-        }
-    })
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        showErrorMessage("Something when wrong, let us know if it continues");
+        console.error(error);
+    }
+}
+
+
+loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    resetErrorMessage();
+    loginButton.style.display = 'none';
+    loader.style.display = 'block';
+
+    const loginInfo = {
+        email: emailInput.value,
+        password: passwordInput.value,
+    }
+
+    const loginAccount = await login(loginInfo);
+
+    loader.style.display = 'none';
+    loginButton.style.display = 'block';
+
+    console.log(loginAccount);
+
+    if (loginAccount.message) {
+        showErrorMessage(loginAccount.message);
+    }  else if (loginAccount.accountFound === false) {
+        showErrorMessage('Sorry we couldn\'t find an account with that email address');
+    } else if (loginAccount.token) {
+        localStorage.setItem('token', loginAccount.token);
+        window.location = './';
+    }
 });
-
-createAccountButton.addEventListener('click', (e) => {
-    const data = {
-        name: nameInput.value,
-        email: emailInput.value,
-        password: passwordInput.value,
-    }
-
-    fetch(`${API_URL}/user/createAccount`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then((data) => {
-        console.log(data);
-        if (data.token) {
-            localStorage.setItem('token', data.token);
-            window.location = './';
-        }
-    })
-    .catch((error) => console.error(error))
-
-})
-
-loginButton.addEventListener('click', (e) => {
-    const data = {
-        email: emailInput.value,
-        password: passwordInput.value,
-    }
-    console.log(data);
-
-    fetch(`${API_URL}/user/login`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then((data) => {
-        console.log(data);
-        if (data.token) {
-            localStorage.setItem('token', data.token);
-            window.location = './';
-        }
-        if (data.message) {
-            errorMessage.innerHTML = data.message;
-            errorMessage.style.display = 'block';
-        }
-    })
-    .catch((error) => console.error(error))
-
-})
 
 function statusChangeCallback(res) {
     console.log(res);
@@ -166,9 +126,9 @@ window.fbAsyncInit = function () {
 
 function checkLoginState() {         
     FB.getLoginStatus(function(response) {   
-      statusChangeCallback(response);
+        statusChangeCallback(response);
     });
-  }
+}
 
 (function (d, s, id) {
     var js, fjs = d.getElementsByTagName(s)[0];
@@ -180,3 +140,13 @@ function checkLoginState() {
     js.src = "https://connect.facebook.net/en_US/sdk.js";
     fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
+
+function showErrorMessage(text) {
+    errorMessage.style.display = 'block';
+    errorMessage.innerText = text;
+}
+
+function resetErrorMessage() {
+    errorMessage.style.display = 'none';
+    errorMessage.innerText = '';
+}
