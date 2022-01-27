@@ -141,6 +141,37 @@ header {
     margin: 0rem auto 2rem auto;
 }
 
+#errorMessage {
+    display: none;
+    font-size: 18px;
+    margin: 1rem auto;
+    width: 80%;
+    max-width: 500px;
+    background-color: rgba(228, 52, 52, 0.541);
+    text-align: center;
+    padding: 1rem;
+    border-radius: 15px;
+    border: 1px solid red;
+}
+
+.loader {
+    display: none;
+    margin: 1rem auto;
+    border-top: 8px solid rgb(66, 176, 255); /* Blue */
+    border-right: 8px solid rgb(126, 243, 100);
+    border-bottom: 8px solid rgb(246, 99, 99);
+    border-left: 8px solid rgb(244, 186, 4);
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    animation: spin 1.2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 footer {
     background-color:rgba(66, 176, 255, 0.151);
     margin-top:auto; 

@@ -13,7 +13,7 @@ router.get('/find/:postCode', async (req, res, next) => {
   const regixPostCode = postCodeParsed.toUpperCase().match(/^[A-Z][A-Z]{0,1}[0-9][A-Z0-9]{0,1}[0-9]/);
 
   if (regixPostCode === null) {
-    return res.json({ withInOpArea: false, message: 'Sorry something went wrong, it does not look like you have entered a vaild postcode' });
+    return res.json({ error: true, message: 'That doesn\'t look like a valid postcode 🤔' });
   }
 
   try {
