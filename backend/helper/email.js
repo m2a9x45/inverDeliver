@@ -1,8 +1,6 @@
 require('dotenv').config();
 
-// host: 'api.eu.mailgun.net'
-
-const mailgun = require('mailgun-js')({ apiKey: process.env.MAILGUN_APIKEY, domain: process.env.MAILGUN_DOMAIN });
+const mailgun = require('mailgun-js')({ apiKey: process.env.MAILGUN_APIKEY, domain: process.env.MAILGUN_DOMAIN, host: 'api.eu.mailgun.net' });
 const logger = require('../middleware/logger');
 
 async function sendWelcomEmail(email, name) {

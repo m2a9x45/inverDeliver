@@ -140,12 +140,13 @@ async function main() {
 };
 
 // Runs everyday at 2:30 AM
-cron.schedule('30 2 * * *', () => {
-    console.log('Running Task at 2:30AM Everyday');
-    // Send Slack message to say the scrape has started 
-    main();
-});
+// cron.schedule('30 2 * * *', () => {
+//     console.log('Running Task at 2:30AM Everyday');
+//     // Send Slack message to say the scrape has started 
+//     main();
+// });
 
+main();
 
 
 
