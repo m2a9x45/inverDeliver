@@ -30,10 +30,11 @@ async function searchForStores(postCode){
 
   stores.forEach( async (store) => {
     const storeInfo = await getStoreInfo(store.store_id);
-    console.log(storeInfo);
-    const htmlToDisplay = showStore(store.store_id, storeInfo);
-    storeHolder.appendChild(htmlToDisplay);
-    storeHolder.style.display = 'flex';
+    if (storeInfo.length > 0) {
+      const htmlToDisplay = showStore(store.store_id, storeInfo[0]);
+      storeHolder.appendChild(htmlToDisplay);
+      storeHolder.style.display = 'flex';
+    }
   });
 }
 
@@ -65,9 +66,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       foundStores.stores.forEach( async (store) => {
         const storeInfo = await getStoreInfo(store.store_id);
-        console.log(storeInfo);
-        const htmlToDisplay = showStore(store.store_id, storeInfo);
-        storeHolderForSavedAddresses.appendChild(htmlToDisplay);
+        if (storeInfo.length > 0) {
+          const htmlToDisplay = showStore(store.store_id, storeInfo[0]);
+          storeHolderForSavedAddresses.appendChild(htmlToDisplay);
+        }
       });
     }
   }
@@ -81,9 +83,13 @@ async function getStoresByPostCode(postcode) {
 }
 
 async function getStoreInfo(storeID) {
-  const response = await fetch(`${API_URL}/store/${storeID}`)
-  const json = await response.json();
-  return json;
+  try {
+    const response = await fetch(`${API_URL}/store/${storeID}`)
+    const json = await response.json();
+    return json;
+  } catch (error) {
+   console.error(error); 
+  }
 }
 
 function showStore(storeID, storeInfo) {

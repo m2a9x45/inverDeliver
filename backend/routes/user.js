@@ -534,41 +534,26 @@ router.post('/postcodeLookup', authorisation.isAuthorized, body('postCode').isPo
     }
   });
 
-router.post('/addAddress', authorisation.isAuthorized,
-  body('addressline1').isString().escape(),
-  body('addressline2').isString().escape(),
-  body('county').isString().escape(),
-  body('grideasting').isNumeric().escape(),
-  body('gridnorthing').isNumeric().escape(),
-  body('latitude').isNumeric().escape(),
-  body('longitude').isNumeric().escape(),
-  body('number').isNumeric().escape(),
-  body('postcode').isString().escape(),
-  body('posttown').isString().escape(),
-  body('premise').isString().escape(),
-  body('street').isString().escape(),
-  body('subbuildingname').isString().escape(),
-  body('summaryline').isString().escape(),
-  async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ error: errors });
-    }
+router.post('/addAddress', authorisation.isAuthorized, async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ error: errors });
+  }
 
-    const address = req.body;
+  const address = req.body;
 
-    try {
-      const addressID = uuidv4();
-      const addressDBInsertID = await dao.addAddress(res.locals.user, addressID, `${address.premise} ${address.street}`,
-        address.posttown, address.postcode, address.latitude, address.longitude);
+  try {
+    const addressID = uuidv4();
+    const addressDBInsertID = await dao.addAddress(res.locals.user, addressID, `${address.premise} ${address.street}`,
+      address.posttown, address.postcode, address.latitude, address.longitude);
 
-      logger.info('Address added', { addressID, dbInsertID: addressDBInsertID.insertId, ip: req.ip });
-      return res.sendStatus(201);
-    } catch (error) {
-      logger.error('Error adding address', error);
-      return next(error);
-    }
-  });
+    logger.info('Address added', { addressID, dbInsertID: addressDBInsertID.insertId, ip: req.ip });
+    return res.sendStatus(201);
+  } catch (error) {
+    logger.error('Error adding address', error);
+    return next(error);
+  }
+});
 
 router.delete('/address', authorisation.isAuthorized, async (req, res, next) => {
   const { addressID } = req.query;
@@ -632,7 +617,7 @@ router.patch('/updatePhoneNumber', authorisation.isAuthorized,
   });
 
 router.post('/generateSMScode', authorisation.isAuthorized,
-  body('phoneNumber').isMobilePhone(['en-GB']),
+  body('phoneNumber').isString(),
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

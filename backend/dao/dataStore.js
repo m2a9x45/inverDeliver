@@ -17,10 +17,10 @@ function getStoreInfo(storeID) {
   return new Promise(((resolve, reject) => {
     const sql = `SELECT s.store_name, b.name, b.logo FROM food.store AS s
     INNER JOIN bussiness AS b ON s.bussiness_id=b.bussiness_id
-    WHERE s.store_id=(?);`;
+    WHERE s.store_id=(?) AND s.deleted_at IS NULL;`;
     db.query(sql, [storeID], (err, value) => {
       if (err === null) {
-        resolve(value[0]);
+        resolve(value);
       } else {
         reject(err);
       }
