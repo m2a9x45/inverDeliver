@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (localStorage.getItem("token")) {
     const foundStores = await storesNearSavedCustomerAddress(localStorage.getItem("token"));
-    if (foundStores) {
+    if (foundStores.post_code) {
 
       const titleForSavedAddresses = document.querySelector('#titleForSavedAddresses');
       titleForSavedAddresses.innerHTML = `Shops near your postcode of ${foundStores.post_code}`;
