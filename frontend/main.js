@@ -7,6 +7,9 @@ const postCodeSearchForm = document.querySelector('#postCodeSearchForm');
 const storeHolder = document.querySelector('#storeHolder');
 const storeHolderForSavedAddresses = document.querySelector('#storeHolderForSavedAddresses');
 
+const errorMessageHolder = document.querySelector('#errorMessage'); 
+const loader = document.querySelector('.loader');
+
 // Navbar toggle code
 const x = window.matchMedia("(max-width: 680px)");
 x.addEventListener("change", () => x.matches ? navtoggle.style.display = "none" : navtoggle.style.display = "flex");
@@ -25,8 +28,20 @@ if (localStorage.getItem("token")) {
 }
 
 async function searchForStores(postCode){
+  showLoader();
   storeHolder.innerHTML = '';
+  hideError();
   const stores = await getStoresByPostCode(postCode);
+
+  if (stores.error === true) {
+    hideLoader();
+    return showError(stores.message);
+  }
+
+  if (stores.length === 0) {
+    hideLoader();
+    return showError('Sorry it doesn\'t look like we deliver there yet 😢');
+  }
 
   stores.forEach( async (store) => {
     const storeInfo = await getStoreInfo(store.store_id);
@@ -35,6 +50,7 @@ async function searchForStores(postCode){
       storeHolder.appendChild(htmlToDisplay);
       storeHolder.style.display = 'flex';
     }
+    hideLoader();
   });
 }
 
@@ -139,3 +155,20 @@ postCodeSearchForm.addEventListener('submit', async (e) => {
   console.log(postCode); 
   searchForStores(postCode);
 });
+
+function showError(errorMessage) {
+  errorMessageHolder.style.display = 'block';
+  errorMessageHolder.innerText = errorMessage;
+}
+
+function hideError() {
+  errorMessageHolder.style.display = 'none';
+}
+
+function showLoader() {
+  loader.style.display = 'block';
+}
+
+function hideLoader() {
+  loader.style.display = 'none';
+}
