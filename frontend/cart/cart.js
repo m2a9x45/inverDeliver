@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const store = await getStoreInfo(storeID);
 
     const storeNameDisplay = document.querySelector('#storeNameDisplay');
-    storeNameDisplay.innerHTML = store.store_name;
+    storeNameDisplay.innerHTML = store[0].store_name;
 
   } catch (error) {
     
