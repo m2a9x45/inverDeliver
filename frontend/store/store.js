@@ -57,8 +57,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const storeDisplayName = document.querySelector('#storeDisplayName');    
     const subStoreDisplayName = document.querySelector('#subStoreDisplayName');  
 
-    storeDisplayName.innerHTML = `You're shopping at ${store.name}`;
-    subStoreDisplayName.innerHTML = store.store_name;
+    storeDisplayName.innerHTML = `You're shopping at ${store[0].name}`;
+    subStoreDisplayName.innerHTML = store[0].store_name;
     
 
     initProducts = products.data;
