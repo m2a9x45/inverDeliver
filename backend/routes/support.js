@@ -1,8 +1,9 @@
 const express = require('express');
-const axios = require('axios');
 const { body, validationResult } = require('express-validator');
 const metrics = require('./metric');
 const logger = require('../middleware/logger.js');
+
+const slack = require('../helper/slack');
 
 require('dotenv').config();
 
@@ -14,8 +15,6 @@ const callbackMetric = new metrics.client.Counter({
   labelNames: ['status'],
 });
 
-// https://discord.com/developers/docs/resources/channel#embed-limits
-// Embed values are limited to 1024 characters
 router.post('/callback',
   body('email').isEmail().normalizeEmail().escape(),
   body('phoneNumber').optional({ checkFalsy: true }).isMobilePhone(['en-GB']).escape(),
@@ -31,38 +30,24 @@ router.post('/callback',
 
     logger.info('Callback request made', { ip: req.ip, email, phoneNumber });
 
-    const discordData = {
-      embeds: [{
-        title: '💬 New Support Request',
-        fields: [{
-          name: 'Email Address',
-          value: email,
-          inline: true,
-        }, {
-          name: 'Phone Number',
-          value: phoneNumber || 'Use number on account',
-          inline: true,
-        }, {
-          name: 'Issue',
-          value: issue,
-        }],
-      }],
-    };
+    // We should probably try to match the email/phone number to an account
 
     try {
-      const responce = await axios.post(process.env.DISCORD_WEBHOOK, discordData);
+      const slackMessageSent = await slack.sendCallbackRequestNotification(email,
+        phoneNumber, issue);
 
-      if (responce.status !== 204) {
-        callbackMetric.inc({ status: responce.status });
-        logger.error('Failed to send to Discord', {
-          ip: req.ip, email, phoneNumber, issue,
+      if (slackMessageSent.ok === false) {
+        callbackMetric.inc({ status: 500 });
+        logger.error('Message failed to send to slack', {
+          error: slackMessageSent.error, ip: req.ip, email, phoneNumber,
         });
         return res.status(500).send();
       }
+
       callbackMetric.inc({ status: 204 });
       return res.status(204).send();
     } catch (error) {
-      return next(error);
+      next(error);
     }
   });
 
