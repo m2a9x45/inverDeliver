@@ -1,11 +1,11 @@
-const db = require('./conn.js');
+const db = require('./conn');
 
 async function getOrders() {
   try {
-    const selectedRows = await db.knex.select('o.user_id', 'o.order_id', 'o.delivery_id', 'o.status', 'o.price', 'o.fee', 'o.created_at',
-      'd.address_id', 'd.time', 'a.street', 'a.city', 'a.post_code').from('order AS o')
+    const selectedRows = await db.knex.select('d.time as delivery_time', 'o.order_id', 'o.status', 's.store_name',
+      's.address', 's.lat', 's.long').from('order AS o')
       .join('delivery AS d', 'o.delivery_id', 'd.delivery_id')
-      .join('addresses AS a', 'd.address_id', ' a.address_id')
+      .join('store AS s', 'o.store_id', 's.store_id')
       .where('o.status', 'order_received')
       .orWhere('o.status', 'shopping');
 
@@ -14,6 +14,11 @@ async function getOrders() {
     return error;
   }
 }
+
+// SELECT d.time as delivery_time, o.order_id, o.status, s.store_name, s.address, s.lat, s.long
+// FROM food.order AS o
+// INNER JOIN delivery AS d ON o.delivery_id=d.delivery_id
+// INNER JOIN store AS s ON o.store_id=s.store_id;
 
 async function getLatestOrders() {
   try {

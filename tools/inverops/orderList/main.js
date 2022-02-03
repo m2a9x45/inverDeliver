@@ -20,23 +20,22 @@ async function getOrders() {
 
 function displayOrder(order) {
 
-    const link = document.createElement("a");
-    link.setAttribute("href", "javascript:;");
-    link.setAttribute("class", "order");
-    link.addEventListener("click", () => {
-        console.log("click");
-        window.location.href = `../order/?orderID=${order.order_id}`
-    })
+    const orderDiv = document.createElement('div');
+    orderDiv.setAttribute('class', 'order');
 
-    const div = document.createElement("div");
-    div.setAttribute("class", "orderText");
+    const shopName = document.createElement('h2');
+    shopName.innerText = order.store_name;
 
-    const orderID = document.createElement("p");
-    orderID.innerHTML = order.order_id;
+    const shopAddress = document.createElement('address');
 
-    const userID = document.createElement("p");
-    userID.innerHTML = `userID: ${order.user_id}`;
+    // continue working on this tommorow
 
+
+
+
+
+
+   
     const deliveryDate = new Date(order.time);
     const displaydate = deliveryDate.toLocaleDateString("en-GB", {
         year: '2-digit',
@@ -46,17 +45,4 @@ function displayOrder(order) {
         minute: 'numeric',
         hour12: true,
     });
-
-    const time = document.createElement("p");
-    time.innerHTML = displaydate;
-
-    div.appendChild(orderID);
-    div.appendChild(userID);
-    div.appendChild(time);
-
-    link.appendChild(div);
-
-    ordersList.appendChild(link);
-
-
-}
+};

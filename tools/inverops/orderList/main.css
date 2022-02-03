@@ -13,14 +13,52 @@ body {
 }
 
 .order {
-    border: 1px solid rgb(66, 176, 255);
-    border-radius: 5px;
-    margin: 0.5rem 0;
-    text-align: center;
-    text-decoration: none;
-    color: black;
+    background-color: rgb(255, 255, 255);
+    padding: 1rem;
 }
 
-.orderText {
-    padding: 0.2rem;
+.order h2 {
+    margin: 0px;
 }
+
+.navAndStatus {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    font-size: 1.3em;
+    margin: 0.5rem 0;
+}
+
+.orderStatus {
+    background-color: #6aa0ff;
+    padding: 0.25rem 1rem;
+    border-radius: 15px;
+    margin: 0px;
+}
+
+.itemCount {
+    text-align: center;
+    font-size: 1.8em;
+}
+
+.deliveryTime {
+    display: flex;
+    justify-content: space-evenly;
+    font-size: 1.3em;
+}
+
+.deliveryTime p {
+    margin: 0.5rem;
+}
+
+.pickNowButton {
+    width: 100%;
+    background-color: rgb(66, 176, 255);
+    border: none;
+    padding: 0.75rem 0;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1.3em;
+}
+
