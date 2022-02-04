@@ -174,7 +174,7 @@ function displayDeliveryInfo(data) {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-    hour12: true
+    hourCycle: "h12"
   });
 
   deliveryTime.innerText = `Delivery Time: ${displaydate}`;

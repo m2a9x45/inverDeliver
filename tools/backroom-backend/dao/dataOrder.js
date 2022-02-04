@@ -7,8 +7,8 @@ async function getOrders() {
       .join('delivery AS d', 'o.delivery_id', 'd.delivery_id')
       .join('store AS s', 'o.store_id', 's.store_id')
       .where('o.status', 'order_received')
-      .orWhere('o.status', 'shopping');
-
+      .orWhere('o.status', 'shopping')
+      .orderBy('o.created_at', 'asc');
     return selectedRows;
   } catch (error) {
     return error;

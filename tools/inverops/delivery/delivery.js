@@ -79,7 +79,7 @@ function showDelivery(delivery) {
       day: 'numeric',
       hour: 'numeric',
       minute: 'numeric',
-      hour12: true
+      hourCycle: "h12"
     };
     const displaydate = deliveryDate.toLocaleDateString("en-GB", options)
   

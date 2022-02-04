@@ -81,7 +81,7 @@ function addOrderToTable(order) {
         day: 'numeric',
         hour: '2-digit',
         minute: 'numeric',
-        hour12: true,
+        hourCycle: "h12"
     });
     deliverTime.innerHTML = displaydate;
 
@@ -93,7 +93,7 @@ function addOrderToTable(order) {
         day: 'numeric',
         hour: '2-digit',
         minute: 'numeric',
-        hour12: true,
+        hourCycle: "h12"
     });
 
     orderTime.innerHTML = displayordertime;

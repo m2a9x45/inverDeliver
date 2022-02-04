@@ -44,7 +44,7 @@ function displayDelivery(delivery) {
         day: 'numeric',
         hour: '2-digit',
         minute: 'numeric',
-        hour12: true,
+        hourCycle: "h12"
     });
 
     const time = document.createElement("p");

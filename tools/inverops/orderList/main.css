@@ -15,10 +15,26 @@ body {
 .order {
     background-color: rgb(255, 255, 255);
     padding: 1rem;
+    margin: 0.5rem 0;
 }
 
 .order h2 {
     margin: 0px;
+}
+
+.order address {
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.late {
+    margin-left: 0.5rem;
+    background-color: #ff4646;
+    padding: 0.2rem 1rem;
+    border-radius: 25px;
+    font-size: 16px;
 }
 
 .navAndStatus {
@@ -27,6 +43,10 @@ body {
     justify-content: space-evenly;
     font-size: 1.3em;
     margin: 0.5rem 0;
+}
+
+.navAndStatus p {
+    margin: 0;
 }
 
 .orderStatus {

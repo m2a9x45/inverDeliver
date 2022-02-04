@@ -146,7 +146,7 @@ async function handlePaymentIntentSucceeded(id) {
         weekday: 'long',
         hour: 'numeric',
         minute: 'numeric',
-        hour12: true,
+        hourCycle: 'h12',
       });
 
       orderInfo.time = displaydate;
