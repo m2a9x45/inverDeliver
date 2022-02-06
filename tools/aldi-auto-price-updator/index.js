@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer-extra');
 const cheerio = require('cheerio');
+const fs = require('fs');
 const cron = require('node-cron');
 
 const dao = require('./dao/dataAldiProducts');
@@ -85,7 +86,24 @@ async function checkProductPrice(sku, newPrice, wholeProduct) {
 
         if (result.length <= 0) {
             // sku not found, send a slack message or something
-            // console.log(`${sku} not found 🚨`, wholeProduct);
+            console.log(`${sku} not found 🚨`);
+
+            const errorSku = {
+                sku,
+                wholeProduct,
+            }
+
+            // Include catogory, in sku error results so we can add the product to the coorect catogory
+            fs.readFile('./skuErrors.json', (err, data) => {
+                if (err) throw err;
+                var json = JSON.parse(data);
+                json.push(errorSku);
+
+                fs.writeFile('./skuErrors.json', JSON.stringify(json), (err) =>{
+                    if (err) throw err;
+                    console.log(`${sku} added to skuError ✅`);
+                  });
+            });
             return;
         }
 
@@ -103,10 +121,8 @@ async function checkProductPrice(sku, newPrice, wholeProduct) {
             if (updated.changedRows > 0) {
                 console.log(`✅ ${existingProduct.product_id} price updated sucessfully`);
             }
-
-
-            console.log(inserted);
-            console.log(updated);
+            // console.log(inserted);
+            // console.log(updated);
         }
     } catch (error) {
         console.log(error);
