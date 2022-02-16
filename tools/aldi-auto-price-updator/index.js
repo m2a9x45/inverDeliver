@@ -1,12 +1,16 @@
 const puppeteer = require('puppeteer-extra');
 const cheerio = require('cheerio');
-const fs = require('fs');
 const cron = require('node-cron');
-
-const dao = require('./dao/dataAldiProducts');
-
+const axios = require('axios');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+
+require('dotenv').config();
+
+const API_URL = 'http://localhost:3002';
+
 puppeteer.use(StealthPlugin());
+
+const products = [];
 
 const aldiUrls = [
     'https://groceries.aldi.co.uk/en-GB/chilled-food',
@@ -20,14 +24,20 @@ const aldiUrls = [
 ];
 
 async function scrape(url) {
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({
+        headless: true,
+        // executablePath: '/usr/bin/chromium-browser'
+    });
     const page = await browser.newPage();
+    page.setDefaultNavigationTimeout(50 * 1000);
     await page.setViewport({
-      width: 1920,
-      height: 1080,
-      deviceScaleFactor: 1,
-      });
-    await page.goto(url, {waitUntil: 'networkidle2'});  
+        width: 1920,
+        height: 1080,
+        deviceScaleFactor: 1,
+    });
+    await page.goto(url, {
+        waitUntil: 'domcontentloaded'
+    });
     await page.waitForTimeout(2000);
 
     const htmlArray = [];
@@ -37,13 +47,21 @@ async function scrape(url) {
         if (await page.$('body > div.container-md > div.searchgrid > div > div > div > div.col-12.col-lg-9.mt-3.pl-1 > div > div > div:nth-child(1) > div.col-6.d-none.d-lg-block > div > ul > li.page-item.next.ml-2.disabled') !== null) {
             console.log('End of page thing');
             const html = await page.content();
-            htmlArray.push({url: page.url(), html});
+            htmlArray.push({
+                url: page.url(),
+                html
+            });
             end = true;
         } else {
             console.log('Not the end');
             const html = await page.content();
-            htmlArray.push({url: page.url(), html});
-            await page.click('body > div.container-md > div.searchgrid > div > div > div > div.col-12.col-lg-9.mt-3.pl-1 > div > div > div:nth-child(1) > div.col-6.d-none.d-lg-block > div > ul > li.page-item.next.ml-2 > a', {waitUntil: 'domcontentloaded'});
+            htmlArray.push({
+                url: page.url(),
+                html
+            });
+            await page.click('body > div.container-md > div.searchgrid > div > div > div > div.col-12.col-lg-9.mt-3.pl-1 > div > div > div:nth-child(1) > div.col-6.d-none.d-lg-block > div > ul > li.page-item.next.ml-2 > a', {
+                waitUntil: 'domcontentloaded'
+            });
             await page.waitForTimeout(2000);
         }
     }
@@ -54,7 +72,6 @@ async function scrape(url) {
 
 function proceesFileContents(html) {
     const $ = cheerio.load(html);
-    const products = [];
 
     $('div[data-qa="search-results"]').each((i, elm) => {
         const product = {
@@ -66,93 +83,155 @@ function proceesFileContents(html) {
             des: $('a[data-qa="search-product-title"]', elm).attr('href'),
         }
 
-        products.push(product);
-    });
-    
-    products.forEach(async product => {
         const price = product.price;
         const removePoundSymbol = price.replace('£', '');
         const removeDecimalPoint = removePoundSymbol.replace('.', '');
         product.price = Math.floor(removeDecimalPoint);
-        checkProductPrice(product.id, product.price, product);
-    });
 
-    // console.log(products);
+        products.push(product);
+    });
 };
 
-async function checkProductPrice(sku, newPrice, wholeProduct) {
-    try {
-        const result = await dao.getproductBySKU(sku);
-
-        if (result.length <= 0) {
-            // sku not found, send a slack message or something
-            console.log(`${sku} not found 🚨`);
-
-            const errorSku = {
-                sku,
-                wholeProduct,
-            }
-
-            // Include catogory, in sku error results so we can add the product to the coorect catogory
-            fs.readFile('./skuErrors.json', (err, data) => {
-                if (err) throw err;
-                var json = JSON.parse(data);
-                json.push(errorSku);
-
-                fs.writeFile('./skuErrors.json', JSON.stringify(json), (err) =>{
-                    if (err) throw err;
-                    console.log(`${sku} added to skuError ✅`);
-                  });
+async function checkProductPrice(products) {
+    // console.log(products);
+    for (const product of products) {
+        try {
+            const response = await axios.get(`${API_URL}/product/bySku?storeID=store_fdfdc63d-f865-4e06-815a-8164820358d8&sku=${product.id}`, {
+                headers: {
+                    'api_key': '69d21fec-49f1-4ed6-a094-5be8bfd647c8-539065a9-eadd-4936-8263-d83b2cf7013d-7f8fca23-c37a-4fbf-9074-072a18c3e1a6'
+                }
             });
-            return;
-        }
 
-        const existingProduct = result[0];
-
-        if (newPrice !== existingProduct.price) {
-            console.log(`⚠ ${existingProduct.product_id} price has changed from ${existingProduct.price} to ${newPrice}`);
-
-            const inserted = await dao.addHistoricalProductPrice(existingProduct.product_id, 'store_fdfdc63d-f865-4e06-815a-8164820358d8', existingProduct.price);
-            if (inserted.insertId > 0) {
-                console.log(`✅ ${existingProduct.product_id} historical price added sucessfully`);
+            if (response.data.error === true) {
+                console.log(`${product.id} not found 🚨`);
+                return;
             }
-            
-            const updated = await dao.updateProductPrice(existingProduct.product_id, newPrice);
-            if (updated.changedRows > 0) {
-                console.log(`✅ ${existingProduct.product_id} price updated sucessfully`);
-            }
-            // console.log(inserted);
-            // console.log(updated);
+
+            console.log(response.data.data);
+        } catch (error) {
+            console.log(error);
         }
-    } catch (error) {
-        console.log(error);
     }
-}
 
+
+
+    // try {
+
+
+    // console.log(result.data.data);
+
+    // if (result.length <= 0) {
+    //     console.log(`${sku} not found 🚨`);
+    //     return;
+    // }
+
+    // const existingProduct = result[0];
+
+    // if (newPrice !== existingProduct.price) {
+    //     console.log(`⚠ ${existingProduct.product_id} price has changed from ${existingProduct.price} to ${newPrice}`);
+
+    //     const inserted = await dao.addHistoricalProductPrice(existingProduct.product_id, 'store_fdfdc63d-f865-4e06-815a-8164820358d8', existingProduct.price);
+    //     if (inserted.insertId > 0) {
+    //         console.log(`✅ ${existingProduct.product_id} historical price added sucessfully`);
+    //     }
+
+    //     const updated = await dao.updateProductPrice(existingProduct.product_id, newPrice);
+    //     if (updated.changedRows > 0) {
+    //         console.log(`✅ ${existingProduct.product_id} price updated sucessfully`);
+    //     }
+    //     // console.log(inserted);
+    //     // console.log(updated);
+    // }
+    // } catch (error) {
+    //     console.log(error);
+    // }
+}
 
 async function main() {
     for (let i = 0; i < aldiUrls.length; i++) {
         const htmlPages = await scrape(aldiUrls[i]);
         console.log(htmlPages.length);
-    
-        htmlPages.forEach((htmlpage, i) => {
-            console.log(htmlpage.url);
-            proceesFileContents(htmlpage.html);
-        });
+
+        for (let j = 0; j < htmlPages.length; j++) {
+            console.log(htmlPages[j].url);
+            proceesFileContents(htmlPages[j].html);
+        }
     }
 
-    // Send Slack message to say the scrape has finished 
-    process.exit();
+    // console.log(products);
+    console.log(products.length);
+    let test = 0;
 
-    // aldiUrls.forEach(async url => {
-    //     const htmlPages = await scrape(url);
-    //     console.log(htmlPages.length);
-    
-    //     htmlPages.forEach((htmlpage, i) => {
-    //         console.log(htmlpage.url);
-    //         proceesFileContents(htmlpage.html);
-    //     });
-    // });
+    for (const product of products) {
+        // test++;
+        // console.log(test);
+        try {
+            const response = await axios.get(`${API_URL}/product/bySku?storeID=store_fdfdc63d-f865-4e06-815a-8164820358d8&sku=${product.id}`, {
+                headers: {
+                    'api_key': process.env.API_KEY
+                }
+            });
+
+            if (response.data.error === true) {
+                console.log(`${product.id} not found`);
+                continue;
+            }
+
+            // console.log(response.data.data);
+
+            const newPrice = product.price; // Scraped
+            const existingProduct = response.data.data; // From DB
+
+            // console.log(newPrice, existingProduct.price);
+
+            if (newPrice !== existingProduct.price) {
+                console.log(`⚠ ${existingProduct.product_id} price has changed from ${existingProduct.price} to ${newPrice}`);
+
+                const historicalData = {
+                    productID: existingProduct.product_id,
+                    storeID: 'store_fdfdc63d-f865-4e06-815a-8164820358d8',
+                    price: existingProduct.price
+                }
+
+                const resHistotical = await axios.post(`${API_URL}/product/addHistoricalPrice`, historicalData, {
+                    headers: {
+                        'api_key': process.env.API_KEY
+                    }
+                });
+
+                if (resHistotical.data.error === true) {
+                    console.log(`❌ ${existingProduct.product_id} historical price not sucessfully added`);
+                    continue;
+                }
+
+                console.log(`✅ ${existingProduct.product_id} historical price added sucessfully`);
+
+                const newData = {
+                    productID: existingProduct.product_id,
+                    storeID: 'store_fdfdc63d-f865-4e06-815a-8164820358d8',
+                    price: newPrice
+                }
+
+                const resNewPrice = await axios.patch(`${API_URL}/product/updatePrice`, newData, {
+                    headers: {
+                        'api_key': process.env.API_KEY
+                    }
+                });
+
+                if (resNewPrice.data.error === true) {
+                    console.log(`❌ ${existingProduct.product_id} price not updated sucessfully`);
+                    continue;
+                }
+
+                console.log(`✅ ${existingProduct.product_id} price updated sucessfully`);
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    process.exit();
 };
 
 // Runs everyday at 2:30 AM
@@ -163,6 +242,3 @@ async function main() {
 // });
 
 main();
-
-
-
