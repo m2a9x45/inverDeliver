@@ -132,12 +132,24 @@ function addProducts(productArray) {
     button.setAttribute("class", "addCartButton");
     button.addEventListener("click", (e) => {
       e.target.innerText = "Added to cart";
-      e.target.disabled = true;
+      // e.target.disabled = true;
+      // e.target.style.display = 'none';
+      // Show the quantiy selector
+      console.log(e);
+      console.log(e.target.parentElement.parentElement.children[1].children[1].innerText);
 
-      setTimeout(() => {
-        e.target.innerText = "Add to cart";
-        e.target.disabled = false;
-      }, 550);
+      console.log(product.product_id);
+      e.target.parentElement.parentElement.children[1].children[1].innerText++;
+
+      button.style.display = 'none';
+      quantityChangerDiv.style.display = 'flex';
+      
+
+
+      // setTimeout(() => {
+      //   e.target.innerText = "Add to cart";
+      //   e.target.disabled = false;
+      // }, 550);
 
       addProductToCart(product);
     })
@@ -148,7 +160,68 @@ function addProducts(productArray) {
     div.appendChild(price);
     div.appendChild(button);
 
+    const quantityChangerDiv = document.createElement("div");
+    quantityChangerDiv.setAttribute('class', 'quantitySelector');
+
+    const addButton = document.createElement('button');
+    addButton.setAttribute('class', 'quantityButton');
+    addButton.innerText = '+';
+    addButton.addEventListener("click", (e) => {
+      console.log(e);
+      console.log(e.target.parentElement.children[1].innerText);
+      e.target.parentElement.children[1].innerText++;
+      cart[product.product_id].number++;
+
+      if (cart[product.product_id].number > 9) {
+        console.log('here');
+        cart[product.product_id].number = 9;
+        e.target.parentElement.children[1].innerText = 9;
+      }
+
+
+      localStorage.setItem("cart", JSON.stringify(cart));
+    });
+
+    const quantityChanger = document.createElement("p");
+    quantityChanger.setAttribute('class', 'quantityNumber');
+
+    const minusButton = document.createElement('button');
+    minusButton.setAttribute('class', 'quantityButton');
+    minusButton.innerText = '-';
+    minusButton.addEventListener("click", (e) => {
+      console.log(e);
+      console.log(e.target.parentElement.children[1].innerText);
+
+      e.target.parentElement.children[1].innerText--;
+      cart[product.product_id].number--;
+
+      if (cart[product.product_id].number < 1) {
+        console.log('here');
+        cart[product.product_id].number = 0;
+        e.target.parentElement.children[1].innerText = 0;
+        quantityChangerDiv.style.display = 'none';
+        button.style.display = 'inline';
+      }
+
+      
+      localStorage.setItem("cart", JSON.stringify(cart));
+    });
+
+    // Check the cart for the current quantity
+    if (cart[product.product_id] &&  cart[product.product_id].number > 0) {
+      button.style.display = 'none';
+      quantityChanger.innerText = cart[product.product_id].number
+    } else {
+      quantityChangerDiv.style.display = 'none';
+      quantityChanger.innerText = 0;
+    }
+
+    quantityChangerDiv.appendChild(addButton);
+    quantityChangerDiv.appendChild(quantityChanger);
+    quantityChangerDiv.appendChild(minusButton);
+
     productLinksDiv.appendChild(div);
+    productLinksDiv.appendChild(quantityChangerDiv);
 
     gridDiv.appendChild(img);
     gridDiv.appendChild(size);

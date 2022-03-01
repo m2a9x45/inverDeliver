@@ -137,7 +137,6 @@ header {
     margin: 0.5rem auto;
 }
 
-
 .loader {
     margin: 1rem auto;
     border: 8px solid #f3f3f3;
@@ -213,12 +212,40 @@ img {
     padding: 15px 32px;
     text-align: center;
     text-decoration: none;
-    font-size: 12pt;
+    font-size: 13pt;
     border-radius: 5px;
 }
 
 .productLinks {
     margin-top: auto;
+}
+
+.quantitySelector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.quantityButton {
+    background-color: rgba(66, 176, 255, 0.61);
+    color: black;
+    border: 2px solid rgb(66, 176, 255);
+    padding: 0.1em 0.75em;
+    text-align: center;
+    text-decoration: none;
+    font-size: 24pt;
+    border-radius: 5px;
+}
+
+.quantityButton:hover {
+    background-color: rgb(66, 176, 255);
+}
+
+.quantityNumber {
+    padding: 0.5rem 1rem;
+    font-size: 18pt;
+    font-weight: bold;
+    margin: 0;
 }
 
 #snackbar {
