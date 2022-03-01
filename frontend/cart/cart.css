@@ -129,6 +129,16 @@ header {
     font-size: 18px;
 }
 
+.priceDiv {
+    text-align: right;
+}
+
+.itemPriceWithQuantity {
+    font-style: italic;
+    font-size: 12pt;
+    white-space: nowrap;
+}
+
 .total {
     margin: 2rem auto;
     padding: 1rem 2rem 1rem 2rem;
