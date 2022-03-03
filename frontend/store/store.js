@@ -279,14 +279,14 @@ function category(e, category) {
 
 productSearch.addEventListener("keypress", (e) => {
   clearError();
-  console.log(selectedCategory);
+  console.log(selectedCategory);;
 
   if (e.key === 'Enter' && productSearch.value !== "") {
     console.log(productSearch.value);
     getproducts(selectedCategory, productSearch.value);
   }
 
-  if (e.key === 'Enter' && productSearch.value === "" && selectedCategory === null) {
+  if (e.key === 'Enter' && productSearch.value === "" && (selectedCategory === null || selectedCategory === undefined)) {
     gridCcontainer.innerHTML = "";
     addProducts(initProducts);
   }

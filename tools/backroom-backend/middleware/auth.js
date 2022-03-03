@@ -29,7 +29,7 @@ function isAuthorized(req, res, next) {
 }
 
 function isAldiScapper(req, res, next) {
-  const apiKeyHeader = req.headers.api_key;
+  const apiKeyHeader = req.headers.apikey;
 
   if (apiKeyHeader !== undefined) {
     if (apiKeyHeader === process.env.API_KEY) {
