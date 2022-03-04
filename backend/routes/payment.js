@@ -113,9 +113,16 @@ router.get('/intent', authorisation.isAuthorized, async (req, res, next) => {
 
   try {
     const paymentIntentID = await dao.getPaymentID(orderID, res.locals.user);
-    if (paymentIntentID[0].payment_id) {
+    console.log(paymentIntentID);
+    // Re-write this check
+    if (paymentIntentID === undefined || paymentIntentID.payment_id === null) {
+      logger.info('No payment intent found for order', { ip: req.ip, orderID, userID: res.locals.user });
+      return res.status(404).send();
+    }
+
+    if (paymentIntentID.payment_id) {
       try {
-        const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentID[0].payment_id);
+        const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentID.payment_id);
         logger.info('Got payment intent for order', {
           ip: req.ip, orderID, userID: res.locals.user, paymentIntent: paymentIntent.id,
         });
@@ -123,10 +130,51 @@ router.get('/intent', authorisation.isAuthorized, async (req, res, next) => {
       } catch (error) {
         next(error);
       }
-    } else {
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/method', authorisation.isAuthorized, async (req, res, next) => {
+  const { orderID } = req.query;
+
+  try {
+    const paymentIntentID = await dao.getPaymentID(orderID, res.locals.user);
+
+    if (!paymentIntentID) {
       logger.info('No payment intent found for order', { ip: req.ip, orderID, userID: res.locals.user });
       res.status(404).send();
     }
+
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentID.payment_id);
+
+    if (paymentIntent.charges.data.length < 1) {
+      logger.error('No charge data found for that paymentID', {
+        ip: req.ip, orderID, userID: res.locals.user, status: paymentIntent.status,
+      });
+      return res.status(404).send();
+    }
+
+    // console.log(paymentIntent.charges.data[0].payment_method_details.card);
+
+    const { brand, wallet } = paymentIntent.charges.data[0].payment_method_details.card;
+    let { last4 } = paymentIntent.charges.data[0].payment_method_details.card;
+
+    let paymentType = 'card';
+
+    if (wallet.type === 'google_pay') {
+      paymentType = 'google_pay';
+      last4 = wallet.dynamic_last4;
+    }
+
+    res.json({
+      type: paymentType,
+      info: {
+        brand,
+        last4,
+      },
+    });
   } catch (error) {
     next(error);
   }
@@ -146,7 +194,7 @@ async function handlePaymentIntentSucceeded(id) {
         weekday: 'long',
         hour: 'numeric',
         minute: 'numeric',
-        hour12: true,
+        hourCycle: 'h12',
       });
 
       orderInfo.time = displaydate;
@@ -157,7 +205,19 @@ async function handlePaymentIntentSucceeded(id) {
       }).format(orderInfo.total / 100);
 
       orderInfo.total = formatedPrice;
-      const { brand, last4 } = cardInfo.charges.data[0].payment_method_details.card;
+
+      const { wallet } = cardInfo.charges.data[0].payment_method_details.card;
+      let { brand, last4 } = cardInfo.charges.data[0].payment_method_details.card;
+
+      if (wallet.type === 'google_pay') {
+        brand = 'Google Pay';
+        last4 = wallet.dynamic_last4;
+      }
+
+      if (wallet.type === 'apple_pay') {
+        brand = 'Apple Pay';
+        last4 = wallet.dynamic_last4;
+      }
 
       logger.info('Order conformation email attempted to be sent', { paymentIntent: id });
       mailgun.sendOrderConformationEmail(orderInfo, brand, last4);

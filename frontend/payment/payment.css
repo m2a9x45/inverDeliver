@@ -159,6 +159,12 @@ input {
 .hidden {
   display: none;
 }
+
+#payment-request-button {
+  width: 80%;
+  margin: 0 auto;
+}
+
 #card-error {
   color: rgb(105, 115, 134);
   text-align: left;

@@ -5,6 +5,7 @@ const navtoggle = document.querySelector('.mainNav');
 
 const orderContentDiv = document.querySelector(".orderContent");
 const priceTotal = document.querySelector('#priceTotal');
+const paymentMethodDisplay = document.querySelector('#paymentMethod');
 
 const url_string = window.location.href;
 const url = new URL(url_string);
@@ -46,6 +47,42 @@ navBarToggle.addEventListener("click", () => {
     navtoggle.style.display = "none";
   }
 });
+
+async function getPaymentMethod() {
+  try {
+    const response = await fetch(`${API_URL}/payment/method/?orderID=${orderID}`, {
+      headers: {
+        'authorization': `bearer ${token}`,
+      }
+    }) 
+
+    if (!response.ok) {
+      return paymentMethodDisplay.innerText = '❌ Sorry we can\'t get this right now';
+    }
+
+    return response.json();
+  } catch (error) {
+    paymentMethodDisplay.innerText = '❌ Sorry we can\'t get this right now';
+  }
+
+
+};
+
+
+document.addEventListener('DOMContentLoaded', async () => {  
+  const paymentMethod = await getPaymentMethod();
+  console.log(paymentMethod);
+
+  if (paymentMethod.type === 'card') {
+    paymentMethodDisplay.innerText = `${paymentMethod.info.brand} - ${paymentMethod.info.last4}`
+  }
+
+  if (paymentMethod.type === 'google_pay') {
+    paymentMethodDisplay.innerText = `Google Pay - ${paymentMethod.info.last4}`
+  }
+
+});
+
 
 fetch(`${API_URL}/order/status?orderID=${orderID}`, {
     headers: {
@@ -174,7 +211,7 @@ function displayDeliveryInfo(data) {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-    hour12: true
+    hourCycle: "h12"
   });
 
   deliveryTime.innerText = `Delivery Time: ${displaydate}`;

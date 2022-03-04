@@ -39,5 +39,6 @@ tools/aldi-scrapper/.env
 
 tools/aldi-auto-price-updator/node_modules
 tools/aldi-auto-price-updator/package.json
+tools/aldi-auto-price-updator/skuErrors-*.json
 
 tools/aldi-auto-price-updator/.env

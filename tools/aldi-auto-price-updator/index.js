@@ -1,16 +1,22 @@
 const puppeteer = require('puppeteer-extra');
 const cheerio = require('cheerio');
 const cron = require('node-cron');
-
-const dao = require('./dao/dataAldiProducts');
-
+const axios = require('axios');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+
+require('dotenv').config();
+
+// const API_URL = 'https://iapi.inverdeliver.com';
+const API_URL = 'http://localhost:3002';
+
 puppeteer.use(StealthPlugin());
+
+const products = [];
 
 const aldiUrls = [
     'https://groceries.aldi.co.uk/en-GB/chilled-food',
     'https://groceries.aldi.co.uk/en-GB/fresh-food/fruit-vegetables',
-    'https://groceries.aldi.co.uk/en-GB/fresh-food/meat-poultry',
+    // 'https://groceries.aldi.co.uk/en-GB/fresh-food/meat-poultry',
     'https://groceries.aldi.co.uk/en-GB/food-cupboard',
     'https://groceries.aldi.co.uk/en-GB/bakery',
     'https://groceries.aldi.co.uk/en-GB/fresh-food/fresh-fish',
@@ -19,14 +25,32 @@ const aldiUrls = [
 ];
 
 async function scrape(url) {
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({
+        headless: true,
+        // executablePath: '/usr/bin/chromium-browser'
+    });
     const page = await browser.newPage();
+    page.setDefaultNavigationTimeout(50 * 1000);
     await page.setViewport({
-      width: 1920,
-      height: 1080,
-      deviceScaleFactor: 1,
-      });
-    await page.goto(url, {waitUntil: 'networkidle2'});  
+        width: 1920,
+        height: 1080,
+        deviceScaleFactor: 1,
+    });
+
+    await page.setRequestInterception(true);
+    page.on('request', (req) => {
+        if (req.resourceType() === 'image') {
+            req.abort();
+        } else if (req.resourceType() === 'stylesheet' || req.resourceType() === 'font') {
+            req.abort();
+        } else {
+            req.continue();
+        }
+    });
+
+    await page.goto(url, {
+        waitUntil: 'domcontentloaded'
+    });
     await page.waitForTimeout(2000);
 
     const htmlArray = [];
@@ -36,13 +60,21 @@ async function scrape(url) {
         if (await page.$('body > div.container-md > div.searchgrid > div > div > div > div.col-12.col-lg-9.mt-3.pl-1 > div > div > div:nth-child(1) > div.col-6.d-none.d-lg-block > div > ul > li.page-item.next.ml-2.disabled') !== null) {
             console.log('End of page thing');
             const html = await page.content();
-            htmlArray.push({url: page.url(), html});
+            htmlArray.push({
+                url: page.url(),
+                html
+            });
             end = true;
         } else {
             console.log('Not the end');
             const html = await page.content();
-            htmlArray.push({url: page.url(), html});
-            await page.click('body > div.container-md > div.searchgrid > div > div > div > div.col-12.col-lg-9.mt-3.pl-1 > div > div > div:nth-child(1) > div.col-6.d-none.d-lg-block > div > ul > li.page-item.next.ml-2 > a', {waitUntil: 'domcontentloaded'});
+            htmlArray.push({
+                url: page.url(),
+                html
+            });
+            await page.click('body > div.container-md > div.searchgrid > div > div > div > div.col-12.col-lg-9.mt-3.pl-1 > div > div > div:nth-child(1) > div.col-6.d-none.d-lg-block > div > ul > li.page-item.next.ml-2 > a', {
+                waitUntil: 'domcontentloaded'
+            });
             await page.waitForTimeout(2000);
         }
     }
@@ -53,7 +85,6 @@ async function scrape(url) {
 
 function proceesFileContents(html) {
     const $ = cheerio.load(html);
-    const products = [];
 
     $('div[data-qa="search-results"]').each((i, elm) => {
         const product = {
@@ -65,78 +96,101 @@ function proceesFileContents(html) {
             des: $('a[data-qa="search-product-title"]', elm).attr('href'),
         }
 
-        products.push(product);
-    });
-    
-    products.forEach(async product => {
         const price = product.price;
         const removePoundSymbol = price.replace('£', '');
         const removeDecimalPoint = removePoundSymbol.replace('.', '');
         product.price = Math.floor(removeDecimalPoint);
-        checkProductPrice(product.id, product.price, product);
+
+        products.push(product);
     });
-
-    // console.log(products);
 };
-
-async function checkProductPrice(sku, newPrice, wholeProduct) {
-    try {
-        const result = await dao.getproductBySKU(sku);
-
-        if (result.length <= 0) {
-            // sku not found, send a slack message or something
-            // console.log(`${sku} not found 🚨`, wholeProduct);
-            return;
-        }
-
-        const existingProduct = result[0];
-
-        if (newPrice !== existingProduct.price) {
-            console.log(`⚠ ${existingProduct.product_id} price has changed from ${existingProduct.price} to ${newPrice}`);
-
-            const inserted = await dao.addHistoricalProductPrice(existingProduct.product_id, 'store_fdfdc63d-f865-4e06-815a-8164820358d8', existingProduct.price);
-            if (inserted.insertId > 0) {
-                console.log(`✅ ${existingProduct.product_id} historical price added sucessfully`);
-            }
-            
-            const updated = await dao.updateProductPrice(existingProduct.product_id, newPrice);
-            if (updated.changedRows > 0) {
-                console.log(`✅ ${existingProduct.product_id} price updated sucessfully`);
-            }
-
-
-            console.log(inserted);
-            console.log(updated);
-        }
-    } catch (error) {
-        console.log(error);
-    }
-}
-
 
 async function main() {
     for (let i = 0; i < aldiUrls.length; i++) {
+
         const htmlPages = await scrape(aldiUrls[i]);
         console.log(htmlPages.length);
-    
-        htmlPages.forEach((htmlpage, i) => {
-            console.log(htmlpage.url);
-            proceesFileContents(htmlpage.html);
-        });
+
+        for (let j = 0; j < htmlPages.length; j++) {
+            console.log(htmlPages[j].url);
+            proceesFileContents(htmlPages[j].html);
+        }
     }
 
-    // Send Slack message to say the scrape has finished 
-    process.exit();
+    // console.log(products);
+    console.log(products.length);
+    let test = 0;
 
-    // aldiUrls.forEach(async url => {
-    //     const htmlPages = await scrape(url);
-    //     console.log(htmlPages.length);
-    
-    //     htmlPages.forEach((htmlpage, i) => {
-    //         console.log(htmlpage.url);
-    //         proceesFileContents(htmlpage.html);
-    //     });
-    // });
+    for (const product of products) {
+        // test++;
+        // console.log(test);
+        try {
+            const response = await axios.get(`${API_URL}/product/bySku?storeID=store_fdfdc63d-f865-4e06-815a-8164820358d8&sku=${product.id}`, {
+                headers: {
+                    'apikey': process.env.API_KEY
+                }
+            });
+
+            if (response.data.error === true) {
+                console.log(`${product.id} not found`);
+                continue;
+            }
+
+            // console.log(response.data.data);
+
+            const newPrice = product.price; // Scraped
+            const existingProduct = response.data.data; // From DB
+
+            // console.log(newPrice, existingProduct.price);
+
+            if (newPrice !== existingProduct.price) {
+                console.log(`⚠ ${existingProduct.product_id} price has changed from ${existingProduct.price} to ${newPrice}`);
+
+                const historicalData = {
+                    productID: existingProduct.product_id,
+                    storeID: 'store_fdfdc63d-f865-4e06-815a-8164820358d8',
+                    price: existingProduct.price
+                }
+
+                const resHistotical = await axios.post(`${API_URL}/product/addHistoricalPrice`, historicalData, {
+                    headers: {
+                        'apikey': process.env.API_KEY
+                    }
+                });
+
+                if (resHistotical.data.error === true) {
+                    console.log(`❌ ${existingProduct.product_id} historical price not sucessfully added`);
+                    continue;
+                }
+
+                console.log(`✅ ${existingProduct.product_id} historical price added sucessfully`);
+
+                const newData = {
+                    productID: existingProduct.product_id,
+                    storeID: 'store_fdfdc63d-f865-4e06-815a-8164820358d8',
+                    price: newPrice
+                }
+
+                const resNewPrice = await axios.patch(`${API_URL}/product/updatePrice`, newData, {
+                    headers: {
+                        'apikey': process.env.API_KEY
+                    }
+                });
+
+                if (resNewPrice.data.error === true) {
+                    console.log(`❌ ${existingProduct.product_id} price not updated sucessfully`);
+                    continue;
+                }
+
+                console.log(`✅ ${existingProduct.product_id} price updated sucessfully`);
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    process.exit();
 };
 
 // Runs everyday at 2:30 AM
@@ -147,6 +201,3 @@ async function main() {
 // });
 
 main();
-
-
-

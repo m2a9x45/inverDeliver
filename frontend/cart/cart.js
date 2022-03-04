@@ -187,15 +187,24 @@ function displayCart(item, id) {
   } 
 
   const divPrice = document.createElement("div");
+  divPrice.setAttribute('class', 'priceDiv');
 
+  const itemPriceWithQuantity = document.createElement("p");
+  itemPriceWithQuantity.setAttribute('class', 'itemPriceWithQuantity');
   const itemPrice = document.createElement("p");
 
   const formatedPrice = new Intl.NumberFormat('en-UK', { style: 'currency', currency: 'GBP' }).format((item.price * item.number) / 100);
+  const formatedItemPrice = new Intl.NumberFormat('en-UK', { style: 'currency', currency: 'GBP' }).format((item.price) / 100);
 
   itemPrice.innerText = formatedPrice;
+  itemPriceWithQuantity.innerText = `${item.number} x ${formatedItemPrice}`;
 
   divPrice.appendChild(itemPrice);
 
+  if (item.name != "Delivery Fee") {
+    divPrice.appendChild(itemPriceWithQuantity);
+  }
+  
   if (item.name != "Delivery Fee") {
     div.appendChild(divPicAndItems);
   } else {

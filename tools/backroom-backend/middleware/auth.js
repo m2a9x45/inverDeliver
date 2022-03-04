@@ -28,6 +28,23 @@ function isAuthorized(req, res, next) {
   }
 }
 
+function isAldiScapper(req, res, next) {
+  const apiKeyHeader = req.headers.apikey;
+
+  if (apiKeyHeader !== undefined) {
+    if (apiKeyHeader === process.env.API_KEY) {
+      next();
+    } else {
+      res.statusCode = 401;
+      next({ internalMessage: 'Unautharised' });
+    }
+  } else {
+    res.statusCode = 401;
+    next('No token given');
+  }
+}
+
 module.exports = {
   isAuthorized,
+  isAldiScapper,
 };
