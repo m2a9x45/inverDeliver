@@ -6,6 +6,7 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 
 require('dotenv').config();
 
+// const API_URL = 'https://iapi.inverdeliver.com';
 const API_URL = 'http://localhost:3002';
 
 puppeteer.use(StealthPlugin());
@@ -15,7 +16,7 @@ const products = [];
 const aldiUrls = [
     'https://groceries.aldi.co.uk/en-GB/chilled-food',
     'https://groceries.aldi.co.uk/en-GB/fresh-food/fruit-vegetables',
-    'https://groceries.aldi.co.uk/en-GB/fresh-food/meat-poultry',
+    // 'https://groceries.aldi.co.uk/en-GB/fresh-food/meat-poultry',
     'https://groceries.aldi.co.uk/en-GB/food-cupboard',
     'https://groceries.aldi.co.uk/en-GB/bakery',
     'https://groceries.aldi.co.uk/en-GB/fresh-food/fresh-fish',
@@ -35,6 +36,18 @@ async function scrape(url) {
         height: 1080,
         deviceScaleFactor: 1,
     });
+
+    await page.setRequestInterception(true);
+    page.on('request', (req) => {
+        if (req.resourceType() === 'image') {
+            req.abort();
+        } else if (req.resourceType() === 'stylesheet' || req.resourceType() === 'font') {
+            req.abort();
+        } else {
+            req.continue();
+        }
+    });
+
     await page.goto(url, {
         waitUntil: 'domcontentloaded'
     });
@@ -92,63 +105,9 @@ function proceesFileContents(html) {
     });
 };
 
-async function checkProductPrice(products) {
-    // console.log(products);
-    for (const product of products) {
-        try {
-            const response = await axios.get(`${API_URL}/product/bySku?storeID=store_fdfdc63d-f865-4e06-815a-8164820358d8&sku=${product.id}`, {
-                headers: {
-                    'api_key': '69d21fec-49f1-4ed6-a094-5be8bfd647c8-539065a9-eadd-4936-8263-d83b2cf7013d-7f8fca23-c37a-4fbf-9074-072a18c3e1a6'
-                }
-            });
-
-            if (response.data.error === true) {
-                console.log(`${product.id} not found 🚨`);
-                return;
-            }
-
-            console.log(response.data.data);
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-
-
-    // try {
-
-
-    // console.log(result.data.data);
-
-    // if (result.length <= 0) {
-    //     console.log(`${sku} not found 🚨`);
-    //     return;
-    // }
-
-    // const existingProduct = result[0];
-
-    // if (newPrice !== existingProduct.price) {
-    //     console.log(`⚠ ${existingProduct.product_id} price has changed from ${existingProduct.price} to ${newPrice}`);
-
-    //     const inserted = await dao.addHistoricalProductPrice(existingProduct.product_id, 'store_fdfdc63d-f865-4e06-815a-8164820358d8', existingProduct.price);
-    //     if (inserted.insertId > 0) {
-    //         console.log(`✅ ${existingProduct.product_id} historical price added sucessfully`);
-    //     }
-
-    //     const updated = await dao.updateProductPrice(existingProduct.product_id, newPrice);
-    //     if (updated.changedRows > 0) {
-    //         console.log(`✅ ${existingProduct.product_id} price updated sucessfully`);
-    //     }
-    //     // console.log(inserted);
-    //     // console.log(updated);
-    // }
-    // } catch (error) {
-    //     console.log(error);
-    // }
-}
-
 async function main() {
     for (let i = 0; i < aldiUrls.length; i++) {
+
         const htmlPages = await scrape(aldiUrls[i]);
         console.log(htmlPages.length);
 
@@ -168,7 +127,7 @@ async function main() {
         try {
             const response = await axios.get(`${API_URL}/product/bySku?storeID=store_fdfdc63d-f865-4e06-815a-8164820358d8&sku=${product.id}`, {
                 headers: {
-                    'api_key': process.env.API_KEY
+                    'apikey': process.env.API_KEY
                 }
             });
 
@@ -195,7 +154,7 @@ async function main() {
 
                 const resHistotical = await axios.post(`${API_URL}/product/addHistoricalPrice`, historicalData, {
                     headers: {
-                        'api_key': process.env.API_KEY
+                        'apikey': process.env.API_KEY
                     }
                 });
 
@@ -214,7 +173,7 @@ async function main() {
 
                 const resNewPrice = await axios.patch(`${API_URL}/product/updatePrice`, newData, {
                     headers: {
-                        'api_key': process.env.API_KEY
+                        'apikey': process.env.API_KEY
                     }
                 });
 
