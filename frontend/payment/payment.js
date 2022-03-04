@@ -392,7 +392,7 @@ function addGooglePayToPage(total) {
     country: 'GB',
     currency: 'gbp',
     total: {
-      label: 'Demo total',
+      label: 'Your Shopping',
       amount: total,
     },
     requestPayerName: true,
