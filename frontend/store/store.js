@@ -135,8 +135,8 @@ function addProducts(productArray) {
       // e.target.disabled = true;
       // e.target.style.display = 'none';
       // Show the quantiy selector
-      console.log(e);
-      console.log(e.target.parentElement.parentElement.children[1].children[1].innerText);
+      // console.log(e);
+      // console.log(e.target.parentElement.parentElement.children[1].children[1].innerText);
 
       console.log(product.product_id);
       e.target.parentElement.parentElement.children[1].children[1].innerText++;
@@ -167,13 +167,12 @@ function addProducts(productArray) {
     addButton.setAttribute('class', 'quantityButton');
     addButton.innerText = '+';
     addButton.addEventListener("click", (e) => {
-      console.log(e);
-      console.log(e.target.parentElement.children[1].innerText);
+      // console.log(e);
+      // console.log(e.target.parentElement.children[1].innerText);
       e.target.parentElement.children[1].innerText++;
       cart[product.product_id].number++;
 
       if (cart[product.product_id].number > 9) {
-        console.log('here');
         cart[product.product_id].number = 9;
         e.target.parentElement.children[1].innerText = 9;
       }
@@ -189,14 +188,13 @@ function addProducts(productArray) {
     minusButton.setAttribute('class', 'quantityButton');
     minusButton.innerText = '-';
     minusButton.addEventListener("click", (e) => {
-      console.log(e);
-      console.log(e.target.parentElement.children[1].innerText);
+      // console.log(e);
+      // console.log(e.target.parentElement.children[1].innerText);
 
       e.target.parentElement.children[1].innerText--;
       cart[product.product_id].number--;
 
       if (cart[product.product_id].number < 1) {
-        console.log('here');
         cart[product.product_id].number = 0;
         e.target.parentElement.children[1].innerText = 0;
         quantityChangerDiv.style.display = 'none';
@@ -216,9 +214,10 @@ function addProducts(productArray) {
       quantityChanger.innerText = 0;
     }
 
-    quantityChangerDiv.appendChild(addButton);
-    quantityChangerDiv.appendChild(quantityChanger);
     quantityChangerDiv.appendChild(minusButton);
+    quantityChangerDiv.appendChild(quantityChanger);
+    quantityChangerDiv.appendChild(addButton);
+    
 
     productLinksDiv.appendChild(div);
     productLinksDiv.appendChild(quantityChangerDiv);
@@ -247,15 +246,7 @@ function addProductToCart(product) {
     };
   }
   console.log(cart);
-  toggleToast(product.name);
   localStorage.setItem("cart", JSON.stringify(cart));
-}
-
-function toggleToast(name) {
-  let x = document.getElementById("snackbar");
-  x.innerText = `${name} added to 🛒`
-  x.className = "show";
-  setTimeout(() => x.className = x.className.replace("show", ""), 500);
 }
 
 // Called form the category buttons
