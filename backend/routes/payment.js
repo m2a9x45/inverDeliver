@@ -113,9 +113,15 @@ router.get('/intent', authorisation.isAuthorized, async (req, res, next) => {
 
   try {
     const paymentIntentID = await dao.getPaymentID(orderID, res.locals.user);
-    if (paymentIntentID[0].payment_id) {
+    // Re-write this check
+    if (paymentIntentID === undefined) {
+      logger.info('No payment intent found for order', { ip: req.ip, orderID, userID: res.locals.user });
+      return res.status(404).send();
+    }
+
+    if (paymentIntentID.payment_id) {
       try {
-        const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentID[0].payment_id);
+        const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentID.payment_id);
         logger.info('Got payment intent for order', {
           ip: req.ip, orderID, userID: res.locals.user, paymentIntent: paymentIntent.id,
         });
@@ -123,10 +129,41 @@ router.get('/intent', authorisation.isAuthorized, async (req, res, next) => {
       } catch (error) {
         next(error);
       }
-    } else {
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/method', authorisation.isAuthorized, async (req, res, next) => {
+  const { orderID } = req.query;
+
+  try {
+    const paymentIntentID = await dao.getPaymentID(orderID, res.locals.user);
+
+    if (!paymentIntentID) {
       logger.info('No payment intent found for order', { ip: req.ip, orderID, userID: res.locals.user });
       res.status(404).send();
     }
+
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentID.payment_id);
+
+    if (paymentIntent.charges.data.length < 1) {
+      logger.error('No charge data found for that paymentID', {
+        ip: req.ip, orderID, userID: res.locals.user, status: paymentIntent.status,
+      });
+      return res.status(404).send();
+    }
+
+    const { brand, last4 } = paymentIntent.charges.data[0].payment_method_details.card;
+
+    res.json({
+      type: 'card',
+      info: {
+        brand,
+        last4,
+      },
+    });
   } catch (error) {
     next(error);
   }

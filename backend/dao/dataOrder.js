@@ -192,7 +192,7 @@ function getPaymentID(orderID, userID) {
     db.query(sql, [orderID, userID], (err, value) => {
       // console.log(err, value);
       if (err === null) {
-        resolve(value);
+        resolve(value[0]);
       } else {
         reject(err);
       }
