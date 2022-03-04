@@ -205,7 +205,19 @@ async function handlePaymentIntentSucceeded(id) {
       }).format(orderInfo.total / 100);
 
       orderInfo.total = formatedPrice;
-      const { brand, last4 } = cardInfo.charges.data[0].payment_method_details.card;
+
+      const { wallet } = cardInfo.charges.data[0].payment_method_details.card;
+      let { brand, last4 } = cardInfo.charges.data[0].payment_method_details.card;
+
+      if (wallet.type === 'google_pay') {
+        brand = 'Google Pay';
+        last4 = wallet.dynamic_last4;
+      }
+
+      if (wallet.type === 'apple_pay') {
+        brand = 'Apple Pay';
+        last4 = wallet.dynamic_last4;
+      }
 
       logger.info('Order conformation email attempted to be sent', { paymentIntent: id });
       mailgun.sendOrderConformationEmail(orderInfo, brand, last4);
