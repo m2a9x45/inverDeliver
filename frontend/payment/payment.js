@@ -65,7 +65,6 @@ navBarToggle.addEventListener("click", () => {
   }
 });
 
-
 // check that the order is in a payable state
 fetch(`${API_URL}/order/status?orderID=${orderID}`, {
     headers: {
@@ -156,6 +155,8 @@ function getOrderPrice(orderID) {
       currency: 'GBP'
     }).format((data.price + data.fee) / 100);
   
+    addGooglePayToPage(data.price + data.fee);
+
     priceTotal.innerText = `Your total: ${totalFormat}`;
 
     displayCart({name: "Delivery Fee", price: data.fee, quantity: 1});
@@ -205,15 +206,14 @@ function displayDeliveryInfo(addressInfo) {
   addressPostCode.innerText = addressInfo.post_code.replace(/^(.*)(\d)/, "$1 $2");
 
   const deliveryDate = new Date(addressInfo.time);
-  const options = {
-    weekday: 'long',
+  const displaydate = deliveryDate.toLocaleDateString("en-GB", {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric'
-  };
-  const displaydate = deliveryDate.toLocaleDateString("en-GB", options)
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: "h12"
+  })
 
 
   deliveryTime.innerText = displaydate;
@@ -385,6 +385,59 @@ const style = {
     color: "#fa755a",
     iconColor: "#fa755a"
   }
+};
+
+function addGooglePayToPage(total) {
+  const paymentRequest = stripe.paymentRequest({
+    country: 'GB',
+    currency: 'gbp',
+    total: {
+      label: 'Demo total',
+      amount: total,
+    },
+    requestPayerName: true,
+    requestPayerEmail: true,
+  });
+  
+  const prButton = elements.create('paymentRequestButton', {
+    paymentRequest,
+  });
+
+  (async () => {
+    // Check the availability of the Payment Request API first.
+    const result = await paymentRequest.canMakePayment();
+    if (result) {
+      prButton.mount('#payment-request-button');
+    } else {
+      document.getElementById('payment-request-button').style.display = 'none';
+    }
+  })();
+  
+  paymentRequest.on('paymentmethod', async (ev) => {
+    // Confirm the PaymentIntent without handling potential next actions (yet).
+    const {paymentIntent, error: confirmError} = await stripe.confirmCardPayment(
+      clientSecret,
+      {payment_method: ev.paymentMethod.id},
+      {handleActions: false}
+    );
+  
+    if (confirmError) {
+      showError(confirmError.message);
+      ev.complete('fail');
+    } else {
+      ev.complete('success');
+      if (paymentIntent.status === "requires_action") {
+        const {error} = await stripe.confirmCardPayment(clientSecret);
+        if (error) {
+          showError(error.message);
+        } else {
+          window.location.replace(`./success/?id=${paymentIntent.id}&orderID=${orderID}`);
+        }
+      } else {
+        window.location.replace(`./success/?id=${paymentIntent.id}&orderID=${orderID}`);
+      }
+    }
+  });
 };
 
 const card = elements.create("card", {

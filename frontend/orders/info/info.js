@@ -77,6 +77,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     paymentMethodDisplay.innerText = `${paymentMethod.info.brand} - ${paymentMethod.info.last4}`
   }
 
+  if (paymentMethod.type === 'google_pay') {
+    paymentMethodDisplay.innerText = `Google Pay - ${paymentMethod.info.last4}`
+  }
+
 });
 
 

@@ -113,8 +113,9 @@ router.get('/intent', authorisation.isAuthorized, async (req, res, next) => {
 
   try {
     const paymentIntentID = await dao.getPaymentID(orderID, res.locals.user);
+    console.log(paymentIntentID);
     // Re-write this check
-    if (paymentIntentID === undefined) {
+    if (paymentIntentID === undefined || paymentIntentID.payment_id === null) {
       logger.info('No payment intent found for order', { ip: req.ip, orderID, userID: res.locals.user });
       return res.status(404).send();
     }
@@ -155,10 +156,20 @@ router.get('/method', authorisation.isAuthorized, async (req, res, next) => {
       return res.status(404).send();
     }
 
-    const { brand, last4 } = paymentIntent.charges.data[0].payment_method_details.card;
+    // console.log(paymentIntent.charges.data[0].payment_method_details.card);
+
+    const { brand, wallet } = paymentIntent.charges.data[0].payment_method_details.card;
+    let { last4 } = paymentIntent.charges.data[0].payment_method_details.card;
+
+    let paymentType = 'card';
+
+    if (wallet.type === 'google_pay') {
+      paymentType = 'google_pay';
+      last4 = wallet.dynamic_last4;
+    }
 
     res.json({
-      type: 'card',
+      type: paymentType,
       info: {
         brand,
         last4,
