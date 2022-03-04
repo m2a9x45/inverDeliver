@@ -124,12 +124,19 @@
                 <div class="spinner hidden" id="spinner"></div>
                 <span id="button-text">Pay</span>
             </button>
+            <div style="display: flex;">
+                <img src="http://localhost:3001/logo/mc.svg" alt="" style="width: 50px;">
+                <img src="http://localhost:3001/logo/visa.svg" alt="" style="width: 50px;">
+                <img src="http://localhost:3001/logo/amex.svg" alt="" style="width: 50px;">
+            </div>
+
             <p>By completing this payment, you agree to our <a href="../us/legal/terms/" target="_blank" rel="noopener noreferrer">terms</a>.</p>
             <p id="card-error" role="alert"></p>
             <p class="result-message hidden">
                 Payment succeeded, see the result in your
                 <a href="" target="_blank">Stripe dashboard.</a> Refresh the page to pay again.
             </p>
+            
         </form>
 
     </main>
