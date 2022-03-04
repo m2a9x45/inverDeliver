@@ -1,0 +1,5 @@
+[[redirects]]
+  from = "/.well-known"
+  to = "/well-known"
+  status = 301
+  force = false
