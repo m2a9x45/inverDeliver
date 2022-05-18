@@ -195,7 +195,7 @@ function addProducts(productArray) {
       cart[product.product_id].number--;
 
       if (cart[product.product_id].number < 1) {
-        cart[product.product_id].number = 0;
+        delete cart[product.product_id];
         e.target.parentElement.children[1].innerText = 0;
         quantityChangerDiv.style.display = 'none';
         button.style.display = 'inline';
