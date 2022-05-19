@@ -110,6 +110,18 @@ async function sendSMScode(SMScode, phoneNumber, userID) {
   }
 }
 
+async function checkIfEmailInUse(email) {
+  try {
+    const account = await dao.hasAccountByEmail(email);
+    if (account.length > 0) {
+      return { inUsed: true, userID: account[0].user_id };
+    }
+    return { inUsed: false };
+  } catch (error) {
+    return error;
+  }
+}
+
 router.post('/googleSignIn', async (req, res, next) => {
   const { credential } = req.body;
   const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -143,13 +155,20 @@ router.post('/googleSignIn', async (req, res, next) => {
         jwt.sign({ userID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
           if (!err) {
             logger.info('User signed in', { userID, ip: req.ip });
-            res.redirect(`${process.env.GOOGLE_REDIRECT_URL}/?token=${jwtToken}`);
+            res.redirect(`${process.env.GOOGLE_REDIRECT_URL}/store/?token=${jwtToken}`);
             loginsMetric.inc({ type: 'google', success: true, status: 200 });
           } else {
             next(err);
           }
         });
       } else {
+        // Check that this email isn't linked to another account
+        const emailInUse = await checkIfEmailInUse(payload.email);
+        if (emailInUse.inUsed === true) {
+          logger.info('Account linked with that email', { email: payload.email, userID: emailInUse.userID, ip: req.ip });
+          res.redirect(`${process.env.GOOGLE_REDIRECT_URL}/signin/?error=email_in_use`);
+        }
+
         // if they don't create an account for them
         const userID = uuidv4();
         logger.info('Account not found via googleID', { googleID: googleUserID, userID, ip: req.ip });
@@ -185,7 +204,7 @@ router.post('/googleSignIn', async (req, res, next) => {
         jwt.sign({ userID }, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
           if (!err) {
             logger.info('JWT Created & Sent', { userID, ip: req.ip });
-            res.redirect(`${process.env.GOOGLE_REDIRECT_URL}/?token=${jwtToken}`);
+            res.redirect(`${process.env.GOOGLE_REDIRECT_URL}/store/?token=${jwtToken}`);
             // res.json({ token: jwtToken });
           } else {
             next(err);
@@ -231,14 +250,22 @@ router.post('/fbSignIn', async (req, res, next) => {
         }
       });
     } else {
-      // not found account so create one
-      const userID = uuidv4();
-      logger.info('Account not found via FBID', { fbID: fbUserID, userID, ip: req.ip });
-
       // get facebook profile info
       const fbUserInfo = await axios.get(`https://graph.facebook.com/me?access_token=${accessToken}&fields=id,email,first_name,last_name`);
       const payload = fbUserInfo.data;
 
+      // check if email is in use
+      const emailInUse = await checkIfEmailInUse(payload.email);
+      if (emailInUse.inUsed === true) {
+        logger.info('Account linked with that email', {
+          email: payload.email, userID: emailInUse.userID, fbID: fbUserID, ip: req.ip,
+        });
+        res.json({ error: true, errorMessage: 'email_in_use' });
+      }
+
+      // not found account so create one
+      const userID = uuidv4();
+      logger.info('Account not found via FBID', { fbID: fbUserID, userID, ip: req.ip });
       // generate a stripe customer ID
       const stripeCustomer = await stripe.customers.create({
         name: `${payload.first_name}`,

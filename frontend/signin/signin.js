@@ -13,6 +13,7 @@ const loader = document.querySelector('.loader');
 const urlString = window.location.href;
 const url = new URL(urlString);
 const loginToken = url.searchParams.get("token");
+const socialLoginError = url.searchParams.get("error");
 
 if (loginToken) {
     localStorage.setItem("token", loginToken);
@@ -21,6 +22,14 @@ if (loginToken) {
 
 if (token) {
     window.location.replace("../");
+}
+
+if (socialLoginError) {
+    if (socialLoginError === 'email_in_use') {
+        showErrorMessage("Sorry your email address is already in use");
+    } else {
+        showErrorMessage("Sorry something went wrong, contact us if this continues");
+    }
 }
 
 async function login(loginInfo) {
@@ -99,6 +108,14 @@ function statusChangeCallback(res) {
         .then(response => response.json())
         .then(data => {
             console.log(data);
+            if (data.error === true) {
+                if (data.errorMessage === 'email_in_use') {
+                    showErrorMessage("Sorry your email address is already in use");
+                } else {
+                    showErrorMessage("Something when wrong, let us know if it continues");
+                }                
+            }
+
             if (data.token) {
                 localStorage.setItem('token', data.token);
                 window.location.replace('../');
