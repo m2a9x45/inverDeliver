@@ -1,0 +1,374 @@
+{
+    "0500": {
+        "id": "0500",
+        "name": "Get Inspired",
+        "order": 1,
+        "parent": null,
+        "subcategories": [
+            "202",
+            "224",
+            "225"
+        ]
+    },
+    "0600": {
+        "id": "0600",
+        "name": "Bakery and Cakes",
+        "order": 2,
+        "parent": null,
+        "subcategories": [
+            "367",
+            "350",
+            "348",
+            "9",
+            "10",
+            "11",
+            "356",
+            "368",
+            "12",
+            "13",
+            "354",
+            "14",
+            "15"
+        ]
+    },
+    "0700": {
+        "id": "0700",
+        "name": "Fresh Fruit, Veg and Salad",
+        "order": 3,
+        "parent": null,
+        "subcategories": [
+            "306",
+            "231",
+            "17",
+            "18",
+            "19",
+            "20",
+            "307",
+            "322",
+            "326",
+            "327",
+            "305"
+        ]
+    },
+    "0800": {
+        "id": "0800",
+        "name": "Meat, Fish and Poultry",
+        "order": 4,
+        "parent": null,
+        "subcategories": [
+            "295",
+            "203",
+            "364",
+            "22",
+            "23",
+            "24",
+            "27",
+            "303",
+            "304",
+            "314",
+            "329",
+            "328"
+        ]
+    },
+    "0850": {
+        "id": "0850",
+        "name": "Dairy, Eggs and Chilled Juice",
+        "order": 5,
+        "parent": null,
+        "subcategories": [
+            "29",
+            "30",
+            "31",
+            "33",
+            "78",
+            "79",
+            "80",
+            "323",
+            "32",
+            "237",
+            "352",
+            "34"
+        ]
+    },
+    "0900": {
+        "id": "0900",
+        "name": "Pizza, Ready Meals and Fresh Pasta",
+        "order": 6,
+        "parent": null,
+        "subcategories": [
+            "36",
+            "308",
+            "285",
+            "313",
+            "371",
+            "372",
+            "39",
+            "38",
+            "83",
+            "336",
+            "373",
+            "41"
+        ]
+    },
+    "0925": {
+        "id": "0925",
+        "name": "Desserts and Yoghurts",
+        "order": 7,
+        "parent": null,
+        "subcategories": [
+            "316",
+            "317",
+            "318",
+            "319"
+        ]
+    },
+    "0950": {
+        "id": "0950",
+        "name": "Food to Go",
+        "order": 8,
+        "parent": null,
+        "subcategories": [
+            "351",
+            "81",
+            "82",
+            "339",
+            "359",
+            "90"
+        ]
+    },
+    "0975": {
+        "id": "0975",
+        "name": "Deli, Pies and Cooked Meats",
+        "order": 9,
+        "parent": null,
+        "subcategories": [
+            "84",
+            "89",
+            "85",
+            "374",
+            "321",
+            "86",
+            "88"
+        ]
+    },
+    "01000": {
+        "id": "01000",
+        "name": "Food Cupboard",
+        "order": 10,
+        "parent": null,
+        "subcategories": [
+            "370",
+            "227",
+            "93",
+            "94",
+            "95",
+            "297",
+            "101",
+            "99",
+            "96",
+            "98",
+            "298",
+            "102",
+            "104"
+        ]
+    },
+    "01100": {
+        "id": "01100",
+        "name": "Frozen Foods",
+        "order": 11,
+        "parent": null,
+        "subcategories": [
+            "288",
+            "289",
+            "113",
+            "116",
+            "290",
+            "112",
+            "291",
+            "115",
+            "118",
+            "119",
+            "114",
+            "120"
+        ]
+    },
+    "01200": {
+        "id": "01200",
+        "name": "Tea, Coffee and Hot Drinks",
+        "order": 12,
+        "parent": null,
+        "subcategories": [
+            "262",
+            "263",
+            "264",
+            "267",
+            "261",
+            "265"
+        ]
+    },
+    "01250": {
+        "id": "01250",
+        "name": "Chocolate, Crisps, Biscuits and Snacks",
+        "order": 13,
+        "parent": null,
+        "subcategories": [
+            "355",
+            "366",
+            "300",
+            "56",
+            "58",
+            "57",
+            "223",
+            "222",
+            "245",
+            "59"
+        ]
+    },
+    "01300": {
+        "id": "01300",
+        "name": "Beers, Wines and Spirits",
+        "order": 14,
+        "parent": null,
+        "subcategories": [
+            "251",
+            "270",
+            "271",
+            "286",
+            "45",
+            "44",
+            "46",
+            "48",
+            "51",
+            "49",
+            "283",
+            "50",
+            "52",
+            "272"
+        ]
+    },
+    "01400": {
+        "id": "01400",
+        "name": "Soft Drinks, Tonic and Water",
+        "order": 15,
+        "parent": null,
+        "subcategories": [
+            "109",
+            "106",
+            "107",
+            "108",
+            "110",
+            "287"
+        ]
+    },
+    "01450": {
+        "id": "01450",
+        "name": "Vegetarian and Vegan",
+        "order": 16,
+        "parent": null,
+        "subcategories": [
+            "65",
+            "66"
+        ]
+    },
+    "01500": {
+        "id": "01500",
+        "name": "Free From",
+        "order": 17,
+        "parent": null,
+        "subcategories": [
+            "67",
+            "68",
+            "69",
+            "70",
+            "76"
+        ]
+    },
+    "02000": {
+        "id": "02000",
+        "name": "Household",
+        "order": 18,
+        "parent": null,
+        "subcategories": [
+            "256",
+            "132",
+            "129",
+            "128",
+            "130",
+            "133",
+            "131",
+            "269",
+            "127",
+            "209"
+        ]
+    },
+    "02100": {
+        "id": "02100",
+        "name": "Occasions, Flowers & Gifting",
+        "order": 19,
+        "parent": null,
+        "subcategories": [
+            "276",
+            "277",
+            "278",
+            "279",
+            "282"
+        ]
+    },
+    "02200": {
+        "id": "02200",
+        "name": "Baby and Toddler",
+        "order": 20,
+        "parent": null,
+        "subcategories": [
+            "135",
+            "136",
+            "137",
+            "138",
+            "139",
+            "142"
+        ]
+    },
+    "02300": {
+        "id": "02300",
+        "name": "Health and Beauty",
+        "order": 21,
+        "parent": null,
+        "subcategories": [
+            "146",
+            "243",
+            "147",
+            "148",
+            "342",
+            "343",
+            "347",
+            "151",
+            "244"
+        ]
+    },
+    "02400": {
+        "id": "02400",
+        "name": "Pet Food",
+        "order": 22,
+        "parent": null,
+        "subcategories": [
+            "334",
+            "154",
+            "249",
+            "153",
+            "250"
+        ]
+    },
+    "02500": {
+        "id": "02500",
+        "name": "Cigarettes, Tobacco and Vaping",
+        "order": 23,
+        "parent": null,
+        "subcategories": [
+            "164",
+            "165",
+            "167",
+            "301",
+            "168"
+        ]
+    }
+}

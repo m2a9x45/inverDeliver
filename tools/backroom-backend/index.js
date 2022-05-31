@@ -18,7 +18,8 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.use(express.json());
+// Need to oncrease for images uploads as base64, would be good to increase this just for that path
+app.use(express.json({ limit: '50mb' }));
 
 app.use('/order', authorisation.isAuthorized, orders);
 app.use('/delivery', authorisation.isAuthorized, delivery);

@@ -9,6 +9,15 @@ async function getproductBySKU(storeID, sku) {
   }
 }
 
+async function getProductsByStore(storeID) {
+  try {
+    const selectedRows = await db.knex('product').where({ retailer_id: storeID }).select('product_id', 'sku', 'price');
+    return selectedRows;
+  } catch (error) {
+    return error;
+  }
+}
+
 async function addHistoricalProductPrice(productID, storeID, price) {
   try {
     const selectedRows = await db.knex('product_historical_pricing').insert({ product_id: productID, retailer_id: storeID, price });
@@ -31,4 +40,5 @@ module.exports = {
   getproductBySKU,
   addHistoricalProductPrice,
   updateProductPrice,
+  getProductsByStore,
 };

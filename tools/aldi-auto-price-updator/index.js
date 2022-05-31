@@ -6,8 +6,8 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 
 require('dotenv').config();
 
-// const API_URL = 'https://iapi.inverdeliver.com';
-const API_URL = 'http://localhost:3002';
+const API_URL = 'https://iapi.inverdeliver.com';
+// const API_URL = 'http://localhost:3002';
 
 puppeteer.use(StealthPlugin());
 
@@ -16,7 +16,7 @@ const products = [];
 const aldiUrls = [
     'https://groceries.aldi.co.uk/en-GB/chilled-food',
     'https://groceries.aldi.co.uk/en-GB/fresh-food/fruit-vegetables',
-    // 'https://groceries.aldi.co.uk/en-GB/fresh-food/meat-poultry',
+    'https://groceries.aldi.co.uk/en-GB/fresh-food/meat-poultry',
     'https://groceries.aldi.co.uk/en-GB/food-cupboard',
     'https://groceries.aldi.co.uk/en-GB/bakery',
     'https://groceries.aldi.co.uk/en-GB/fresh-food/fresh-fish',
@@ -26,7 +26,7 @@ const aldiUrls = [
 
 async function scrape(url) {
     const browser = await puppeteer.launch({
-        headless: true,
+        headless: false,
         // executablePath: '/usr/bin/chromium-browser'
     });
     const page = await browser.newPage();

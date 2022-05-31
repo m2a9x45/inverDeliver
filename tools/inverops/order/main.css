@@ -2,6 +2,14 @@ body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
     background-color: rgb(241, 241, 241);
+    font-size: 18px;
+}
+
+button, input, textarea {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    outline: none;
 }
 
 .orderItem {
@@ -48,12 +56,45 @@ body {
 }
 
 #completeButton {
-    background-color: hsl(93, 77%, 44%); /* Green */
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    background-color: rgb(66, 176, 255);
     border: none;
-    padding: 0.5rem 2rem;
+    padding: 0.75rem 0;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 14pt;
-    width: 100%;
+    font-size: 1.3em;
 }
+
+.uploadCheckoutDataForm {
+    width: 95%;
+    margin: 1rem auto;
+    padding: 1rem 0.5rem;
+    background-color: rgb(255, 255, 255);
+}
+
+#uploadCheckoutDataButton {
+    width: 100%;
+    background-color: rgb(66, 176, 255);
+    border: none;
+    padding: 0.75rem 0;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1.3em;
+}
+
+.uploadCheckoutDataForm input[type=text] {
+    width: 100%;
+    font-size: 18px;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: 1px solid black;
+    border-radius: 5px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+

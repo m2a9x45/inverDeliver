@@ -19,7 +19,8 @@
     "knex": "^0.95.4",
     "mime-db": "^1.48.0",
     "mysql": "^2.18.1",
-    "picomatch": "^2.3.0"
+    "picomatch": "^2.3.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "eslint": "^7.28.0",

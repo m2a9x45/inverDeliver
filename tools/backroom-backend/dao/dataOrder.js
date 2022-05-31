@@ -66,10 +66,23 @@ async function updateOrderStatus(orderID, status) {
   }
 }
 
+async function addInStoreCheckoutInfo(orderID, receiptUrl, inStoreCheckoutPrice) {
+  try {
+    const selectedRows = await db.knex('order').where('order_id', orderID).update({
+      receipt_url: receiptUrl,
+      in_store_checkout_price: inStoreCheckoutPrice,
+    });
+    return selectedRows;
+  } catch (error) {
+    return error;
+  }
+}
+
 module.exports = {
   getOrders,
   getLatestOrders,
   getOrderContent,
   updateOrderStatus,
   getOrderStatus,
+  addInStoreCheckoutInfo,
 };

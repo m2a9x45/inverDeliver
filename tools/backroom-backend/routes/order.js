@@ -1,8 +1,10 @@
+const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
 const express = require('express');
 
 const router = express.Router();
 
-const dao = require('../dao/dataOrder.js');
+const dao = require('../dao/dataOrder');
 
 router.get('/latest', async (req, res, next) => {
   try {
@@ -58,6 +60,29 @@ router.get('/getStatus/:id', async (req, res, next) => {
     console.log(error);
     next(error);
   }
+});
+
+router.post('/finalCheckoutInfo', (req, res, next) => {
+  const { receiptImage, price, orderID } = req.body;
+
+  const data = receiptImage.replace(/^data:image\/\w+;base64,/, '');
+  const fileName = `receipt_${uuidv4()}`;
+
+  fs.writeFile(`${process.env.RECEIPT_SAVE_PATH}/${fileName}.jpg`, data, { encoding: 'base64' }, async (err) => {
+    if (err) {
+      res.status(500);
+    }
+
+    try {
+      const updated = await dao.addInStoreCheckoutInfo(orderID, fileName, price * 100);
+      if (updated !== 1) {
+        res.status(500).send();
+      }
+      res.status(201).send();
+    } catch (error) {
+      next(error);
+    }
+  });
 });
 
 module.exports = router;

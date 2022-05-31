@@ -1,0 +1,66 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background-color: #eeeeee;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+header {
+    background-color: rgb(41, 41, 41);
+    padding: 1em;
+}
+
+.navbar {
+    margin: 0 auto;
+    width: 75%;
+}
+
+.navbarToggle {
+    display: none;
+}
+
+.navbarToggle:hover {
+    color: rgb(66, 176, 255);
+}
+
+.mainNav {
+    display: flex;
+    flex-direction: row;
+}
+
+.navbarList {
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+#navbarItem {
+    display: inline-block;
+    list-style-type: none;
+    font-size: 16pt;
+    padding: 0.5rem;
+}
+
+#navbarItem a, #logo a {
+    text-decoration: none;
+    color: rgb(224, 224, 224);
+}
+
+#navbarItem a:hover, #logo a:hover {
+    color: rgb(66, 176, 255);
+}
+
+main {
+    width: 40%;
+    margin: 1rem auto;
+}
+
+main h1 {
+    font-size: 3em;
+}
+
+main p {
+    font-size: 1.5em;
+}

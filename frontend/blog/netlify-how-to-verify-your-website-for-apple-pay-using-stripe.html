@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="blog.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@150;300;400&display=swap" rel="stylesheet">
+
+    <script src="https://kit.fontawesome.com/4c9a84b417.js" crossorigin="anonymous"></script>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+    <link rel="manifest" href="../site.webmanifest">
+    <link rel="mask-icon" href="../safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#603cba">
+    <meta name="theme-color" content="#ffffff">
+
+    <meta name="description" content="Blog post focusing on how to verify a website for apple pay via stripe">
+    <meta name="keywords" content="Netlify, Stripe, Apple Pay">
+    <meta name="author" content="Lewis Dukelow">
+
+    <title>InverDeliver | Blog - how to verify a website for apple pay via stripe</title> 
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <span class="navbarToggle">
+                <i class="fa fa-bars"></i>
+            </span>
+            <ul class="navbarList">
+                <li id="navbarItem" style="margin-right: auto;"><a href="../">Home</a></li>
+                <div class="mainNav">
+                    <li id="navbarItem"><a id="order" href="../orders/">Your Orders</a></li>
+                    <li id="navbarItem"><a id="cart" href="../cart/">Cart</a></li>
+                    <li id="navbarItem"><a id="cart" href="../us/">Help</a></li>
+                    <li id="navbarItem"><a id="cart" href="../account/">Account</a></li>
+                    <li id="navbarItem"><a id="logout" href="../signin">Login</a></li>
+                </div>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h1>Netlify how to verify your website for Apple Pay using Stripe</h1>
+
+        <span>17 MARCH 2022</span>
+
+        <p>To accept Apple Pay and Google Pay on the web using stripe, you'll need to use their payment request button <a href="https://stripe.com/docs/stripe-js/elements/payment-request-button">Payment Request Button | Stripe Documentation</a></p>
+
+        <p>The Stripes docs are great and walk you through adding the payment request button. And if you've already set up card payments, there's very little work to actually do.</p>
+
+        <p>As the frontend of my application was hosted on Netlify, verifying my domain with Apple pay required one more step than the docs covered.</p>
+
+        <p>It's pretty simple: Stripe generates a file for you that you host at a specific place on your site. https://example.com/.well-known/apple-developer-merchantid-domain-association</p>
+
+        <p>Apple will then make a request to that endpoint, take the file hosted there and verify it. If all goes well Apple Pay will start working.</p>
+
+        <p>However Netlify removes any files or directories starting with a dot. This makes sense, as I'm guessing they don't want to host your .gitigonore file or anything else private that might be in the repository.</p>
+
+        <p>Lucky they do have a redirects feature <a href="https://docs.netlify.com/routing/redirects/">Redirects and rewrites | Netlify Docs</a>. Which means all you need to do is create a well-known folder and then create a redirect to it. So that any traffic to .well-known/apple-developer-merchantid-domain-association gets directed to well-known/apple-developer-merchantid-domain-association without the dot.</p>
+
+        <p>Firstly head to your stripe dashboard, then settings, payment methods, scroll down to the wallets section, click on Apple pay and then hit configure <a href="https://dashboard.stripe.com/settings/payments/apple_pay">Apple Pay Config | Stripe Dashboard</a></p>
+
+        <p>You just need to focus on the Web domains part of the page, the iOS certificates are for mobile  app integrations, and require an apple developer account. Verifying your domain for apple pay on the other hand doesn't require an apple developer account and is completely free. </p>
+
+        <p>Then all you'll need to do is create a file called _redirects in the root of your project. Then add your redirect to the file in plan text.</p>
+
+        <p><code>/.well-known/apple-developer-merchantid-domain-association  /well-known/apple-developer-merchantid-domain-association 200</code></p>
+            
+        <p>The <code>200</code> at the end is really important, it allows you to force the status code of the redirect. Without it the default status code is <code>401</code> as it should be. Stripe will return an error when checking if the file is in the correct location if the http status code is anything other than a <code>200 OK</code> response.</p>
+
+        <p>Finally enter your domain name, example.com not https or www. And click add you should see a success message and then a new entry under the Web domains section on your dashboard.</p>
+
+        <p>You can see this working on InverDeliver https://inverdeliver.com/.well-known/apple-developer-merchantid-domain-association</p>
+    </main>
+</body>
+</html>

@@ -38,6 +38,18 @@ tools/aldi-scrapper/.env
 
 tools/aldi-auto-price-updator/node_modules
 tools/aldi-auto-price-updator/package.json
-tools/aldi-auto-price-updator/skuErrors-*.json
-
 tools/aldi-auto-price-updator/.env
+
+tools/coop-scraper/node_modules
+tools/coop-scraper/package.json
+tools/coop-scraper/skuErrors-*.json
+tools/coop-scraper/data
+tools/coop-scraper/images
+
+tools/coop-scraper/.env
+
+
+tools/coop-auto-price-updater/node_modules
+tools/coop-auto-price-updater/package.json
+tools/coop-auto-price-updater/.env
+

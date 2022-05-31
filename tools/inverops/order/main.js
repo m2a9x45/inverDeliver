@@ -4,12 +4,19 @@ const orderList = document.querySelector(".orderList");
 const completeButton = document.querySelector("#completeButton");
 const shoppingNowButton = document.querySelector('#shoppingNowButton');
 const nameText = document.querySelector('#name');
+const fileInput = document.querySelector('#receiptImage');
+const checkoutPrice = document.querySelector('#checkoutPrice');
+const uploadCheckoutDataForm = document.querySelector('.uploadCheckoutDataForm');
+
 
 const token = localStorage.getItem('stoken');
 
 const url_string = window.location.href;
 const url = new URL(url_string);
 const orderID = url.searchParams.get("orderID");
+
+let receiptImageBase64 = '';
+
 console.log(orderID);
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -73,7 +80,6 @@ async function getOrderStatus() {
     } 
 }
 
-
 function displayOrder(product) {
     const orderDiv = document.createElement("div");
     orderDiv.setAttribute("class", "orderItem");
@@ -126,3 +132,43 @@ function displayOrder(product) {
 
     orderList.appendChild(orderDiv);
 }
+
+fileInput.addEventListener('change', (e) => {
+    console.log(e.target.files[0]);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+        // console.log(reader.result)
+        receiptImageBase64 = reader.result;
+    }
+
+    reader.readAsDataURL(e.target.files[0]);
+});
+
+uploadCheckoutDataForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const data = {
+        orderID: orderID,
+        price: checkoutPrice.value,
+        receiptImage: receiptImageBase64,
+    }
+
+    console.log(data);
+
+    try {
+        const response = await fetch(`${API_URL}/order/finalCheckoutInfo`, { 
+            method: "POST", 
+            headers: { 'authorization' : `Bearer ${token}` }, 
+            body: JSON.stringify(data)
+        });
+
+        if (response.status === 201) {
+            
+        }
+
+        console.log(response);
+    } catch (error) {
+        console.log(error);
+    }
+})
