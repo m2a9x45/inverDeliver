@@ -5,6 +5,7 @@ const navtoggle = document.querySelector('.mainNav');
 const catogoryItems = document.querySelectorAll('.categoryItem');
 const gridCcontainer = document.querySelector('.grid-container');
 const productSearch = document.querySelector('#productSearch');
+const keywordSearchFoundDiv = document.querySelector('.keywordSearchFoundDiv');
 
 const loader = document.querySelector('.loader');
 const errorMessage = document.querySelector('#errorMessage');
@@ -268,20 +269,81 @@ function category(e, category) {
   }
 }
 
+async function keywordProductSerach() {
+  keywordSearchFoundDiv.innerHTML = '';
+
+  if (productSearch.value.length > 3) {
+    const foundProducts = await keywordSerachProducts(productSearch.value);
+    console.log(foundProducts);
+    if (foundProducts.length > 0) {
+      keywordSearchFoundDiv.style.display = 'block';
+      foundProducts.forEach(product => {
+        displaykeywordSerachProduct(product);
+      });
+    } else {
+      keywordSearchFoundDiv.style.display = 'none';
+    }
+  } else {
+    keywordSearchFoundDiv.style.display = 'none';
+  }
+}
+
+productSearch.addEventListener("focus", (e) => {
+  keywordProductSerach();
+});
+
+productSearch.addEventListener("input", (e) => {
+  keywordProductSerach();
+});
+
 productSearch.addEventListener("keypress", (e) => {
   clearError();
-  console.log(selectedCategory);;
+  console.log(selectedCategory);
 
   if (e.key === 'Enter' && productSearch.value !== "") {
     console.log(productSearch.value);
+    keywordSearchFoundDiv.style.display = 'none';
     getproducts(selectedCategory, productSearch.value);
   }
 
   if (e.key === 'Enter' && productSearch.value === "" && (selectedCategory === null || selectedCategory === undefined)) {
     gridCcontainer.innerHTML = "";
+    keywordSearchFoundDiv.style.display = 'none';
     addProducts(initProducts);
   }
 })
+
+function displaykeywordSerachProduct(product) {
+  const keywordSearchFoundProduct = document.createElement('div');
+  keywordSearchFoundProduct.setAttribute('class', 'keywordSearchFoundProduct');
+  keywordSearchFoundProduct.addEventListener('click', (e) => {
+    console.log(product.product_id);
+    window.location = `./product/?productID=${product.product_id}&?storeID=${storeID}`
+  })
+
+  const img = document.createElement('img')
+  img.setAttribute('src', `http://localhost:3001/productImage/${product.image_url}`);
+  img.setAttribute('width', '75px');
+  img.setAttribute('height', '75px');
+
+  const productName = document.createElement('p')
+  productName.innerText = product.name;
+
+  keywordSearchFoundProduct.appendChild(img);
+  keywordSearchFoundProduct.appendChild(productName);
+
+  keywordSearchFoundDiv.appendChild(keywordSearchFoundProduct);
+}
+
+async function keywordSerachProducts(searchTerm) {
+  try {
+    const response = await fetch(`${API_URL}/product/find?storeID=${storeID}&search=${searchTerm}`)
+    const products = await response.json();
+    return products;
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 async function getproducts(category, search) {
   gridCcontainer.innerHTML = "";

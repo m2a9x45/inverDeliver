@@ -169,7 +169,7 @@ header {
     margin: 0 auto;
   }
 
-img {
+.grid-item img {
     margin: 0 auto;
 }
 
@@ -275,12 +275,37 @@ img {
 #productSearch {
     width: 100%;
     padding: 12px 20px;
-    margin: 8px 0;
+    margin: 8px 0 0 0;
     box-sizing: border-box;
-    border: 1px solid black;
+    border: 1px solid rgb(91, 91, 91);
     font-size: 18px;
     text-align: center;
-    border-radius: 25px;
+    border-radius: 5px
+}
+
+.keywordSearchFoundDiv::-webkit-scrollbar {
+    display: none;
+}
+
+.keywordSearchFoundDiv {
+    display: none;
+    background-color: white;
+    overflow-y: scroll;
+    height: 30vh;
+}
+
+.keywordSearchFoundProduct {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.keywordSearchFoundProduct p {
+    padding-left: 1rem;
+}
+
+.keywordSearchFoundProduct:hover {
+    background-color: rgb(200, 200, 200);
 }
 
 footer {

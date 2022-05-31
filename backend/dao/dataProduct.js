@@ -66,10 +66,25 @@ function productById(productID) {
   }));
 }
 
+function keywordSearch(storeID, searchTerm) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT product_id, name, image_url FROM product WHERE retailer_id=(?) AND name LIKE (?) ORDER BY category DESC';
+    db.query(sql, [storeID, `%${searchTerm}%`], (err, value) => {
+      // console.log(err, value);
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
 module.exports = {
   products,
   product,
   productById,
   productByCategory,
   productByCategoryAndSearch,
+  keywordSearch,
 };
