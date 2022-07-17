@@ -56,9 +56,14 @@ async function main() {
         const existingProduct = productsArray[i];
         const newPrice = Math.floor(thirdPartyPrice * 100);
 
-        console.log(`🔎 OurID ${productsArray[i].product_id}, Third Party ID${productsArray[i].sku} Our Price ${existingProduct.product_id} Their Price ${newPrice}`);
+        if (Number(newPrice) === NaN || Number(newPrice) === 0) {
+            console.log(`New price isn't a number ${newPrice}, ${productsArray[i].product_id} | ${productsArray[i].sku}`);
+            continue;
+        }
 
-        if (productsArray[i].price !== newPrice && typeof newPrice === "number"  && typeof existingProduct === "number") {
+        console.log(`🔎 OurID ${productsArray[i].product_id}, Third Party ID ${productsArray[i].sku} Our Price ${existingProduct.price} Their Price ${newPrice}`);
+
+        if (productsArray[i].price !== newPrice && typeof newPrice === "number") {
 
             console.log(`⚠ ${existingProduct.product_id} price has changed from ${existingProduct.price} to ${newPrice}`);
 
@@ -116,4 +121,4 @@ cronitor.schedule('coop-price-updater', '2 2 * * *', () => {
 });
 
 // monitor.ping({state: 'run'});
-// main();
+main();
