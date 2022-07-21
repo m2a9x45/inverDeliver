@@ -1,5 +1,14 @@
 const db = require('./conn');
 
+async function getproduct(storeID, id) {
+  try {
+    const selectedRows = await db.knex('product').where({ retailer_id: storeID, product_id: id }).select();
+    return selectedRows[0];
+  } catch (error) {
+    return error;
+  }
+}
+
 async function getproductBySKU(storeID, sku) {
   try {
     const selectedRows = await db.knex('product').where({ retailer_id: storeID, sku }).select('product_id', 'price');
@@ -36,9 +45,21 @@ async function updateProductPrice(productID, price, storeID) {
   }
 }
 
+async function updateProduct(productID, storeID, product) {
+  try {
+    const selectedRows = await db.knex('product').where({ product_id: productID, retailer_id: storeID }).update(product);
+    return selectedRows;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+}
+
 module.exports = {
+  getproduct,
   getproductBySKU,
   addHistoricalProductPrice,
   updateProductPrice,
   getProductsByStore,
+  updateProduct,
 };

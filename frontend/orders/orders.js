@@ -151,6 +151,10 @@ function displayOrders(order) {
     // Delivery section, label, streetname, city and postcode
     const deliveryInfo = document.createElement("div");
 
+    const storeName = document.createElement("p")
+    storeName.innerText = order.store_name;
+    deliveryInfo.appendChild(storeName);
+
     const deliveryInfoLabel = document.createElement("p");
     deliveryInfoLabel.innerText = "Delivery Address";
     deliveryInfo.appendChild(deliveryInfoLabel);

@@ -23,6 +23,7 @@ async function checkThirdPartyPrice(sku) {
         return response.data.price;
     } catch (error) {
         console.log(error);
+        return null;
     }
 }
 
@@ -36,6 +37,48 @@ async function getProducts() {
     return response.data.data;
 }
 
+async function updateProduct(existingProduct, newPrice){
+    console.log(`⚠ ${existingProduct.product_id} price has changed from ${existingProduct.price} to ${newPrice}`);
+
+    const newData = {
+        productID: existingProduct.product_id,
+        storeID: 'store_c57b9f4f-0b69-496c-8036-d801c6041a72',
+        price: newPrice,
+    }
+
+    const resNewPrice = await axios.patch(`${process.env.API_URL}/product/updatePrice`, newData, {
+        headers: {
+            'apikey': process.env.API_KEY
+        }
+    });
+
+    if (resNewPrice.data.error === true) {
+        console.log(`❌ ${existingProduct.product_id} price not updated sucessfully`);
+        return;
+    }
+
+    console.log(`✅ ${existingProduct.product_id} price updated sucessfully`);
+
+    const historicalData = {
+        productID: existingProduct.product_id,
+        storeID: 'store_c57b9f4f-0b69-496c-8036-d801c6041a72',
+        price: existingProduct.price,
+    }
+
+    const resHistotical = await axios.post(`${process.env.API_URL}/product/addHistoricalPrice`, historicalData, {
+        headers: {
+            'apikey': process.env.API_KEY
+        }
+    });
+
+    if (resHistotical.data.error === true) {
+        console.log(`❌ ${existingProduct.product_id} historical price not sucessfully added`);
+        return;
+    }
+
+    console.log(`✅ ${existingProduct.product_id} historical price added sucessfully`);
+}
+
 async function main() {
     const productsArray = await getProducts();
 
@@ -47,78 +90,42 @@ async function main() {
         console.log(`${i + 1}/${productsArray.length} : ${progress}`);
 
         await new Promise(r => setTimeout(r, 300));
-        const thirdPartyPrice = await checkThirdPartyPrice(productsArray[i].sku);
-        console.log(productsArray[i]);
-        if (thirdPartyPrice === null) {
-            continue;
-        }
+        try {
+            const thirdPartyPrice = await checkThirdPartyPrice(productsArray[i].sku);   
+            
+            if (thirdPartyPrice === null) {
+                continue;
+            } 
 
-        const existingProduct = productsArray[i];
-        const newPrice = Math.floor(thirdPartyPrice * 100);
+            const existingProduct = productsArray[i];
+            const newPrice = Math.floor(thirdPartyPrice * 100);
 
-        if (Number(newPrice) === NaN || Number(newPrice) === 0) {
-            console.log(`New price isn't a number ${newPrice}, ${productsArray[i].product_id} | ${productsArray[i].sku}`);
-            continue;
-        }
 
-        console.log(`🔎 OurID ${productsArray[i].product_id}, Third Party ID ${productsArray[i].sku} Our Price ${existingProduct.price} Their Price ${newPrice}`);
-
-        if (productsArray[i].price !== newPrice && typeof newPrice === "number") {
-
-            console.log(`⚠ ${existingProduct.product_id} price has changed from ${existingProduct.price} to ${newPrice}`);
-
-            const newData = {
-                productID: existingProduct.product_id,
-                storeID: 'store_c57b9f4f-0b69-496c-8036-d801c6041a72',
-                price: newPrice,
-            }
-
-            const resNewPrice = await axios.patch(`${process.env.API_URL}/product/updatePrice`, newData, {
-                headers: {
-                    'apikey': process.env.API_KEY
-                }
-            });
-
-            if (resNewPrice.data.error === true) {
-                console.log(`❌ ${existingProduct.product_id} price not updated sucessfully`);
+    
+            if (Number(newPrice) == NaN || Number(newPrice) == 0) {
+                console.log(`New price isn't a number ${newPrice}, ${productsArray[i].product_id} | ${productsArray[i].sku}`);
                 continue;
             }
+    
+            console.log(`🔎 OurID ${productsArray[i].product_id}, Third Party ID ${productsArray[i].sku} Our Price ${existingProduct.price} Their Price ${newPrice}`);
 
-            console.log(`✅ ${existingProduct.product_id} price updated sucessfully`);
-
-            const historicalData = {
-                productID: existingProduct.product_id,
-                storeID: 'store_c57b9f4f-0b69-496c-8036-d801c6041a72',
-                price: existingProduct.price,
+            if (productsArray[i].price !== newPrice && typeof newPrice === "number") {
+                updateProduct(existingProduct, newPrice);
             }
-
-            const resHistotical = await axios.post(`${process.env.API_URL}/product/addHistoricalPrice`, historicalData, {
-                headers: {
-                    'apikey': process.env.API_KEY
-                }
-            });
-
-            if (resHistotical.data.error === true) {
-                console.log(`❌ ${existingProduct.product_id} historical price not sucessfully added`);
-                continue;
-            }
-
-            console.log(`✅ ${existingProduct.product_id} historical price added sucessfully`);
+        } catch (error) {
+            console.log(error);
+            continue;
         }
     }
 
     const endTime = new Date();
     console.log(startTime, endTime);
-    monitor.ping({state: 'complete'});
     process.exit();
 }
 
 
 cronitor.schedule('coop-price-updater', '2 2 * * *', () => {
-    monitor.ping({state: 'run'});
-    console.log('Sending welcome email to new sign ups every five minutes.');
     main();
 });
 
-// monitor.ping({state: 'run'});
-main();
+//main();

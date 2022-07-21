@@ -3,6 +3,20 @@ const dao = require('../dao/dataProduct');
 
 const router = express.Router();
 
+router.get('/byId', async (req, res, next) => {
+  const { id, storeID } = req.query;
+
+  try {
+    const product = await dao.getproduct(storeID, id);
+    if (product === undefined) {
+      return res.json({ error: true, message: 'Invaild sku or storeID' });
+    }
+    return res.json({ error: false, data: product });
+  } catch (error) {
+    return next(error);
+  }
+});
+
 router.get('/bySku', async (req, res, next) => {
   const { sku, storeID } = req.query;
 
@@ -58,7 +72,29 @@ router.patch('/updatePrice', async (req, res, next) => {
     if (inserted === 1) {
       return res.json({ error: false });
     }
-    return res.json({ error: true, message: 'Failed to add historical pricing data' });
+    return res.json({ error: true, message: 'Failed to update product pricing data' });
+  } catch (error) {
+    return next(error);
+  }
+});
+
+router.patch('/updateProduct', async (req, res, next) => {
+  const { productID, storeID, product } = req.body;
+
+  console.log(product);
+
+  // {
+  //   name: "test",
+  //   price: "123"
+  // }
+
+  try {
+    const inserted = await dao.updateProduct(productID, storeID, product);
+
+    if (inserted === 1) {
+      return res.json({ error: false });
+    }
+    return res.json({ error: true, message: 'Failed to update product data' });
   } catch (error) {
     return next(error);
   }
