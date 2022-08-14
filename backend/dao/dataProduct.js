@@ -55,7 +55,7 @@ function productByCategoryAndSearch(storeID, category, search) {
 
 function productById(productID) {
   return new Promise(((resolve, reject) => {
-    const sql = 'SELECT name, image_url, price FROM product WHERE product_id=(?)';
+    const sql = 'SELECT * FROM product WHERE product_id=(?)';
     db.query(sql, [productID], (err, value) => {
       if (err === null) {
         resolve(value);

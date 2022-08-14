@@ -318,11 +318,11 @@ function displaykeywordSerachProduct(product) {
   keywordSearchFoundProduct.setAttribute('class', 'keywordSearchFoundProduct');
   keywordSearchFoundProduct.addEventListener('click', (e) => {
     console.log(product.product_id);
-    window.location = `./product/?productID=${product.product_id}&?storeID=${storeID}`
+    window.location = `../product/?productID=${product.product_id}&?storeID=${storeID}`
   })
 
   const img = document.createElement('img')
-  img.setAttribute('src', `http://localhost:3001/productImage/${product.image_url}`);
+  img.setAttribute('src', `${API_URL}/productImage/${product.image_url}`);
   img.setAttribute('width', '75px');
   img.setAttribute('height', '75px');
 

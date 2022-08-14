@@ -99,8 +99,6 @@ async function main() {
 
             const existingProduct = productsArray[i];
             const newPrice = Math.floor(thirdPartyPrice * 100);
-
-
     
             if (Number(newPrice) == NaN || Number(newPrice) == 0) {
                 console.log(`New price isn't a number ${newPrice}, ${productsArray[i].product_id} | ${productsArray[i].sku}`);
@@ -124,8 +122,8 @@ async function main() {
 }
 
 
-cronitor.schedule('coop-price-updater', '2 2 * * *', () => {
-    main();
-});
+// cronitor.schedule('coop-price-updater', '2 2 * * *', () => {
+//     main();
+// });
 
-//main();
+main();

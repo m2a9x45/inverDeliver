@@ -1,9 +1,12 @@
 const db = require('./conn');
 
-async function getproduct(storeID, id) {
+async function getproduct(id) {
   try {
-    const selectedRows = await db.knex('product').where({ retailer_id: storeID, product_id: id }).select();
-    return selectedRows[0];
+    const selectedRows = await db.knex.select('*').from('product')
+      .join('store', 'store.store_id', '=', 'product.retailer_id')
+      .join('bussiness', 'bussiness.bussiness_id', '=', 'store.bussiness_id')
+      .where('product_id', id);
+    return selectedRows;
   } catch (error) {
     return error;
   }

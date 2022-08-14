@@ -4,14 +4,15 @@ const dao = require('../dao/dataProduct');
 const router = express.Router();
 
 router.get('/byId', async (req, res, next) => {
-  const { id, storeID } = req.query;
+  const { id } = req.query;
 
   try {
-    const product = await dao.getproduct(storeID, id);
+    const product = await dao.getproduct(id);
     if (product === undefined) {
       return res.json({ error: true, message: 'Invaild sku or storeID' });
     }
-    return res.json({ error: false, data: product });
+    console.log(product);
+    return res.json(product[0]);
   } catch (error) {
     return next(error);
   }
