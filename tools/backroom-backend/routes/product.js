@@ -46,6 +46,17 @@ router.get('/byStore', async (req, res, next) => {
   }
 });
 
+router.get('/search', async (req, res, next) => {
+  const { name } = req.query;
+
+  try {
+    const products = await dao.getProductByName(name);
+    res.json(products);
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.post('/addHistoricalPrice', async (req, res, next) => {
   const { productID, storeID, price } = req.body;
 
@@ -83,11 +94,6 @@ router.patch('/updateProduct', async (req, res, next) => {
   const { productID, storeID, product } = req.body;
 
   console.log(product);
-
-  // {
-  //   name: "test",
-  //   price: "123"
-  // }
 
   try {
     const inserted = await dao.updateProduct(productID, storeID, product);

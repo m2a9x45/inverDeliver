@@ -2,7 +2,8 @@ const db = require('./conn');
 
 async function getproduct(id) {
   try {
-    const selectedRows = await db.knex.select('*').from('product')
+    const selectedRows = await db.knex.select('product_id', 'sku', 'retailer_id', 'upc', 'product.name', 'price', 'price_variable', 'size',
+      'category', 'upc', 'image_url').from('product')
       .join('store', 'store.store_id', '=', 'product.retailer_id')
       .join('bussiness', 'bussiness.bussiness_id', '=', 'store.bussiness_id')
       .where('product_id', id);
@@ -24,6 +25,15 @@ async function getproductBySKU(storeID, sku) {
 async function getProductsByStore(storeID) {
   try {
     const selectedRows = await db.knex('product').where({ retailer_id: storeID }).select('product_id', 'sku', 'price');
+    return selectedRows;
+  } catch (error) {
+    return error;
+  }
+}
+
+async function getProductByName(productName) {
+  try {
+    const selectedRows = await db.knex('product').where('name', 'like', `%${productName}%`).select();
     return selectedRows;
   } catch (error) {
     return error;
@@ -65,4 +75,5 @@ module.exports = {
   updateProductPrice,
   getProductsByStore,
   updateProduct,
+  getProductByName,
 };

@@ -1,0 +1,74 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    /* background-color: rgb(241, 241, 241); */
+    height: 100vh;
+}
+
+button, input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    outline: none;
+}
+
+header {
+    background-color: rgb(41, 41, 41);
+    padding: 1em;
+    
+}
+
+main {
+    margin: 1rem auto;
+    width: 75%;
+}
+
+input[type=text] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: 1px solid rgb(125, 125, 125);
+  }
+
+.keywordSearchFoundProduct {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.keywordSearchFoundProduct p {
+    padding-left: 1rem;
+}
+
+.keywordSearchFoundProduct:hover {
+    /* background-color: rgb(200, 200, 200); */
+}
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    /* background-color: #dddddd; */
+}
+
+.code {
+    width: fit-content;
+    margin: 0;
+    font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace;
+    line-height: normal;
+    background: rgba(135,131,120,0.15);
+    color: #EB5757;
+    border-radius: 3px;
+    font-size: 85%;
+    padding: 0.2em 0.4em;
+}
