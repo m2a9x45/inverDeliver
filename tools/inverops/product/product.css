@@ -49,6 +49,7 @@ table {
     font-family: arial, sans-serif;
     border-collapse: collapse;
     width: 100%;
+    margin-bottom: 1rem;
 }
 
 td, th {

@@ -48,12 +48,24 @@ router.get('/byStore', async (req, res, next) => {
 
 router.get('/search', async (req, res, next) => {
   const { name } = req.query;
+  const { upc } = req.query;
+
+  console.log(name);
 
   try {
-    const products = await dao.getProductByName(name);
-    res.json(products);
+    let products;
+
+    if (name && upc === undefined) {
+      products = await dao.getProductByName(name);
+    } else if (upc && name === undefined) {
+      products = await dao.getProductByUPC(upc);
+    } else {
+      return res.json({ error: true, message: 'Incorrect query params supplied' });
+    }
+
+    return res.json(products);
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 

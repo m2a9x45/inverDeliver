@@ -1,4 +1,5 @@
 const API_URL = "http://localhost:3002";
+const API_URL_MAIN = "http://localhost:3001";
 const token = localStorage.getItem('stoken');
 
 const search = document.querySelector('#product-search');
@@ -29,13 +30,24 @@ stores.addEventListener('change', (e) => {
 search.addEventListener('keyup', async (e) => {
     productList.innerHTML = "";
 
+    // Internal product ID lookup
     if (search.value.split("_")[0] === "prod") {
         window.location = `.?product_id=${search.value}`
+        return;
     }
 
+    // UPC lookup
+    if (Number.isInteger(Number(search.value)) === true) {
+        const products  = await getProducts(`search?upc=${search.value}`);
+        window.location = `.?product_id=${products[0].product_id}`
+        return;
+    }
+
+    // Product name search
+    // If the product name contain non safe url encoding charaters such as & we'll need to url encode the serach value
     if (search.value.length >= 3) {
         console.log(search.value);
-        const products  = await getProducts(search.value);
+        const products  = await getProducts(`search?name=${encodeURIComponent(search.value)}`);
         products.forEach(product => {
             displayProduct(product)
         });
@@ -44,7 +56,7 @@ search.addEventListener('keyup', async (e) => {
 
 async function getProducts(search) {
     try {
-        const response = await fetch(`${API_URL}/product/search?name=${search}`, { headers: { 'authorization' : `Bearer ${token}`} });
+        const response = await fetch(`${API_URL}/product/${search}`, { headers: { 'authorization' : `Bearer ${token}`} });
         if (!response.ok) {
             throw `❌ ${response.status} - ${response.statusText}`;
         }
@@ -78,11 +90,12 @@ function displayProduct(product) {
 
     keywordSearchFoundProduct.addEventListener('click', (e) => {
         console.log(product.product_id);
-        selectProduct(product);
+        window.location = `.?product_id=${product.product_id}`;
+        //selectProduct(product);
     })
 
     const img = document.createElement('img')
-    img.setAttribute('src', `${API_URL}/productImage/${product.image_url}`);
+    img.setAttribute('src', `${API_URL_MAIN}/productImage/${product.image_url}`);
     img.setAttribute('width', '75px');
     img.setAttribute('height', '75px');
 
@@ -101,10 +114,8 @@ function selectProduct(product) {
     // Add product ID to the url bar
     window.history.replaceState(null, null, `?product_id=${product.product_id}`);
 
-
-
     const img = document.createElement('img')
-    img.setAttribute('src', `${API_URL}/productImage/${product.image_url}`);
+    img.setAttribute('src', `${API_URL_MAIN}/productImage/${product.image_url}`);
     img.setAttribute('width', '175px');
     img.setAttribute('height', '175px');
 
@@ -218,4 +229,40 @@ function selectProduct(product) {
     table.appendChild(retailerIDRow);
 
     selectedProduct.appendChild(table);
+
+    // Add links to external product pages
+    const productLink = document.createElement('a');
+    
+    productLink.setAttribute('target', '_blank');
+    productLink.setAttribute('rel', 'noopener noreferrer');
+    productLink.style.paddingRight = "1rem";
+    
+    const productAPI = document.createElement('a');
+    
+    productAPI.setAttribute('target', '_blank');
+    productAPI.setAttribute('rel', 'noopener noreferrer');
+    
+
+    switch (product.retailer_id) {
+        case "store_3f9cdbd2-ee17-42e8-90c6-1852fd77a93d": // Morrisons
+            productLink.setAttribute('href', `https://groceries.store.morrisons.com/products/${product.sku}/details`);
+            productAPI.setAttribute('href', `https://groceries.store.morrisons.com/api/v4/products/bop?retailerProductId=${product.sku}`);
+            productLink.innerText = 'Morrisons Product Page';
+            productAPI.innerText = 'Morrisons API';
+            break;
+
+        case "store_c57b9f4f-0b69-496c-8036-d801c6041a72": // Co-op
+            productLink.setAttribute('href', `https://shop.coop.co.uk/product/${product.sku}`);
+            productAPI.setAttribute('href', `https://api.shop.coop.co.uk/products/details/${product.sku}?store_id=7d452a7d-90dc-46b6-9d4c-db2a30584521`);
+            productLink.innerText = 'Co-op Product Page';
+            productAPI.innerText = 'Co-op API';
+            break;
+        default:
+            break;
+    }
+
+    selectedProduct.appendChild(productLink);
+    selectedProduct.appendChild(productAPI);
+
+
 }
