@@ -46,6 +46,29 @@ router.get('/byStore', async (req, res, next) => {
   }
 });
 
+router.get('/search', async (req, res, next) => {
+  const { name } = req.query;
+  const { upc } = req.query;
+
+  console.log(name);
+
+  try {
+    let products;
+
+    if (name && upc === undefined) {
+      products = await dao.getProductByName(name);
+    } else if (upc && name === undefined) {
+      products = await dao.getProductByUPC(upc);
+    } else {
+      return res.json({ error: true, message: 'Incorrect query params supplied' });
+    }
+
+    return res.json(products);
+  } catch (error) {
+    return next(error);
+  }
+});
+
 router.post('/addHistoricalPrice', async (req, res, next) => {
   const { productID, storeID, price } = req.body;
 
@@ -83,11 +106,6 @@ router.patch('/updateProduct', async (req, res, next) => {
   const { productID, storeID, product } = req.body;
 
   console.log(product);
-
-  // {
-  //   name: "test",
-  //   price: "123"
-  // }
 
   try {
     const inserted = await dao.updateProduct(productID, storeID, product);

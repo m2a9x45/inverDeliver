@@ -7,7 +7,7 @@ require('dotenv').config();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const dao = require('../dao/dataStaff.js');
+const dao = require('../dao/dataStaff');
 
 router.post('/login', async (req, res, next) => {
   const { username, password } = req.body;
@@ -30,6 +30,7 @@ router.post('/login', async (req, res, next) => {
       return next(err);
     });
   } catch (error) {
+    console.log(error);
     return next(error);
   }
 });

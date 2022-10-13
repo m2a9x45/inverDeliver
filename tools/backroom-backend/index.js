@@ -24,7 +24,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use('/order', authorisation.isAuthorized, orders);
 app.use('/delivery', authorisation.isAuthorized, delivery);
 app.use('/staff', staff);
-app.use('/product', authorisation.isAldiScapper, product);
+app.use('/product', authorisation.isAuthorized || authorisation.isAldiScapper, product);
 // app.use('/planning', planning);
 
 app.get('/', (req, res) => {
