@@ -1,4 +1,4 @@
-const db = require('./conn.js');
+const db = require('./conn');
 
 function createOrderWithNewAddress(userID, orderID, deliveryID, addressID, orderData) {
   return new Promise(((resolve, reject) => {
@@ -27,7 +27,7 @@ function createOrderWithNewAddress(userID, orderID, deliveryID, addressID, order
 
             return db.query('INSERT INTO addresses (address_id, user_id, street, city, post_code) VALUES (?,?,?,?,?)',
               [addressID, userID, orderData.street_name, orderData.city,
-                orderData.post_code], (errorAddress, valueAddress) => {
+                orderData.post_code], (errorAddress) => {
                 if (errorAddress) {
                   return db.rollback(() => {
                     reject(errorAddress);
@@ -97,7 +97,7 @@ function createOrder(userID, orderID, deliveryID, addressID, storeID, orderData)
 
 function addOrderDetails(products) {
   return new Promise(((resolve, reject) => {
-    const sql = 'INSERT INTO details(order_id, product_id, quantity) VALUES ?';
+    const sql = 'INSERT INTO details(order_id, product_id, quantity, price) VALUES ?';
     db.query(sql, [products], (err, value) => {
       if (err === null) {
         resolve(value);
@@ -177,8 +177,8 @@ function updateOrderPrice(price, paymentID, fee, orderID, userID) {
 
 function updateOrderStatus(paymentID, status) {
   return new Promise(((resolve, reject) => {
-    const sql = 'UPDATE food.order SET status=(?) WHERE payment_id=(?) AND status="payment_required"';
-    db.query(sql, [status, paymentID], (err, value) => {
+    const sql = 'UPDATE food.order SET status=(?) WHERE payment_id=(?) AND status=(?)';
+    db.query(sql, [status, paymentID, 'payment_required'], (err, value) => {
       // console.log(err, value);
       if (err === null) {
         resolve(value);
@@ -241,7 +241,6 @@ function getOrderConfirmEmailInfo(id) {
     INNER JOIN store s ON s.store_id = o.store_id
     WHERE o.payment_id = (?); `;
     db.query(sql, [id], (err, value) => {
-      console.log(err, value);
       if (err === null) {
         resolve(value[0]);
       } else {
@@ -253,9 +252,8 @@ function getOrderConfirmEmailInfo(id) {
 
 function getStoreIDFromProduct(productID) {
   return new Promise(((resolve, reject) => {
-    const sql = 'SELECT retailer_id FROM product WHERE product_id=(?)';
+    const sql = 'SELECT retailer_id, price FROM product WHERE product_id=(?)';
     db.query(sql, [productID], (err, value) => {
-      // console.log(err, value);
       if (err === null) {
         resolve(value[0]);
       } else {

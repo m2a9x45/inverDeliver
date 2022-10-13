@@ -23,7 +23,7 @@ const logger = require('./middleware/logger');
 // const bussiness = require('./routes/bussiness');
 
 const corsOptions = {
-  origin: ['http://localhost:8080', 'https://inverdeliver.com'],
+  origin: ['http://localhost:8080', 'http://localhost:63342', 'https://inverdeliver.com'],
   optionsSuccessStatus: 200,
 };
 

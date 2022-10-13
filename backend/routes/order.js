@@ -43,15 +43,15 @@ router.post('/create',
       return res.json({ error: "We don't deliver on weekends" });
     }
 
-    // Check the deleryID's postcode sector is within the operatrating area of the storeID that's been provided
+    // Check the deliveryID's postcode sector is within the operating area
+    // of the storeID that's been provided
     try {
       const { post_code: postCode } = await daoUser.getAddressPostCode(res.locals.user, addressID);
       // Get the post code sector from the post code
       const postCodeParsed = postCode.replace(/\s/g, '');
-      const regixPostCode = postCodeParsed.toUpperCase().match(/^[A-Z][A-Z]{0,1}[0-9][A-Z0-9]{0,1}[0-9]/);
+      const regixPostCode = postCodeParsed.toUpperCase().match(/^[A-Z][A-Z]?[0-9][A-Z0-9]?[0-9]/);
 
-      // Then query the stores operting area with that post code sectore
-      console.log(postCode);
+      // Then query the stores operating area with that post code sector
       const { operates: isWithinOperatingArea } = await daoUser
         .isDeliveryAddressWithinOperatingArea(data.store_id, regixPostCode[0]);
 
@@ -73,16 +73,24 @@ router.post('/create',
     const cartIssues = [];
 
     for (let i = 0; i < data.products.length; i += 1) {
+      const productIDFromClient = data.products[i][0];
       // eslint-disable-next-line no-await-in-loop
-      const correctStoreID = await dao.getStoreIDFromProduct(data.products[i][0]);
+      const productInfo = await dao.getStoreIDFromProduct(productIDFromClient);
+      if (!productInfo.retailer_id || !productInfo.price) {
+        logger.error('product missing storeID or price', { ip: req.ip, userID: res.locals.user, product_id: productIDFromClient });
+        return res.status(400).json({ error: true, message: "Product isn't assigned to a store" });
+      }
+      const correctStoreID = productInfo.retailer_id;
+      data.products[i][2] = productInfo.price;
+
       // console.log(correctStoreID.retailer_id, data.store_id);
       if (correctStoreID === null || correctStoreID === undefined) {
-        cartIssues.push({ product_id: data.products[i][0], issue_reason: 'invaild_product_id' });
-        logger.warn('invaild product ID in cart', { ip: req.ip, userID: res.locals.user, product_id: data.products[i][0] });
+        cartIssues.push({ product_id: productIDFromClient, issue_reason: 'invalid_product_id' });
+        logger.warn('invalid product ID in cart', { ip: req.ip, userID: res.locals.user, product_id: productIDFromClient });
       } else if (correctStoreID.retailer_id !== data.store_id) {
-        cartIssues.push({ product_id: data.products[i][0], correctStoreID, issue_reason: 'wrong_store_id' });
-        logger.warn('invaild product ID for given store ID', {
-          ip: req.ip, userID: res.locals.user, product_id: data.products[i][0], correctStoreID,
+        cartIssues.push({ product_id: productIDFromClient, correctStoreID, issue_reason: 'wrong_store_id' });
+        logger.warn('invalid product ID for given store ID', {
+          ip: req.ip, userID: res.locals.user, product_id: productIDFromClient, correctStoreID,
         });
       }
     }
@@ -107,7 +115,10 @@ router.post('/create',
       ip: req.ip, orderID, userID: res.locals.user, addressID,
     });
 
-    data.products.forEach((product) => { productsArray.push([orderID, product[0], product[1]]); });
+    // product[0], product[1] -> productID, quantity
+    data.products.forEach((product) => {
+      productsArray.push([orderID, product[0], product[1], product[2]]);
+    });
 
     try {
       logger.info('Checking if an existing address has been used', {
@@ -126,7 +137,7 @@ router.post('/create',
       // link address to order
       const orderInfo = await dao.createOrder(res.locals.user, orderID, deliveryID,
         addressID, data.store_id, data);
-      logger.info('create order with exsiting address', {
+      logger.info('create order with existing address', {
         ip: req.ip, orderID, userID: res.locals.user, addressID,
       });
       orderCreatedMetric.inc({ type: 'order_created', status: 200 });
@@ -163,7 +174,7 @@ router.post('/create',
         productListdbID,
         ProductsdbRownum: addProductToOrder.affectedRows,
       });
-      return res.statusCode(500);
+      return res.status(500).send();
     } catch (error) {
       return next(error);
     }
