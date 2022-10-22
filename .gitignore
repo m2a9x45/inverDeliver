@@ -37,6 +37,8 @@ tools/coop-scraper/skuErrors-*.json
 tools/coop-scraper/data
 tools/coop-scraper/images
 
+tools/morrisons/*.html
+
 tools/*/node_modules
 tools/*/package.json
 tools/*/.env
@@ -44,4 +46,6 @@ tools/*/.env
 tools/*/*/node_modules
 tools/*/*/package.json
 tools/*/*/.env
+
+.idea
 
