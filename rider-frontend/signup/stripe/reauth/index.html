@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InverDeliver | Rider</title>
+</head>
+<body>
+    <h1>Stripe reauth</h1>
+    <!-- 
+        https://stripe.com/docs/connect/express-accounts
+
+        This is the page that stripe will redirect the rider to if they 
+        Your user is redirected to the refresh_url in these cases:
+
+        The link is expired (a few minutes went by since the link was created).
+        The user already visited the URL (the user refreshed the page or clicked back or forward in the browser).
+        Your platform can no longer access the account.
+        The account has been rejected.
+
+        Your refresh_url should trigger a method on your server to call Account Links again with the same parameters, and redirect the user to the Connect Onboarding flow to create a seamless experience.
+
+
+     -->
+     <script src="./reauth.js"></script>
+</body>
+</html>
