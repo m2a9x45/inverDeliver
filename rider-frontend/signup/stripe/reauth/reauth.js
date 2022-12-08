@@ -1,11 +1,42 @@
 const API_URL = 'http://localhost:3001';
+const backToStripeButton = document.querySelector('#backToStripeButton');
 
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyaWRlcklEIjoicmlkZXJfZTQyMTkyMWUtY2UyMi00ZWU3LTk4MzktMjRiNGNjNDJjZjc2Iiwicm9sZXMiOlsicmlkZXIiXSwiaWF0IjoxNjcwMzY4NTc2LCJleHAiOjE2NzA5NzMzNzZ9.PTNPt0zQLz8rnWQznfOKs2Lfoi0sh7f680qGOG68Zp0'
-
-fetch(`${API_URL}/rider/signup/stripe/reauth`, {
-    headers: {
-        'authorization': `Bearer ${token}`
+window.onload = async function() {
+    // Check if the rider is has a token
+    const token = localStorage.getItem('rtoken');
+    if (token === null) {
+        // Error no token, direct rider to login
+        console.log('No token');
+        return
     }
-})
-.then((response) => response.json())
-.then((data) => console.log(data));
+
+    console.log(token);
+
+    try {
+        const stripeData = await getNewStripeAccountLink(token);
+        console.log(stripeData);
+        backToStripeButton.addEventListener('click', () => {
+            window.location.replace(stripeData.url);
+        })
+
+    } catch (error) {
+        console.log(error);
+    }
+
+}
+
+async function getNewStripeAccountLink(token) {
+    try {
+        const response = await fetch(`${API_URL}/shopper/signup/stripe/reauth`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+    
+        const stripeData = await response.json();
+        return stripeData;
+    } catch (error) {
+        console.error(error);
+    }
+}

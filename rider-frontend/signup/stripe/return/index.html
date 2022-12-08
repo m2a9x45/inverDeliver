@@ -4,14 +4,34 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="return.css">
+    <!-- <link rel="preload" href="main.css" as="style" onload="this.onload=null;this.rel='stylesheet'"> -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preconnect" href="https://fonts.googleapis.com/css2?family=Roboto:wght@150;300;400&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+
+    <script async src="https://kit.fontawesome.com/4c9a84b417.js" crossorigin="anonymous"></script>
+
     <title>InverDeliver | Rider</title>
 </head>
 <body>
-    <h1>Stripe return</h1>
-    <!-- 
-        Stripe will redirect riders back to this page after they've completed the stripe onbaodring
-        https://stripe.com/docs/connect/express-accounts#return_url
-    -->
+    <main>
+        <div class="content">
+            <img src="../stripe_logo.svg" alt="" width="45%">
+            <h1>We've created your Stripe account</h1>
+            <p>
+                Sorry it looks like we ran into a problem when trying to create your Stripe account. <br> <br>
+                You should be able to resolve the problem, by trying again. If that doesn't work, please do let us know.
+            </p>
+
+            <i>
+                Whilst creating your Stripe account, you shouldn't refersh the page or use the naviagtion buttons in your browser
+                to move forward or backwards. As this will result in you being redirected to this page.
+            </i>
+
+            <button id="backToStripeButton">Continue</button>
+        </div>
+    </main>
     <script src="./return.js"></script>
 </body>
 </html>
