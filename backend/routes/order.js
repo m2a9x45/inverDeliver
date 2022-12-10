@@ -83,11 +83,10 @@ router.post('/create',
       const correctStoreID = productInfo.retailer_id;
       data.products[i][2] = productInfo.price;
 
-      // console.log(correctStoreID.retailer_id, data.store_id);
       if (correctStoreID === null || correctStoreID === undefined) {
         cartIssues.push({ product_id: productIDFromClient, issue_reason: 'invalid_product_id' });
         logger.warn('invalid product ID in cart', { ip: req.ip, userID: res.locals.user, product_id: productIDFromClient });
-      } else if (correctStoreID.retailer_id !== data.store_id) {
+      } else if (correctStoreID !== data.store_id) {
         cartIssues.push({ product_id: productIDFromClient, correctStoreID, issue_reason: 'wrong_store_id' });
         logger.warn('invalid product ID for given store ID', {
           ip: req.ip, userID: res.locals.user, product_id: productIDFromClient, correctStoreID,
