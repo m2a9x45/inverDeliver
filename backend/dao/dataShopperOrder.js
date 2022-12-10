@@ -30,6 +30,20 @@ function getBatches() {
   }));
 }
 
+function getBatchItemCount(orderID) {
+  return new Promise(((resolve, reject) => {
+    const sql = 'SELECT SUM(quantity) AS item_count FROM food.details WHERE order_id = (?)';
+    db.query(sql, [orderID], (err, value) => {
+      if (err === null) {
+        resolve(value);
+      } else {
+        reject(err);
+      }
+    });
+  }));
+}
+
 module.exports = {
   getBatches,
+  getBatchItemCount,
 };

@@ -1,0 +1,98 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background-color: rgb(241, 241, 241);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+img {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    position: relative;
+    top: -2rem;
+    left: -2rem;
+    background-color: white;
+}
+
+.batchHolder {
+    width: 45%;
+    margin: 2rem auto;
+    max-width: 550px;
+}
+
+.batch {
+    display: flex;
+    flex-direction: column;
+    margin: 2rem auto;
+    padding: 1rem 1rem 0.5rem 1rem;
+
+    border-radius: 20px;
+    color: white;
+    font-size: 16pt;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    
+}
+
+.morrison {
+    background: linear-gradient(0deg, rgb(134, 228, 154) 4%, rgb(164, 231, 8) 80%);
+}
+
+.coop {
+    background: linear-gradient(0deg, rgb(134, 212, 228) 4%, rgb(8, 227, 231) 80%);
+}
+
+.aldi {
+    background: linear-gradient(0deg, rgba(227,228,134,1) 4%, rgba(231,178,8,1) 80%);
+}
+
+.batch p {
+    margin: 0;
+}
+
+.batchInfo {
+    display: flex;
+    justify-content: space-between;
+    height: 2rem;
+}
+
+.logoAndAddress {
+    display: flex;
+    width: 65%;
+}
+
+.address {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fa-clock:before, .fa-shopping-basket:before {
+    margin-left: 0.35rem;
+}
+
+.buttonDiv {
+    display: flex;
+}
+
+button {
+    background-color: #5858584c;
+    font-size: 12pt;
+    border-radius: 25px;
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    margin: 4px 2px;
+    cursor: pointer;
+    /* border: 2px rgb(71, 102, 207) solid; */
+}
+
+
+
+
+
+
