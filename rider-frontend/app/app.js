@@ -1,5 +1,7 @@
 const API_URL = 'http://localhost:3001';
 const batchHolder = document.querySelector('.batchHolder');
+const yourBatches = document.querySelector('.yourBatches');
+
 let authToken;
 
 window.onload = async function() {
@@ -23,16 +25,47 @@ window.onload = async function() {
         console.log(error);
     }
 
+    // Get batches assigned to shopper
+    try {
+        const batches = await getMyBatches()
+        console.log(batches);
+        batches.forEach(async batch => {
+            const batchDiv = await displayBatch(batch);
+            yourBatches.appendChild(batchDiv);
+        });
+
+
+    } catch (error) {
+        console.log(error);
+    }
+
     try {
         const batches = await getBatches(authToken);
         console.log(batches);
-        batches.forEach(batch => {
-            displayBatch(batch);
+        batches.forEach(async batch => {
+            const batchDiv = await displayBatch(batch);
+            batchHolder.appendChild(batchDiv);
         });
     } catch (error) {
         console.log(error);
     }
 
+}
+
+async function getMyBatches() {
+    try {
+        const response = await fetch(`${API_URL}/shopper/order/my-batches`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
+    
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 async function getSignupStatus(token) {
@@ -83,12 +116,16 @@ async function displayBatch(batch) {
 
     switch (batch.company_name) {
         case "Morrisons":
-            console.log("morrisons");
             batchDiv.setAttribute('class', 'batch morrison');
             break;
         case "ALDI":
-            console.log("aldi");
             batchDiv.setAttribute('class', 'batch aldi');
+            break;
+        case "Co-op":
+            batchDiv.setAttribute('class', 'batch coop');
+            break; 
+        default:
+            batchDiv.setAttribute('class', 'batch morrison');
             break;
     }
 
@@ -145,9 +182,18 @@ async function displayBatch(batch) {
     const buttonDiv = document.createElement('div');
     buttonDiv.setAttribute('class', 'buttonDiv')
     const button = document.createElement('button');
-    button.innerHTML = '<i class="fas fa-search"></i> View Batch';
+
+    let redirectUrl = `./batch/?batchID=${batch.order_id}`
+    let buttonIcon = '<i class="fas fa-search"></i> View Batch';
+
+    if (batch.fulfillment_status) {
+        redirectUrl = `./job/?batchID=${batch.order_id}`
+        buttonIcon = '<i class="fas fa-route"></i> Go to shop';
+    }
+
+    button.innerHTML = buttonIcon;
     button.addEventListener('click', () => {
-        window.location.href = `./batch/?batchID=${batch.order_id}`;
+        window.location.href = redirectUrl;
     });
 
     buttonDiv.appendChild(button);
@@ -155,8 +201,7 @@ async function displayBatch(batch) {
     batchDiv.appendChild(batchInfoDiv);
     batchDiv.appendChild(buttonDiv);
 
-    batchHolder.appendChild(batchDiv);
-
+    return batchDiv;
 }
 
 async function getBatchItemCount(token, orderID) {

@@ -1,12 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InverDeliver | Shopper Batch</title>
+
+    <link rel="stylesheet" href="batch.css">
+
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css' rel='stylesheet' />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preconnect" href="https://fonts.googleapis.com/css2?family=Roboto:wght@150;300;400&display=swap"
+        as="style" onload="this.onload=null;this.rel='stylesheet'">
+
+    <script async src="https://kit.fontawesome.com/4c9a84b417.js" crossorigin="anonymous"></script>
+
+    <title>InverDeliver | Shopper</title>
 </head>
+
 <body>
-    <h1>batch</h1>
+    <main>
+        <div id='map'></div>
+        <div class="content">
+            <div class="productHolder">
+                <h2>Order Content</h1>
+                    <!-- <div class="product">
+                    <div class="productInfo">
+                        <div class="productImgAndName">
+                            <img src="http://localhost:3001/productImage/coop/d3a3f485-2752-47a8-8d39-b2f3137f0870.jpg" alt="">
+                            <div>
+                                <p>Rowan Glen Greek Style Yogurt Natural</p>
+                                <p>150g</p>
+                            </div>
+                        </div>
+                       <div>
+                        <div class="quantity">
+                            <p>1</p>
+                            <i class="fas fa-shopping-basket"></i>
+                        </div>
+                       </div>
+                    </div>
+                    <div class="productMetaData">
+                        <div class="barcodeAndSKU">
+                            <div class="barcode">
+                                <i class="fas fa-barcode"></i>
+                                <p>4088600034393</p>
+                            </div>
+                            <div class="barcode">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <p> No Sku</p>
+                            </div>
+                        </div>
+                        <div class="category">
+                            <p>🧀 Fresh</p>
+                        </div>
+                    </div>
+                </div> -->
+
+                    <!-- <div class="product">
+                    <div class="productInfo">
+                        <div class="productImgAndName">
+                            <img src="http://localhost:3001/productImage/coop/d3a3f485-2752-47a8-8d39-b2f3137f0870.jpg" alt="">
+                            <div>
+                                <p>Rowan Glen Greek Style Yogurt Natural</p>
+                                <p>150g</p>
+                            </div>
+                        </div>
+                       <div>
+                        <div class="quantity">
+                            <p>1</p>
+                            <i class="fas fa-shopping-basket"></i>
+                        </div>
+                       </div>
+                    </div>
+                    <div class="productMetaData">
+                        <div class="barcodeAndSKU">
+                            <div class="barcode">
+                                <i class="fas fa-barcode"></i>
+                                <p>4088600034393</p>
+                            </div>
+                            <div class="barcode">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <p> No Sku</p>
+                            </div>
+                        </div>
+                        <div class="category">
+                            <p>🧀 Fresh</p>
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+            <div class="buttonHolder">
+                <button id="chooseBatch">Choose Batch</button>
+            </div>
+        </div>
+    </main>
+
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <h2 id="errorTitle">Something went wrong</h2>
+            <i id="errorIcon" class="fas fa-times"></i>
+            <p id="errorMessage"></p>
+            <div class="errorButtonHolder">
+                <button onclick="hideError()">Ok</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="batch.js"></script>
 </body>
+
 </html>

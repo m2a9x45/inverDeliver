@@ -183,7 +183,6 @@ router.get('/signup/stripe/return', auth.isAuthorizedRider, async (req, res, nex
 
     console.log(account);
     // If account.details_submitted is true, then we can contine onboarding the rider
-    // TODO: Update signup status
     if (account.details_submitted) {
       const completeStripeSignupResult = await dao.completeStripeSignup(rider);
       if (completeStripeSignupResult.changedRows !== 1) {

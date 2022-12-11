@@ -71,15 +71,9 @@ const errorCount = new metric.client.Counter({
   labelNames: ['path', 'code'],
 });
 
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
   console.log(err);
-
-  // errorCount.inc({ path: req.path, code: res.statusCode || 500 });
-  // logger.error(err.message || err.internalMessage || 'Somthing went wrong', {
-  //   errorCode: res.statusCode, userID: res.locals.users, url: req.originalUrl, errorInfo: err,
-  // });
-  // res.status(res.statusCode || 500);
-  // res.json({
-  //   error: err.message,
-  // });
+  return res.json({
+    error: err,
+  });
 });

@@ -17,6 +17,12 @@ img {
     background-color: white;
 }
 
+.yourBatches {
+    width: 45%;
+    margin: 2rem auto;
+    max-width: 550px;
+}
+
 .batchHolder {
     width: 45%;
     margin: 2rem auto;
