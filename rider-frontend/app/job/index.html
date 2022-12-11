@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="job.css">
+
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css' rel='stylesheet' />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preconnect" href="https://fonts.googleapis.com/css2?family=Roboto:wght@150;300;400&display=swap"
+        as="style" onload="this.onload=null;this.rel='stylesheet'">
+
+    <script async src="https://kit.fontawesome.com/4c9a84b417.js" crossorigin="anonymous"></script>
+
+    <title>InverDeliver | Shopper</title>
+</head>
+
+<body>
+    <main>
+        <div id='map'></div>
+        <div class="content">
+          <h2>Head to [NAME OF SHOP]</h2>
+            <div class="buttonHolder">
+                <button id="wazeButton"><i class="fab fa-waze"></i> Naviagte with Wazes</button>
+                <button id="appleButton"><i class="fab fa-apple"></i> Naviagte with Apple maps</button>
+                <button id="googleButton"><i class="fab fa-google"></i> Naviagte with Google maps</button>
+            </div>
+        </div>
+    </main>
+
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <h2 id="errorTitle">Something went wrong</h2>
+            <i id="errorIcon" class="fas fa-times"></i>
+            <p id="errorMessage"></p>
+            <div class="errorButtonHolder">
+                <button onclick="hideError()">Ok</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="job.js"></script>
+</body>
+
+</html>

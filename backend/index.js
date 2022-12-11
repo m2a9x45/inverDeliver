@@ -13,6 +13,8 @@ const payments = require('./routes/payment');
 const users = require('./routes/user');
 const support = require('./routes/support');
 const stores = require('./routes/store');
+const shopperSignup = require('./routes/shopper/shopperSignup');
+const shopperOrder = require('./routes/shopper/order');
 
 const metric = require('./routes/metric');
 
@@ -23,7 +25,7 @@ const logger = require('./middleware/logger');
 // const bussiness = require('./routes/bussiness');
 
 const corsOptions = {
-  origin: ['http://localhost:8080', 'http://localhost:63342', 'https://inverdeliver.com'],
+  origin: ['http://localhost:8080', 'http://127.0.0.1:8080', 'http://localhost:63342', 'https://inverdeliver.com'],
   optionsSuccessStatus: 200,
 };
 
@@ -50,6 +52,8 @@ app.use('/payment', payments);
 app.use('/user', users);
 app.use('/support', support);
 app.use('/store', stores);
+app.use('/shopper', shopperSignup);
+app.use('/shopper/order', authorisation.isAuthorizedRider, shopperOrder);
 // app.use('/seller', seller);
 // app.use('/bussiness', authorisation.isAuthorizedSeller);
 
@@ -67,15 +71,9 @@ const errorCount = new metric.client.Counter({
   labelNames: ['path', 'code'],
 });
 
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
   console.log(err);
-
-  // errorCount.inc({ path: req.path, code: res.statusCode || 500 });
-  // logger.error(err.message || err.internalMessage || 'Somthing went wrong', {
-  //   errorCode: res.statusCode, userID: res.locals.users, url: req.originalUrl, errorInfo: err,
-  // });
-  // res.status(res.statusCode || 500);
-  // res.json({
-  //   error: err.message,
-  // });
+  return res.json({
+    error: err,
+  });
 });

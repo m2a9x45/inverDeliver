@@ -1,0 +1,153 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background-color: rgb(241, 241, 241);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+#map {
+    width: 100vw;
+    height: 40vh;
+}
+
+.content {
+    width: 50%;
+    margin: 1rem auto;
+}
+
+.productHolder {
+    width: 95%;
+    margin: 1rem auto;
+}
+
+.product {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding: 0.25rem 0.5rem 1rem 0.5rem;
+    border-radius: 25px;
+    width: 100%;
+    margin: 1rem auto;
+    max-width: 550px;
+}
+
+.product img {
+    width: 100px;
+    height: 100px;
+}
+
+.product p {
+    margin: 0;
+}
+
+.productInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.productImgAndName {
+    display: flex;
+    align-items: center;
+}
+
+.productImgAndName div {
+    margin-left: 1rem;
+}
+
+.quantity {
+    display: flex;
+    margin-right: 1rem;
+    font-size: 18pt;
+}
+
+.barcodeAndSKU {
+    display: flex;
+    margin: 0 1rem;
+}
+
+.barcode {
+    display: flex;
+    justify-content: space-evenly;
+    margin: 0 0.5rem;
+}
+
+.barcode p {
+    margin-left: 0.5rem;
+}
+
+.productMetaData {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px rgb(223, 223, 223) solid;
+    padding-top: 0.25rem;
+}
+
+.category {
+    margin-right: 1rem;
+}
+
+.fa-shopping-basket:before {
+    margin-left: 0.35rem;
+}
+
+.buttonHolder {
+    width: 85%;
+    margin: 0 auto;
+    max-width: 550px;
+}
+
+button {
+    width: 100%;
+    background-color: rgb(66, 176, 255);
+    font-size: 16pt;
+    border-radius: 15px;
+    border: none;
+    color: white;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+/* The Modal (background) */
+.modal {
+    display: none;
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+  
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 25%; /* Could be more or less, depending on screen size */
+    text-align: center;
+}
+
+#errorIcon {
+    font-size: 150pt;
+    color: rgb(223 73 73);
+}
+
+.errorButtonHolder {
+    width: 45%;
+    margin: 0 auto;
+}
+
+#googleButton {
+    background: rgb(234,67,53);
+    background: linear-gradient(90deg, rgba(234,67,53,1) 0%, rgba(251,188,5,1) 25%, rgba(52,168,83,1) 50%, rgba(66,133,244,1) 75%);
+}
