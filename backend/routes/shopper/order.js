@@ -96,10 +96,10 @@ router.get('/my-batches', async (req, res, next) => {
   }
 });
 
-router.get('/store/:storeID', async (req, res, next) => {
-  const { storeID } = req.params;
+router.get('/store/:orderID', async (req, res, next) => {
+  const { orderID } = req.params;
   try {
-    const store = await dao.getStore(storeID);
+    const store = await dao.getStore(orderID);
     if (store.length === 0) {
       return next(genInvErr(Error('faild to find store'), 'Invaild store', 'we couldn\'t find this store', { store_id: storeID }));
     }

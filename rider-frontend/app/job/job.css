@@ -146,3 +146,8 @@ button {
     width: 45%;
     margin: 0 auto;
 }
+
+#googleButton {
+    background: rgb(234,67,53);
+    background: linear-gradient(90deg, rgba(234,67,53,1) 0%, rgba(251,188,5,1) 25%, rgba(52,168,83,1) 50%, rgba(66,133,244,1) 75%);
+}

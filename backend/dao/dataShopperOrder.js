@@ -112,16 +112,17 @@ function getBatchStatus(batchID) {
   }));
 }
 
-function getStore(storeID) {
+function getStore(orderID) {
   return new Promise(((resolve, reject) => {
     const sql = `
     SELECT 
       store_name, address, lat, s.long, logo
     FROM food.store AS s
+    INNER JOIN food.order AS o ON s.store_id = o.store_id
     INNER JOIN bussiness AS b ON s.bussiness_id=b.bussiness_id
-    WHERE s.store_id = (?);
+    WHERE o.order_id = (?);
     `;
-    db.query(sql, [storeID], (err, value) => {
+    db.query(sql, [orderID], (err, value) => {
       if (err === null) {
         resolve(value);
       } else {
