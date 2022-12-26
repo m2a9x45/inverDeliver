@@ -30,6 +30,7 @@ function isAuthorized(req, res, next) {
 
 function isAldiScapper(req, res, next) {
   const apiKeyHeader = req.headers.apikey;
+  console.log('here', apiKeyHeader);
 
   if (apiKeyHeader !== undefined) {
     if (apiKeyHeader === process.env.API_KEY) {
@@ -44,7 +45,16 @@ function isAldiScapper(req, res, next) {
   }
 }
 
+function isPeronOrAuto(req, res, next) {
+  if (req.headers.apikey) {
+    isAldiScapper(req, res, next);
+  } else {
+    isAuthorized(req, res, next);
+  }
+}
+
 module.exports = {
   isAuthorized,
   isAldiScapper,
+  isPeronOrAuto,
 };
