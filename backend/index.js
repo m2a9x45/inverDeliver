@@ -67,7 +67,7 @@ const errorCount = new metric.client.Counter({
   labelNames: ['path', 'code'],
 });
 
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
   console.log(err);
 
   // errorCount.inc({ path: req.path, code: res.statusCode || 500 });
