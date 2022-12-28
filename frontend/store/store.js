@@ -21,7 +21,7 @@ const loginToken = new URL(window.location.href).searchParams.get("token");
 
 if (loginToken) {
   localStorage.setItem('token', loginToken);
-  window.location = 'http://localhost:8080/frontend/';
+  window.location = '../';
 }
 
 // Navbar toggle code
