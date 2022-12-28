@@ -1,7 +1,6 @@
 backend/.env
 # npm
 backend/node_modules
-backend/package.json
 *.log
 *.gz
 *.txt
@@ -14,10 +13,8 @@ frontend/us/why-join/*.jpg
 .vscode
 
 tools/backroom/node_modules
-tools/backroom/package.json
 
 tools/backroom-backend/node_modules
-tools/backroom-backend/package.json
 tools/backroom-backend/.env
 
 tools/fruit.html
@@ -42,11 +39,9 @@ tools/morrisons/*.html
 tools/tesco/html
 
 tools/*/node_modules
-tools/*/package.json
 tools/*/.env
 
 tools/*/*/node_modules
-tools/*/*/package.json
 tools/*/*/.env
 
 .idea
