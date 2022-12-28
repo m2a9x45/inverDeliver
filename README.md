@@ -1,5 +1,7 @@
 # Food Delivery Project
 
+A personal project with an online store, with product data scapped from UK supermarkets. Along with some delivery tooling.
+
 A marketplace solution to food deliver food from supermarkets and the like. Currently I've started the backend with two routes one to list all the products, which in the future will turning a site wide reccomendation endpoint.
 
 The other route is a search using the LIKE syntax in SQL to return a list of products where the name includes the search term. 
