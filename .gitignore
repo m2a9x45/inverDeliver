@@ -39,6 +39,8 @@ tools/coop-scraper/images
 
 tools/morrisons/*.html
 
+tools/tesco/html
+
 tools/*/node_modules
 tools/*/package.json
 tools/*/.env
