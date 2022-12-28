@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3001"
+const API_URL = "https://api.inverdeliver.com";
 
 // Checking to see if the jwt is vaild client side, we could just check if it exist in local storage to update the UI and the deal with a 401 when it happens.
 if (localStorage.getItem("token")) {
