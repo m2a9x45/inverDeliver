@@ -21,7 +21,7 @@ const loginToken = new URL(window.location.href).searchParams.get("token");
 
 if (loginToken) {
   localStorage.setItem('token', loginToken);
-  window.location = '../index.html';
+  window.location = 'https://inverdeliver.com/';
 }
 
 // Navbar toggle code
