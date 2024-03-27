@@ -34,6 +34,9 @@ tools/coop-scraper/skuErrors-*.json
 tools/coop-scraper/data
 tools/coop-scraper/images
 
+tools/coop-auto-price-v2/*.html
+tools/coop-auto-price-v2/*.json
+
 tools/morrisons/*.html
 
 tools/tesco/html
